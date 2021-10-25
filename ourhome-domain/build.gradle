@@ -1,0 +1,11 @@
+dependencies {
+    // 자식 모듈이 쓰는 라이브러리는 api
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // 현재 모듈에서만 쓸거면 implementation
+    implementation "com.h2database:h2"
+    runtimeOnly 'mysql:mysql-connector-java'
+}
+
+bootJar { enabled = false }
+
+jar { enabled = true }

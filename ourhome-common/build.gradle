@@ -1,0 +1,9 @@
+dependencies {
+    api 'org.springframework.boot:spring-boot-starter-web'
+}
+
+// common 모듈 빌드 시 단독으로 실행 가능한 jar 파일으로 만들 필요가 없음
+bootJar { enabled = false }
+
+// 다른 모듈에는 포함되어 빌드되도록
+jar { enabled = true }

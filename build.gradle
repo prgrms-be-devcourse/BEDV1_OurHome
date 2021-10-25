@@ -1,0 +1,44 @@
+// gradle 버전업에 따라 buildscript -> plugins로 변경됨.
+plugins {
+    id 'org.springframework.boot' version '2.5.6'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+// allprojects : root 프로젝트 설정
+allprojects {
+    group = 'com.armand'
+    version = '0.0.1-SNAPSHOT'
+}
+
+// subprojects : 하위 프로젝트 설정
+subprojects {
+    apply {
+        plugin('java')
+        plugin('java-library')
+        plugin('org.springframework.boot')
+        plugin('io.spring.dependency-management')
+    }
+
+    sourceCompatibility = "17"
+
+    repositories {
+        mavenCentral()
+    }
+
+    // 모든 하위 프로젝트에게 공통적으로 부여할 의존성 라이브러리
+    dependencies {
+        // bean validation
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        // Lombok
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        // Test
+        implementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+
+    // 테스트 플랫폼 지정
+    test {
+        useJUnitPlatform()
+    }
+}
+

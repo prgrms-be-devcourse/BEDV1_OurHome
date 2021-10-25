@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':ourhome-domain')
+    implementation project(':ourhome-common')
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+}
