@@ -25,6 +25,12 @@ subprojects {
         mavenCentral()
     }
 
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
     // 모든 하위 프로젝트에게 공통적으로 부여할 의존성 라이브러리
     dependencies {
         // bean validation

@@ -10,7 +10,9 @@
 
 <br>
 
-## Market Team
+## Team
+
+### Market Team
 
 <table>
   <tr>
@@ -30,7 +32,7 @@
   </tr>
 </table>
 
-## Community Team
+### Community Team
 
 <table>
   <tr>
