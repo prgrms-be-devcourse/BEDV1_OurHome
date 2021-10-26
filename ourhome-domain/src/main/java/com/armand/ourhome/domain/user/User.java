@@ -20,10 +20,4 @@ public class User {
     private User(Long id) {
         this.id = id;
     }
-
-    static public User of(UserDto dummyDto){
-        return User.builder()
-                .id(dummyDto.getId())
-                .build();
-    }
 }
