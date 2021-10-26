@@ -2,6 +2,5 @@ rootProject.name = 'BEDV1_OurHome'
 include 'ourhome-domain'
 include 'ourhome-common'
 include 'ourhome-market'
-include 'ourhome-communtiy'
 include 'ourhome-community'
 
