@@ -3,5 +3,10 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost/our_home
-    username:
-    password:
+    username: root
+    password: root1234
+
+  # sequence 전략 default 해제
+  jpa:
+    hibernate:
+      use-new-id-generator-mappings: false

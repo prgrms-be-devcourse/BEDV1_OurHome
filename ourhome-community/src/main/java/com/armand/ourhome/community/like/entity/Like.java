@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "like")
+@Table(name = "likes")
 public class Like extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
