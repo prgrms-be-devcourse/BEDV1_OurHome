@@ -35,11 +35,27 @@ subprojects {
     dependencies {
         // bean validation
         implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+        // Mapstruct
+        implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+
         // Lombok
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
+        implementation 'org.projectlombok:lombok:1.18.22'
+
+        // Mapstruct + Lombok
+        implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
         // Test
         implementation 'org.springframework.boot:spring-boot-starter-test'
+
+        // annotationProcessor
+        annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+        annotationProcessor 'org.projectlombok:lombok:1.18.22'
+        annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+        testCompileOnly 'org.projectlombok:lombok:1.18.22'
+        testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+        testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
     }
 
     // 테스트 플랫폼 지정
