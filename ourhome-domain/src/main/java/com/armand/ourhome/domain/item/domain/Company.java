@@ -1,4 +1,4 @@
-package com.armand.ourhome.domain.item;
+package com.armand.ourhome.domain.item.domain;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class Company {
   @GeneratedValue
   private Long id;
 
-  @Column(nullable = false, length = MAX_NAME_LENGTH)
+  @Column(nullable = false, length = MAX_NAME_LENGTH, unique = true)
   private String name;
 
   public Company(String name) {

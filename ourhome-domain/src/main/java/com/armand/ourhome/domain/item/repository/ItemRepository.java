@@ -1,5 +1,8 @@
-package com.armand.ourhome.domain.item;
+package com.armand.ourhome.domain.item.repository;
 
+import com.armand.ourhome.domain.item.domain.Category;
+import com.armand.ourhome.domain.item.domain.Company;
+import com.armand.ourhome.domain.item.domain.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

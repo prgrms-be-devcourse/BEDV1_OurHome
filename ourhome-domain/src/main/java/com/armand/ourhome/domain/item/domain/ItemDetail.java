@@ -1,4 +1,4 @@
-package com.armand.ourhome.domain.item;
+package com.armand.ourhome.domain.item.domain;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,11 +30,20 @@ public class ItemDetail {
   private String imageUrl;
 
   @Builder
-  public ItemDetail(String name, String description, String imageUrl) {
+  private ItemDetail(String name, String description, String imageUrl) {
     validate(name, description, imageUrl);
     this.name = name;
     this.description = description;
     this.imageUrl = imageUrl;
+  }
+
+  public static ItemDetail of(String name, String description, String imageUrl) {
+    return ItemDetail.builder()
+            .name(name)
+            .imageUrl(imageUrl)
+            .description(description)
+            .build();
+
   }
 
   private void validate(String name, String description, String imageUrl) {
