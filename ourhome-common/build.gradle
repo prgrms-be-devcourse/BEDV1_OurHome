@@ -1,5 +1,8 @@
 dependencies {
     api 'org.springframework.boot:spring-boot-starter-web'
+
+    // AWS S3
+    api 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
 }
 
 // common 모듈 빌드 시 단독으로 실행 가능한 jar 파일으로 만들 필요가 없음
