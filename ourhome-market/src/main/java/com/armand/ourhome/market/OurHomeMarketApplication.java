@@ -11,7 +11,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication(scanBasePackages = "com.armand.ourhome",
         excludeName = "com.armand.ourhome.community")
 public class OurHomeMarketApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(OurHomeMarketApplication.class, args);
-    }
+
+  public static void main(String[] args) {
+    SpringApplication.run(OurHomeMarketApplication.class, args);
+  }
+
 }
