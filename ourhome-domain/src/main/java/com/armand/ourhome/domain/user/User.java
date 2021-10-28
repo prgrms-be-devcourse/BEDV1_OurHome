@@ -1,10 +1,7 @@
 package com.armand.ourhome.domain.user;
 
 import com.armand.ourhome.domain.base.BaseEntity;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -34,4 +31,14 @@ public class User extends BaseEntity {
 
     @Column(name="profile_image_url", columnDefinition = "TEXT")
     private String profileImageUrl;
+
+    @Builder
+    public User(String email, String password, String nickname, String address, String description, String profileImageUrl) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.address = address;
+        this.description = description;
+        this.profileImageUrl = profileImageUrl;
+    }
 }
