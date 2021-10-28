@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 public abstract class Voucher {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(name = "min_limit", nullable = false)
