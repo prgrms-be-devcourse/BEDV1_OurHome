@@ -1,0 +1,52 @@
+package com.armand.ourhome.market.voucher.domain;
+
+import java.text.MessageFormat;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DiscriminatorValue("PERCENT")
+@Getter
+@Entity
+public class PercentVoucher extends Voucher {
+
+  @Column(nullable = false)
+  private Integer percent;
+
+  private PercentVoucher(Integer percent, Integer minLimit) {
+    super(minLimit);
+    this.percent = percent;
+  }
+
+  public static PercentVoucher of(Integer percent, Integer minLimit) {
+    validatePercent(percent);
+    validateMinLimit(minLimit);
+
+    return new PercentVoucher(percent, minLimit);
+  }
+
+  @Override
+  public int getDiscountPrice(int currentPrice) {
+    return currentPrice * (percent / 100);
+  }
+
+  //== Validation Method ==//
+  public static void validateMinLimit(Integer minLimit) {
+    if (minLimit == null || minLimit <= 0) {
+      throw new IllegalArgumentException(
+          MessageFormat.format("바우처 사용 최소금액은 0원이상입니다. minLimit = {0}", minLimit));
+    }
+  }
+
+  private static void validatePercent(Integer percent) {
+    if (percent == null || percent <= 0) {
+      throw new IllegalArgumentException(
+          MessageFormat.format("바우처 할인비율은 0보다 커야합니다. percent = {0}", percent));
+    }
+  }
+
+}
