@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class Content {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name ="media_url", columnDefinition = "TEXT", nullable = false)
