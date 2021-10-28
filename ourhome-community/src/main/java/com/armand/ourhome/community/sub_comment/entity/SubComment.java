@@ -17,7 +17,7 @@ import javax.persistence.*;
 public class SubComment extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "sub_comment", length = 300, nullable = false)
