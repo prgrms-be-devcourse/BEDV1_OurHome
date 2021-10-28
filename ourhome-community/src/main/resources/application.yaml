@@ -14,3 +14,16 @@ spring:
     show-sql: true
     properties:
       hibernate.format_sql: true
+
+# AWS S3 설정
+cloud:
+  aws:
+    credentials:
+      accessKey: ${AWS_ACCESS_KEY}
+      secretKey: ${AWS_SECRET_KEY}
+    s3:
+      bucket: ${AWS_BUCKET}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
