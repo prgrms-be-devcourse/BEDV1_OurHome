@@ -49,7 +49,7 @@ public class AwsS3Uploader {
 
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {
-            log.info("파일이 삭제되었습니다.");
+            log.info("S3 업로드 완료 (로컬 파일은 삭제되었습니다.)");
         } else {
             log.info("파일이 삭제되지 못했습니다.");
         }
