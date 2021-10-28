@@ -1,5 +1,6 @@
-package com.armand.ourhome.market.voucher.dto;
+package com.armand.ourhome.market.voucher.dto.request;
 
+import com.armand.ourhome.market.voucher.dto.VoucherType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import lombok.Builder;
@@ -10,20 +11,23 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class RequestCreateFixedVoucher {
+public class RequestVoucher {
 
   @NotNull
   @Positive
-  private Integer amount;
+  private Integer value;
 
   @NotNull
   @Positive
   private Integer minLimit;
 
+  private VoucherType voucherType;
+
   @Builder
-  public RequestCreateFixedVoucher(Integer amount, Integer minLimit) {
-    this.amount = amount;
+  public RequestVoucher(Integer value, Integer minLimit, VoucherType voucherType) {
+    this.value = value;
     this.minLimit = minLimit;
+    this.voucherType = voucherType;
   }
 
 }

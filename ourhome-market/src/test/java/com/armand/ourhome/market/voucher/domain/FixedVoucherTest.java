@@ -50,7 +50,7 @@ public class FixedVoucherTest {
 
   @Test
   @DisplayName("바우처를 정상적으로 생성할 수 있다")
-  void createVoucher() {
+  void testSaveVoucher() {
     // when
     FixedVoucher voucher = FixedVoucher.of(3000, 10000);
 
