@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableJpaRepositories(basePackageClasses = OurHomeMarketApplication.class)
 @EntityScan(basePackageClasses = OurHomeMarketApplication.class)
-@SpringBootApplication(scanBasePackages = "com.armand.ourhome") // 다른 api는 제외시켜야함
+@SpringBootApplication(scanBasePackages = {"com.armand.ourhome"}, excludeName = {
+    "com.armand.ourhome.community"}) // 다른 api는 제외시켜야함
 public class OurHomeMarketApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(OurHomeMarketApplication.class, args);
-    }
+
+  public static void main(String[] args) {
+    SpringApplication.run(OurHomeMarketApplication.class, args);
+  }
+
 }

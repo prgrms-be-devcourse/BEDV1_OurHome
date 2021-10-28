@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-  List<Item> findAllByName(String name);
+  // List<Item> findAllByName(String name);
 
   List<Item> findAllByCompany(Company company);
 
