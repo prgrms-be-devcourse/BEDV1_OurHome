@@ -5,10 +5,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@EnableJpaRepositories(basePackageClasses = OurHomeMarketApplication.class)
-@EntityScan(basePackageClasses = OurHomeMarketApplication.class)
-@SpringBootApplication(scanBasePackages = {"com.armand.ourhome"}, excludeName = {
-    "com.armand.ourhome.community"}) // 다른 api는 제외시켜야함
+
+@EnableJpaRepositories(basePackageClasses = {OurHomeMarketApplication.class})
+@EntityScan(basePackageClasses = {OurHomeMarketApplication.class})
+@SpringBootApplication(scanBasePackages = "com.armand.ourhome",
+        excludeName = "com.armand.ourhome.community")
 public class OurHomeMarketApplication {
 
   public static void main(String[] args) {

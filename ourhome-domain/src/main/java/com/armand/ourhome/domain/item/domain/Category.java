@@ -1,4 +1,4 @@
-package com.armand.ourhome.domain.item;
+package com.armand.ourhome.domain.item.domain;
 
 public enum Category {
   FURNITURE, FABRIC, LIGHT, HOME_APPLIANCE, KITCHEN_UTENSIL,

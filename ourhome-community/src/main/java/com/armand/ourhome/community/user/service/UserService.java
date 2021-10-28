@@ -1,4 +1,4 @@
-package com.armand.ourhome.community.user;
+package com.armand.ourhome.community.user.service;
 
 
 import com.armand.ourhome.domain.user.User;
