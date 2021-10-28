@@ -1,5 +1,6 @@
-package com.armand.ourhome.domain.item;
+package com.armand.ourhome.domain.item.domain;
 
+import com.armand.ourhome.domain.base.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.text.MessageFormat;
 @Getter
 @Entity
 @Table(name = "item")
-public class Item {
+public class Item extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,7 +29,7 @@ public class Item {
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
@@ -37,28 +38,42 @@ public class Item {
     private Category category;
 
     @Builder
-    public Item(ItemDetail itemDetail, int price, int stock, Company company, Category category) {
+    public Item(String name, String description, String imageUrl, int price, int stockQuantity, Company company, Category category) {
 
-        validate(itemDetail, price, stock, company, category);
+        validate(price, stockQuantity, company, category);
 
-        this.itemDetail = itemDetail;
+        this.itemDetail = ItemDetail.of(name, description, imageUrl);
         this.price = price;
-        this.stockQuantity = stock;
+        this.stockQuantity = stockQuantity;
         this.company = company;
         this.category = category;
     }
 
     //== Business Method ==//
-    public Item update(ItemDetail itemDetail, int price, int stockQuantity, Category category) {
+    public void update(String name, String description, String imageUrl, int price, int stockQuantity, Category category) {
 
-        validate(itemDetail, price, stockQuantity, this.company, category);
+        validate(price, stockQuantity, this.company, category);
 
-        this.itemDetail = itemDetail;
+        this.itemDetail = ItemDetail.of(name, description, imageUrl);
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.category = category;
+    }
 
-        return this;
+    public void updateInfo(String name, String description, String imageUrl) {
+        this.itemDetail = ItemDetail.of(name, description, imageUrl);
+    }
+
+    public void updatePrice(int price) {
+        validatePrice(price);
+
+        this.price = price;
+    }
+
+    public void updateStockQuantity(int stockQuantity) {
+        validateQuantityOverZero(stockQuantity);
+
+        this.stockQuantity = stockQuantity;
     }
 
     public int addStockQuantity(int quantity) {
@@ -86,9 +101,8 @@ public class Item {
     }
 
     //== Validation Method ==//
-    private void validate(ItemDetail itemDetail, int price, int quantity, Company company,
+    private void validate(int price, int quantity, Company company,
         Category category) {
-        Assert.notNull(itemDetail, "상품 상세 정보는 null이 될 수 없습니다.");
         Assert.notNull(company, "기업은 null이 될 수 없습니다.");
         Assert.notNull(category, "상품 카테고리는 null이 될 수 없습니다.");
 
@@ -110,4 +124,19 @@ public class Item {
         }
     }
 
+    public String getName() {
+        return this.itemDetail.getName();
+    }
+
+    public String getDescription() {
+        return this.itemDetail.getDescription();
+    }
+
+    public String getImageUrl() {
+        return this.itemDetail.getImageUrl();
+    }
+
+    public String getCompanyName() {
+        return this.company.getName();
+    }
 }
