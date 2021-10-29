@@ -3,6 +3,7 @@ package com.armand.ourhome.market.voucher.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.armand.ourhome.common.error.exception.BusinessException;
 import com.armand.ourhome.market.voucher.domain.Voucher;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.VoucherType;
@@ -45,6 +46,31 @@ class VoucherServiceTest {
 
     // then
     assertThat(voucherRepository.count()).isEqualTo(1);
+  }
+
+  @Test
+  @DisplayName("중복된 바우처는 저장할 수 없다")
+  void cannot_save_duplicatedVoucher() {
+    // given
+    RequestVoucher request = RequestVoucher.builder()
+        .value(2000)
+        .minLimit(10000)
+        .voucherType(VoucherType.FIXED)
+        .build();
+
+    voucherService.save(request);
+
+    // when
+    RequestVoucher duplicatedRequest = RequestVoucher.builder()
+        .value(2000)
+        .minLimit(10000)
+        .voucherType(VoucherType.FIXED)
+        .build();
+
+    // then
+    assertThrows(BusinessException.class, () -> {
+      voucherService.save(duplicatedRequest);
+    });
   }
 
 }
