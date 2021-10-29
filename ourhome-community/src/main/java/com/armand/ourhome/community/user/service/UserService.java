@@ -2,9 +2,12 @@ package com.armand.ourhome.community.user.service;
 
 
 import com.armand.ourhome.common.error.exception.BusinessException;
+import com.armand.ourhome.common.error.exception.EntityNotFoundException;
 import com.armand.ourhome.common.error.exception.ErrorCode;
 import com.armand.ourhome.community.user.dto.mapper.SignUpMapper;
+import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
+import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
@@ -24,14 +27,31 @@ public class UserService {
     private final SignUpMapper signUpMapper = Mappers.getMapper(SignUpMapper.class);
 
     @Transactional
-    public SignUpResponse signUp(SignUpRequest request){
-        Optional<User> byEmail = userRepository.findByEmail(request.getEmail());
+    public SignUpResponse signUp(SignUpRequest signUpRequest){
+        Optional<User> byEmail = userRepository.findByEmail(signUpRequest.getEmail());
         if(byEmail.isPresent())
-            throw new BusinessException("이미 중복되는 이메일이 있습니다", ErrorCode.INVALID_INPUT_VALUE);
+            // FIXME : duplicate exception 추가하고 변경해야함
+            throw new EntityNotFoundException("이미 중복되는 이메일이 있습니다");
         // request -> entity -> response
-        User user = signUpMapper.requestToEntity(request);
+        User user = signUpMapper.requestToEntity(signUpRequest);
         User save = userRepository.save(user);
         return signUpMapper.entityToResponse(save);
+    }
+
+    @Transactional(readOnly = true)
+    public LoginResponse login(LoginRequest loginRequest){
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword();
+        Optional<User> byEmail = userRepository.findByEmail(email);
+        // 가입된 email 검증
+        if(byEmail.isEmpty())
+            throw new EntityNotFoundException("가입되지 않은 이메일입니다.");
+        // 비번 검증
+        String foundPassword = byEmail.get().getPassword();
+        if(!password.equals(foundPassword))
+            // FIXME : illegalArg exception 추가하고 변경해야함
+            throw new EntityNotFoundException("비밀번호가 틀립니다");
+        return LoginResponse.of(byEmail.get());
     }
 
 

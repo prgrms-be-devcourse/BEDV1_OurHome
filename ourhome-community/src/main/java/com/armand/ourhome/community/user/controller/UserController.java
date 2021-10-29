@@ -2,7 +2,9 @@ package com.armand.ourhome.community.user.controller;
 
 
 import com.armand.ourhome.common.utils.AwsS3Uploader;
+import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
+import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
 import com.armand.ourhome.community.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,22 +25,24 @@ public class UserController {
 
     // 회원가입
     @PostMapping
-    public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request){
+    public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request) {
         SignUpResponse response = userService.signUp(request);
         return ResponseEntity.ok(response);
     }
 
     // 로그인
-
-
-
-
-
-    @PostMapping("/temp")
-    public String test(@RequestParam("img") MultipartFile multipartFile) throws IOException {
-        String upload = awsS3Uploader.upload(multipartFile, "user-profiles");
-        System.out.println(upload);
-        return upload;
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse response = userService.login(request);
+        return ResponseEntity.ok(response);
     }
+
+
+//    @PostMapping("/temp")
+//    public String test(@RequestParam("img") MultipartFile multipartFile) throws IOException {
+//        String upload = awsS3Uploader.upload(multipartFile, "user-profiles");
+//        System.out.println(upload);
+//        return upload;
+//    }
 
 }
