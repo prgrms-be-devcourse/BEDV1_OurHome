@@ -13,14 +13,7 @@ import org.springframework.stereotype.Component;
 public class VoucherConverter {
 
   public Voucher toEntity(RequestVoucher request) {
-    if (VoucherType.FIXED.equals(request.getVoucherType())) {
-      return FixedVoucher.of(request.getValue(), request.getMinLimit());
-    }
-    if (VoucherType.PERCENT.equals(request.getVoucherType())) {
-      return PercentVoucher.of(request.getValue(), request.getMinLimit());
-    }
-    throw new IllegalArgumentException(
-        MessageFormat.format("잘못된 바우처 타입입니다. request.voucherType : {0}", request.getVoucherType()));
+    return request.getVoucherType().of(request.getValue(), request.getMinLimit());
   }
 
   public VoucherDto toDto(Voucher voucher) {
