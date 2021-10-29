@@ -34,10 +34,11 @@ public class UserController {
 
 
 
-//    @PostMapping
-//    public String test(@RequestParam("img") MultipartFile multipartFile) throws IOException {
-//        awsS3Uploader.upload(multipartFile, "user-profiles");
-//        return "";
-//    }
+    @PostMapping("/temp")
+    public String test(@RequestParam("img") MultipartFile multipartFile) throws IOException {
+        String upload = awsS3Uploader.upload(multipartFile, "user-profiles");
+        System.out.println(upload);
+        return upload;
+    }
 
 }

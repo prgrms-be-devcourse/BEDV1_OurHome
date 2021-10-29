@@ -34,7 +34,7 @@ public class AwsS3Uploader {
     }
 
     private String upload(File uploadFile, String dirName) {
-        String fileName = dirName + "/" + uploadFile.getName();
+        String fileName = dirName + "/" + UUID.randomUUID() + "_" + uploadFile.getName();
         // S3에 저장 -> url 리턴됨
         String uploadImageUrl = putS3(uploadFile, fileName);
         // 로컬 파일 삭제
