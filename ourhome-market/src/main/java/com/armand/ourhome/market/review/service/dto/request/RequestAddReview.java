@@ -1,4 +1,4 @@
-package com.armand.ourhome.market.review.service.dto;
+package com.armand.ourhome.market.review.service.dto.request;
 
 import com.armand.ourhome.domain.item.domain.Item;
 import com.armand.ourhome.domain.user.User;
@@ -31,7 +31,4 @@ public class RequestAddReview {
     @Max(5)
     private int rating;
 
-    public Review toEntity(User user, Item item) {
-        return Review.of(user, item, rating, comment);
-    }
 }
