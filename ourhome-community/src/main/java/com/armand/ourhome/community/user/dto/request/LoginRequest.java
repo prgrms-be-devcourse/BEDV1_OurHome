@@ -15,5 +15,6 @@ public class LoginRequest {
     private String email;
 
     @Size(message="비밀번호는 8~45자까지 입력 가능합니다", min=8, max=45)
+    @NotBlank(message = "비밀번호를 입력해주세요")
     private String password;
 }

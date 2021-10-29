@@ -12,6 +12,7 @@ import com.armand.ourhome.community.user.dto.request.UpdateInfoRequest;
 import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
 import com.armand.ourhome.community.user.dto.response.UpdateInfoResponse;
+import com.armand.ourhome.community.user.dto.response.UserPageResponse;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +74,11 @@ public class UserService {
         userRepository.flush();
         User updatedUser = userRepository.findById(id).get();
         return UpdateInfoResponse.of(updatedUser);
+    }
+
+    @Transactional(readOnly = true)
+    public UserPageResponse userPage(){
+
     }
 
 
