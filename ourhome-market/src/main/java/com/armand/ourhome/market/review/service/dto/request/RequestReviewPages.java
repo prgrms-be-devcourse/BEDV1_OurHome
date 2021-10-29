@@ -17,6 +17,7 @@ public class RequestReviewPages {
 
     private int page;
     private OrderType order;
+    private int size;
 
     public void setPage(int page) {
         this.page = page <= 0 ? 1 : page;
@@ -26,11 +27,15 @@ public class RequestReviewPages {
         this.order = order;
     }
 
+    public void setSize(int size) {
+        this.size = size <= 0 ? DEFAULT_SIZE : size;
+    }
+
     public PageRequest of() {
 
         if (order == OrderType.RECENT)
-            return PageRequest.of(page - 1, DEFAULT_SIZE, Sort.Direction.DESC, order.getOrder());
-        return PageRequest.of(page - 1, DEFAULT_SIZE, Sort.Direction.DESC, order.getOrder(), OrderType.RECENT.getOrder());
+            return PageRequest.of(page - 1, size, Sort.Direction.DESC, order.getOrder());
+        return PageRequest.of(page - 1, size, Sort.Direction.DESC, order.getOrder(), OrderType.RECENT.getOrder());
     }
 
     @Getter
