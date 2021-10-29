@@ -15,7 +15,7 @@ import org.springframework.util.Assert;
 @Entity
 public class FixedVoucher extends Voucher {
 
-  @Column // (nullable = false)
+  @Column
   private Integer amount;
 
   private FixedVoucher(Integer amount, Integer minLimit) {

@@ -15,7 +15,7 @@ import org.springframework.util.Assert;
 @Entity
 public class PercentVoucher extends Voucher {
 
-  @Column // (nullable = false)
+  @Column
   private Integer percent;
 
   private PercentVoucher(Integer percent, Integer minLimit) {

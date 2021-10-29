@@ -6,6 +6,7 @@ import com.armand.ourhome.market.voucher.converter.VoucherConverter;
 import com.armand.ourhome.market.voucher.domain.Voucher;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
+import com.armand.ourhome.market.voucher.exception.DuplicateVoucherException;
 import com.armand.ourhome.market.voucher.repository.VoucherRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class VoucherService {
     };
 
     if (saved.isPresent()) {
-      throw new BusinessException("이미 중복된 바우처가 있습니다", ErrorCode.INVALID_INPUT_VALUE);
+      throw new DuplicateVoucherException("이미 중복된 바우처가 있습니다", ErrorCode.INVALID_INPUT_VALUE);
     }
 
     Voucher voucher = voucherConverter.toEntity(request);
