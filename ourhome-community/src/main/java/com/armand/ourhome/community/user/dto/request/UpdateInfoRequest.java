@@ -3,6 +3,7 @@ package com.armand.ourhome.community.user.dto.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Size;
@@ -15,6 +16,5 @@ public class UpdateInfoRequest {
 
     private String description;
 
-    @JsonProperty("profile_image")
     private MultipartFile profileImage;
 }

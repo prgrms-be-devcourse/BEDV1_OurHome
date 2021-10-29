@@ -41,7 +41,7 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<UpdateInfoResponse> updateInfo(
             @PathVariable(value = "id") Long id,
-            @Valid @RequestBody UpdateInfoRequest request
+            @Valid @ModelAttribute UpdateInfoRequest request
     ) throws IOException {
         UpdateInfoResponse response = userService.updateInfo(id, request);
         return ResponseEntity.ok(response);

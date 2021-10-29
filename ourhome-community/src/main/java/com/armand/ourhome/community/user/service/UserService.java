@@ -69,8 +69,10 @@ public class UserService {
 
         User user = userRepository.findById(id).get();
         user.updateUserInfo(nickname, description, profileImageUrl);
-
-        return UpdateInfoResponse.of(user);
+        // update된 시간을 받아오기 위해 flush -> 다시 select
+        userRepository.flush();
+        User updatedUser = userRepository.findById(id).get();
+        return UpdateInfoResponse.of(updatedUser);
     }
 
 
