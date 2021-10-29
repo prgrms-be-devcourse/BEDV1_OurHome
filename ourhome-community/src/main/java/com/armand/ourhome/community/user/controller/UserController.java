@@ -1,18 +1,19 @@
 package com.armand.ourhome.community.user.controller;
 
 
-import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
+import com.armand.ourhome.community.user.dto.request.UpdateInfoRequest;
 import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
+import com.armand.ourhome.community.user.dto.response.UpdateInfoResponse;
 import com.armand.ourhome.community.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 import java.io.IOException;
 
 @RequiredArgsConstructor
@@ -21,7 +22,6 @@ import java.io.IOException;
 public class UserController {
 
     private final UserService userService;
-    private final AwsS3Uploader awsS3Uploader;
 
     // 회원가입
     @PostMapping
@@ -37,12 +37,16 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // 회원정보 수정
+    @PatchMapping("/{id}")
+    public ResponseEntity<UpdateInfoResponse> updateInfo(
+            @PathVariable(value = "id") Long id,
+            @Valid @RequestBody UpdateInfoRequest request
+    ) throws IOException {
+        UpdateInfoResponse response = userService.updateInfo(id, request);
+        return ResponseEntity.ok(response);
+    }
 
-//    @PostMapping("/temp")
-//    public String test(@RequestParam("img") MultipartFile multipartFile) throws IOException {
-//        String upload = awsS3Uploader.upload(multipartFile, "user-profiles");
-//        System.out.println(upload);
-//        return upload;
-//    }
+
 
 }
