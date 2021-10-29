@@ -50,6 +50,9 @@ public class Post extends BaseEntity {
     @JoinColumn(name ="content_id")
     private List<Content> contentList;
 
+    public void plusViewCount(){
+        this.viewCount += 1;
+    }
 
     @Builder
     public Post(Long postId,

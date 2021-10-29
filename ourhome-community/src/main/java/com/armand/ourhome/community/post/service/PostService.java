@@ -56,8 +56,11 @@ public class PostService {
         return postDto.getPostId();
     }
 
+    @Transactional
     public PostDto getOne(final Long postId){
-        return postMapper.toDto(postRepository.findById(postId).orElseThrow(() -> new BusinessException("해당 게시물은 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND)));
+        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException("해당 게시물은 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
+        post.plusViewCount();
+        return postMapper.toDto(post);
     }
 
     @Transactional
