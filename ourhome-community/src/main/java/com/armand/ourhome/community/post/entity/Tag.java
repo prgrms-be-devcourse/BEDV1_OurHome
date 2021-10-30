@@ -1,6 +1,6 @@
 package com.armand.ourhome.community.post.entity;
 
-import com.armand.ourhome.community.comment.entity.Comment;
+import com.armand.ourhome.community.post.util.Checking;
 import com.armand.ourhome.domain.base.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,14 +32,9 @@ public class Tag extends BaseEntity {
     @Builder
     public Tag(Long tagId, String name){
         Assert.notNull(name, "name은 null 값을 허용하지 않습니다.");
-        validLength(0,30,"tag name", name);
+        Checking.validLength(0,30,"tag name", name);
         this.tagId = tagId;
         this.name = name;
     }
 
-    private void validLength(int min, int max, String targetFieldName, String target){
-        int length = target.length();
-        if (length <= min) throw new IllegalArgumentException("{}은(는) {}초과의 자리수만을 허용합니다.".formatted(targetFieldName, min));
-        if (max < length) throw new IllegalArgumentException("{}은(는) {}미만의 자리수만을 허용합니다.".formatted(targetFieldName, min));
-    }
 }
