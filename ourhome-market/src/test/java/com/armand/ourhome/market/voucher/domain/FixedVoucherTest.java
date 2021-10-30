@@ -58,4 +58,18 @@ public class FixedVoucherTest {
     assertThat(voucher).isNotNull();
   }
 
+  @Test
+  @DisplayName("바우처 정보를 변경할 수 있다")
+  void testUpdateVoucher(){
+    // given
+    FixedVoucher voucher = FixedVoucher.of(3000, 10000);
+
+    // when
+    voucher.update(2000, 10000);
+
+    // then
+    assertThat(voucher.getAmount()).isEqualTo(2000);
+    assertThat(voucher.getMinLimit()).isEqualTo(10000);
+  }
+
 }
