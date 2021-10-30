@@ -31,6 +31,15 @@ public class FixedVoucher extends Voucher {
   }
 
   @Override
+  public void update(int amount, int minLimit) {
+    validateAmount(amount);
+    validateMinLimit(minLimit, amount);
+
+    this.amount = amount;
+    super.updateMinLimit(minLimit);
+  }
+
+  @Override
   public int getDiscountPrice(int currentPrice) {
     return this.amount;
   }

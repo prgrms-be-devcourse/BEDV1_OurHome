@@ -38,6 +38,12 @@ public abstract class Voucher extends BaseEntity {
     this.minLimit = minLimit;
   }
 
+  public abstract void update(int value, int minLimit);
+
+  public void updateMinLimit(int minLimit){
+    this.minLimit = minLimit;
+  }
+
   public int discount(int currentPrice) {
     return currentPrice - getDiscountPrice(currentPrice);
   }
