@@ -37,4 +37,3 @@ spring:
     activate:
       on-profile: prod
     import: classpath:db.yaml
-

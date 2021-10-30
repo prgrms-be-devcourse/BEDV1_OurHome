@@ -1,5 +1,7 @@
 package com.armand.ourhome.market.voucher.domain;
 
+import com.armand.ourhome.domain.base.BaseEntity;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -20,13 +22,13 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(name = "voucher"
-//    , uniqueConstraints = {
-//    @UniqueConstraint(columnNames = {"amount", "percent", "minLimit"})}
+    , uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"amount", "percent", "min_limit"})}
 )
-public abstract class Voucher {
+public abstract class Voucher extends BaseEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(name = "min_limit", nullable = false)
