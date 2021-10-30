@@ -10,6 +10,7 @@ import com.armand.ourhome.market.review.service.ReviewService;
 import com.armand.ourhome.market.review.service.dto.ReviewDto;
 import com.armand.ourhome.market.review.service.dto.request.RequestReviewPages;
 import com.armand.ourhome.market.review.service.dto.response.PageResponse;
+import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,7 @@ public class ItemService {
 
     public ItemDto findItemBy(Long itemId, RequestReviewPages request) {
 
-        PageResponse<List<ReviewDto>> reviews = reviewService.fetchReviewPagesBy(itemId, request);
+        PageResponse<List<ResponseReview>> reviews = reviewService.fetchReviewPagesBy(itemId, request);
 
         return itemRepository.findById(itemId)
                 .map(item -> itemMapper.toItemDto(item, item.getCompanyName(), reviews))
