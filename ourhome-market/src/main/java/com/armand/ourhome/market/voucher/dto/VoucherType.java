@@ -1,6 +1,7 @@
 package com.armand.ourhome.market.voucher.dto;
 
 import com.armand.ourhome.market.voucher.domain.FixedVoucher;
+import com.armand.ourhome.market.voucher.domain.PercentVoucher;
 import com.armand.ourhome.market.voucher.domain.Voucher;
 
 public enum VoucherType { // 214page
@@ -10,8 +11,8 @@ public enum VoucherType { // 214page
     }
   },
   PERCENT {
-    public FixedVoucher of(int value, int minLimit) {
-      return FixedVoucher.of(value, minLimit);
+    public PercentVoucher of(int value, int minLimit) {
+      return PercentVoucher.of(value, minLimit);
     }
   };
 
