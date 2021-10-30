@@ -19,18 +19,22 @@ public class VoucherConverter {
   public VoucherDto toDto(Voucher voucher) {
     if (FixedVoucher.class.equals(voucher.getClass())) {
       return VoucherDto.builder()
+          .id(voucher.getId())
           .value(((FixedVoucher) voucher).getAmount())
           .minLimit(voucher.getMinLimit())
           .voucherType(VoucherType.FIXED)
           .createdAt(voucher.getCreatedAt())
+          .updatedAt(voucher.getUpdatedAt())
           .build();
     }
     if (PercentVoucher.class.equals(voucher.getClass())) {
       return VoucherDto.builder()
+          .id(voucher.getId())
           .value(((PercentVoucher) voucher).getPercent())
           .minLimit(voucher.getMinLimit())
           .voucherType(VoucherType.PERCENT)
           .createdAt(voucher.getCreatedAt())
+          .updatedAt(voucher.getUpdatedAt())
           .build();
     }
     throw new IllegalArgumentException(

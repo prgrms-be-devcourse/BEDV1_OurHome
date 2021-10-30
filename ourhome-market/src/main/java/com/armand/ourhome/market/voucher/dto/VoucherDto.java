@@ -14,15 +14,17 @@ public class VoucherDto {
   private Integer minLimit;
   private VoucherType voucherType;
   private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
   @Builder
   public VoucherDto(Long id, Integer value, Integer minLimit, VoucherType voucherType,
-      LocalDateTime createdAt) {
+      LocalDateTime createdAt, LocalDateTime updatedAt) {
     this.id = id;
     this.value = value;
     this.minLimit = minLimit;
     this.voucherType = voucherType;
     this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
   }
 
 }
