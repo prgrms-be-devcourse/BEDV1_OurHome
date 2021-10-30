@@ -8,6 +8,7 @@ import com.armand.ourhome.market.item.dto.response.ResponseItem;
 import com.armand.ourhome.market.item.dto.response.ResponseItemDetail;
 import com.armand.ourhome.market.review.service.dto.ReviewDto;
 import com.armand.ourhome.market.review.service.dto.response.PageResponse;
+import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -18,7 +19,7 @@ public interface ItemMapper {
 
     @Mapping(target = "itemId", source = "item.id")
     @Mapping(target = "reviews", source = "reviews")
-    ItemDto toItemDto(Item item, String companyName, PageResponse<List<ReviewDto>> reviews);
+    ItemDto toItemDto(Item item, String companyName, PageResponse<List<ResponseReview>> reviews);
 
     @Mapping(target = "reviews", ignore = true)
     ItemDto toItemDto(Item item, String companyName);
@@ -36,7 +37,6 @@ public interface ItemMapper {
                 .build();
     }
 
-    @Mapping(target = "serverDateTime", ignore = true)
     @Mapping(target = "reviews", source = "itemDto.reviews")
     ResponseItemDetail toResponseItemDetail(ItemDto itemDto);
 

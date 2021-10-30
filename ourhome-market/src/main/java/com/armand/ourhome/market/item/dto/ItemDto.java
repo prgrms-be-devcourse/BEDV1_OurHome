@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ItemDto {
 
-    private String itemId;
+    private Long itemId;
     private String name;
     private String description;
     private String imageUrl;
@@ -27,7 +27,7 @@ public class ItemDto {
     private PageResponse<List<ReviewDto>> reviews;
 
     @Builder
-    public ItemDto(String itemId, String name, String description, String imageUrl, int price, int stockQuantity, String companyName, Category category, LocalDateTime createdAt, PageResponse<List<ReviewDto>> reviews) {
+    public ItemDto(Long itemId, String name, String description, String imageUrl, int price, int stockQuantity, String companyName, Category category, LocalDateTime createdAt, PageResponse<List<ReviewDto>> reviews) {
         this.itemId = itemId;
         this.name = name;
         this.description = description;

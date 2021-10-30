@@ -13,6 +13,7 @@ import com.armand.ourhome.market.review.service.dto.request.RequestAddReview;
 import com.armand.ourhome.market.review.service.dto.request.RequestReviewPages;
 import com.armand.ourhome.market.review.service.dto.ReviewDto;
 import com.armand.ourhome.market.review.service.dto.response.PageResponse;
+import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
@@ -40,13 +41,13 @@ public class ReviewService {
         return review.getId();
     }
 
-    public PageResponse<List<ReviewDto>> fetchReviewPagesBy(Long itemId, RequestReviewPages request) {
+    public PageResponse<List<ResponseReview>> fetchReviewPagesBy(Long itemId, RequestReviewPages request) {
         Page<Review> pages = reviewRepository.findByItemId(itemId, request.of());
 
-        List<ReviewDto> reviews = pages
+        List<ResponseReview> reviews = pages
                 .getContent()
                 .stream()
-                .map(reviewMapper::toDto)
+                .map(reviewMapper::toResponseDto)
                 .collect(Collectors.toList());
 
         return new PageResponse<>(pages.getTotalElements(), pages.getTotalPages(), reviews, pages.getSize());

@@ -24,7 +24,7 @@ public class RequestReviewPages {
     }
 
     public void setOrder(OrderType order) {
-        this.order = order;
+        this.order = order == null ? OrderType.BEST : order;
     }
 
     public void setSize(int size) {
