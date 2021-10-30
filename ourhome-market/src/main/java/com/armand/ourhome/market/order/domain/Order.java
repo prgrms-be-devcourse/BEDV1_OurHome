@@ -31,6 +31,9 @@ public class Order {
     @Column(name = "payment_type", nullable = false)
     private PaymentType paymentType;
 
+    @Column(name = "address", nullable = false)
+    private String address;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -43,16 +46,18 @@ public class Order {
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Builder
-    public Order(PaymentType paymentType, User user, Delivery delivery, List<OrderItem> orderItems) {
+    public Order(PaymentType paymentType, String address, User user, Delivery delivery, List<OrderItem> orderItems) {
         this.paymentType = paymentType;
+        this.address = address;
         this.user = user;
         this.delivery = delivery;
         this.orderItems = orderItems;
     }
 
-    static public Order createOrder(PaymentType paymentType, User user, Delivery delivery, List<OrderItem> orderItems) {
+    static public Order createOrder(PaymentType paymentType, String address, User user, Delivery delivery, List<OrderItem> orderItems) {
         return Order.builder()
                 .paymentType(paymentType)
+                .address(address)
                 .user(user)
                 .delivery(delivery)
                 .orderItems(orderItems)
@@ -62,6 +67,7 @@ public class Order {
     @PrePersist
     public void prePersist() {
         this.status = this.status == null ? OrderStatus.ACCEPTED : this.status;
+        this.address = this.address == null ? user.getAddress() : this.address;
     }
 
     public long getTotalPrice() {
