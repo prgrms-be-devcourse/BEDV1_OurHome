@@ -1,10 +1,11 @@
 package com.armand.ourhome.community.user.dto.response;
 
+import com.armand.ourhome.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 
-@Getter
 @Builder
+@Getter
 public class UserPageResponse {
     private String nickname;
     private String description;

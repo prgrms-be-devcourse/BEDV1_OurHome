@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class UpdateInfoResponse {
+public class UpdateResponse {
     @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
 
-    static public UpdateInfoResponse of(User user){
-        return UpdateInfoResponse.builder()
+    static public UpdateResponse of(User user){
+        return UpdateResponse.builder()
                 .updatedAt(user.getUpdatedAt())
                 .build();
     }

@@ -6,15 +6,15 @@ import com.armand.ourhome.community.user.dto.request.SignUpRequest;
 import com.armand.ourhome.community.user.dto.request.UpdateInfoRequest;
 import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
-import com.armand.ourhome.community.user.dto.response.UpdateInfoResponse;
+import com.armand.ourhome.community.user.dto.response.UpdateResponse;
 import com.armand.ourhome.community.user.dto.response.UserPageResponse;
 import com.armand.ourhome.community.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import java.io.IOException;
 
 @RequiredArgsConstructor
@@ -40,11 +40,21 @@ public class UserController {
 
     // 회원정보 수정
     @PatchMapping("/{id}")
-    public ResponseEntity<UpdateInfoResponse> updateInfo(
+    public ResponseEntity<UpdateResponse> updateInfo(
             @PathVariable(value = "id") Long id,
-            @Valid @ModelAttribute UpdateInfoRequest request
+            @Valid @RequestBody UpdateInfoRequest request
+    ) {
+        UpdateResponse response = userService.updateInfo(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    // 회원정보 수정 - 프로필
+    @PatchMapping("/{id}/profile")
+    public ResponseEntity<UpdateResponse> updateProfile(
+            @PathVariable(value = "id") Long id,
+            @RequestParam(value = "profile_image") MultipartFile profileImage
     ) throws IOException {
-        UpdateInfoResponse response = userService.updateInfo(id, request);
+        UpdateResponse response = userService.updateProfile(id, profileImage);
         return ResponseEntity.ok(response);
     }
 
@@ -54,8 +64,8 @@ public class UserController {
             @PathVariable(value = "id") Long id,
             @RequestParam(value = "token") Long token   // 나의 id 값 (대충 토큰이라 부름)
     ) {
-
+        UserPageResponse response = userService.userPage(id, token);
+        return ResponseEntity.ok(response);
     }
-
 
 }
