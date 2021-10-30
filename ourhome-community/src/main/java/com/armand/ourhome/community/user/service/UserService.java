@@ -74,15 +74,15 @@ public class UserService {
         return UpdateResponse.of(updatedUser);
     }
 
-    @Transactional
-    public UpdateResponse updateProfile(Long id, MultipartFile profileImage) throws IOException {
-        String profileImageUrl = awsS3Uploader.upload(profileImage, "user-profiles");
-        User user = userRepository.findById(id).get();
-        user.updateProfile(profileImageUrl);
-        userRepository.flush();
-        User updatedUser = userRepository.findById(id).get();
-        return UpdateResponse.of(updatedUser);
-    }
+//    @Transactional
+//    public UpdateResponse updateProfile(Long id, MultipartFile profileImage) throws IOException {
+//        String profileImageUrl = awsS3Uploader.upload(profileImage, "user-profiles");
+//        User user = userRepository.findById(id).get();
+//        user.updateProfile(profileImageUrl);
+//        userRepository.flush();
+//        User updatedUser = userRepository.findById(id).get();
+//        return UpdateResponse.of(updatedUser);
+//    }
 
     @Transactional(readOnly = true)
     public UserPageResponse userPage(Long id, Long token) {

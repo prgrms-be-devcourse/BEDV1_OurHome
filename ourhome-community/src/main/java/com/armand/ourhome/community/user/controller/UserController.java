@@ -1,8 +1,10 @@
 package com.armand.ourhome.community.user.controller;
 
 
+import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
+import com.armand.ourhome.community.user.dto.request.TempRequest;
 import com.armand.ourhome.community.user.dto.request.UpdateInfoRequest;
 import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
@@ -49,14 +51,14 @@ public class UserController {
     }
 
     // 회원정보 수정 - 프로필
-    @PatchMapping("/{id}/profile")
-    public ResponseEntity<UpdateResponse> updateProfile(
-            @PathVariable(value = "id") Long id,
-            @RequestParam(value = "profile_image") MultipartFile profileImage
-    ) throws IOException {
-        UpdateResponse response = userService.updateProfile(id, profileImage);
-        return ResponseEntity.ok(response);
-    }
+//    @PatchMapping("/{id}/profile")
+//    public ResponseEntity<UpdateResponse> updateProfile(
+//            @PathVariable(value = "id") Long id,
+//            @RequestParam(value = "profile_image") MultipartFile profileImage
+//    ) throws IOException {
+//        UpdateResponse response = userService.updateProfile(id, profileImage);
+//        return ResponseEntity.ok(response);
+//    }
 
     // 유저페이지
     @GetMapping("/{id}")
@@ -66,6 +68,24 @@ public class UserController {
     ) {
         UserPageResponse response = userService.userPage(id, token);
         return ResponseEntity.ok(response);
+    }
+
+
+
+
+
+    private final AwsS3Uploader awsS3Uploader;
+
+    @PatchMapping("/{id}/temp")
+    public String temp(
+            @PathVariable(value = "id") Long id,
+            @RequestBody TempRequest tempRequest
+    ) throws IOException {
+        System.out.println(tempRequest.getNickname());
+        System.out.println(tempRequest.getDescription());
+        System.out.println(tempRequest.getProfileImage());
+
+        return awsS3Uploader.upload(tempRequest.getProfileImage(), "user-profiles");
     }
 
 }
