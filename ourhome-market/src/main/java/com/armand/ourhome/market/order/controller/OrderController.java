@@ -16,7 +16,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody final OrderRequest orderRequest) {
         final OrderResponse orderResponse = orderService.createOrder(orderRequest);
         return ResponseEntity.ok(orderResponse);
