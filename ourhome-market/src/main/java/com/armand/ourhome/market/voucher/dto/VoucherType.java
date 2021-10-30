@@ -5,6 +5,7 @@ import com.armand.ourhome.market.voucher.domain.PercentVoucher;
 import com.armand.ourhome.market.voucher.domain.Voucher;
 
 public enum VoucherType {
+  
   FIXED {
     public FixedVoucher of(int value, int minLimit) {
       return FixedVoucher.of(value, minLimit);

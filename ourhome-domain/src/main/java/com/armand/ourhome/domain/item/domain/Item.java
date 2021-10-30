@@ -38,10 +38,10 @@ public class Item extends BaseEntity {
     private Category category;
 
     @Builder
-    public Item(String name, String description, String imageUrl, int price, int stockQuantity, Company company, Category category) {
+    public Item(Long id, String name, String description, String imageUrl, int price, int stockQuantity, Company company, Category category) {
 
         validate(price, stockQuantity, company, category);
-
+        this.id = id;
         this.itemDetail = ItemDetail.of(name, description, imageUrl);
         this.price = price;
         this.stockQuantity = stockQuantity;

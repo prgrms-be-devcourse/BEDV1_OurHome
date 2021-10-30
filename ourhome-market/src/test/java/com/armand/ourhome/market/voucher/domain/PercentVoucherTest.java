@@ -72,5 +72,4 @@ public class PercentVoucherTest {
     assertThat(voucher.getMinLimit()).isEqualTo(10000);
   }
 
-
 }

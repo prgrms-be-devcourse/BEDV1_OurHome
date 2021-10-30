@@ -1,9 +1,9 @@
-package com.armand.ourhome.market.item.dto;
-
+package com.armand.ourhome.market.item.dto.response;
 
 import com.armand.ourhome.domain.item.domain.Category;
 import com.armand.ourhome.market.review.service.dto.ReviewDto;
 import com.armand.ourhome.market.review.service.dto.response.PageResponse;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +12,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
-public class ItemDto {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class ResponseItemDetail {
 
-    private String itemId;
     private String name;
     private String description;
     private String imageUrl;
@@ -25,10 +24,10 @@ public class ItemDto {
     private Category category;
     private LocalDateTime createdAt;
     private PageResponse<List<ReviewDto>> reviews;
+    private LocalDateTime serverDateTime;
 
     @Builder
-    public ItemDto(String itemId, String name, String description, String imageUrl, int price, int stockQuantity, String companyName, Category category, LocalDateTime createdAt, PageResponse<List<ReviewDto>> reviews) {
-        this.itemId = itemId;
+    public ResponseItemDetail(String name, String description, String imageUrl, int price, int stockQuantity, String companyName, Category category, LocalDateTime createdAt, PageResponse<List<ReviewDto>> reviews) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
@@ -37,6 +36,7 @@ public class ItemDto {
         this.companyName = companyName;
         this.category = category;
         this.createdAt = createdAt;
+        this.serverDateTime = LocalDateTime.now();
         this.reviews = reviews;
     }
 }

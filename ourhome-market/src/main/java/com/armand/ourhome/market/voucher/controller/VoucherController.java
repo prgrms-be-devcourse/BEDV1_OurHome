@@ -30,5 +30,5 @@ public class VoucherController {
       @Valid @RequestBody RequestVoucher request) {
     return ResponseEntity.ok(voucherService.update(id, request));
   }
-
+  
 }
