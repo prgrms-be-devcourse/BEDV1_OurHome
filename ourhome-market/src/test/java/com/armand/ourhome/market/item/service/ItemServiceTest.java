@@ -63,10 +63,8 @@ class ItemServiceTest {
         //given
         given(itemRepository.findById(any())).willReturn(Optional.of(item));
 
-        given(reviewService.fetchReviewPagesBy(any(), any())).willReturn(null);
-
         //when
-        ItemDto dto = itemService.findItemBy(1L, new RequestReviewPages());
+        ItemDto dto = itemService.findItemBy(1L);
 
         //then
         assertThat(dto.getName()).isEqualTo(item.getName());

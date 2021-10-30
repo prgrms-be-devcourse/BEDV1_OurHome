@@ -3,6 +3,7 @@ package com.armand.ourhome.market.item.dto.response;
 import com.armand.ourhome.domain.item.domain.Category;
 import com.armand.ourhome.market.review.service.dto.ReviewDto;
 import com.armand.ourhome.market.review.service.dto.response.PageResponse;
+import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,11 +24,11 @@ public class ResponseItemDetail {
     private String companyName;
     private Category category;
     private LocalDateTime createdAt;
-    private PageResponse<List<ReviewDto>> reviews;
+    private PageResponse<List<ResponseReview>> reviews;
     private LocalDateTime serverDateTime;
 
     @Builder
-    public ResponseItemDetail(String name, String description, String imageUrl, int price, int stockQuantity, String companyName, Category category, LocalDateTime createdAt, PageResponse<List<ReviewDto>> reviews) {
+    public ResponseItemDetail(String name, String description, String imageUrl, int price, int stockQuantity, String companyName, Category category, LocalDateTime createdAt, PageResponse<List<ResponseReview>> reviews) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;

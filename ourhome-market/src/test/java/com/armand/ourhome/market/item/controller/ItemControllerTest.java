@@ -4,11 +4,14 @@ import com.armand.ourhome.domain.item.domain.Category;
 import com.armand.ourhome.domain.item.domain.Company;
 import com.armand.ourhome.domain.item.domain.Item;
 import com.armand.ourhome.market.item.dto.ItemDto;
+import com.armand.ourhome.market.item.dto.response.ResponseItem;
+import com.armand.ourhome.market.item.dto.response.ResponseItemDetail;
 import com.armand.ourhome.market.item.mapper.ItemMapper;
 import com.armand.ourhome.market.item.service.ItemService;
 import com.armand.ourhome.market.review.service.ReviewService;
 import com.armand.ourhome.market.review.service.dto.ReviewDto;
 import com.armand.ourhome.market.review.service.dto.response.PageResponse;
+import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -61,15 +64,15 @@ class ItemControllerTest {
     private ReviewService reviewService;
 
     private ItemMapper itemMapper = Mappers.getMapper(ItemMapper.class);
-    private ReviewDto request;
+    private ResponseReview request;
     private Item item;
 
     @BeforeAll
     void setup() {
-        request = ReviewDto.builder()
-                .itemId(1L)
+        request = ResponseReview.builder()
+                .reviewId(1L)
+                .createdAt(LocalDateTime.now())
                 .userId(1L)
-                .id(1L)
                 .help(3)
                 .comment("너무나도 좋은 제품입니다. 다음에 다시 구매할 것 같아요:)")
                 .rating(5)
@@ -91,28 +94,28 @@ class ItemControllerTest {
     @DisplayName("상품 상세 정보를 조회한다.")
     void fetchItemDetail() throws Exception {
         //given
-        List<ReviewDto> dtoList = List.of(this.request);
-        PageResponse<List<ReviewDto>> reviews = PageResponse.<List<ReviewDto>>builder()
+        List<ResponseReview> dtoList = List.of(this.request);
+        PageResponse<List<ResponseReview>> reviews = PageResponse.<List<ResponseReview>>builder()
                 .totalElements(1)
                 .totalPages(1)
                 .content(dtoList)
                 .size(5)
                 .build();
 
-        ItemDto itemDto = ItemDto.builder()
+        ResponseItemDetail itemDto = ResponseItemDetail.builder()
                 .companyName(item.getCompanyName())
-                .itemId(item.getId())
                 .createdAt(LocalDateTime.now())
                 .description(item.getDescription())
                 .imageUrl(item.getImageUrl())
                 .name(item.getName())
-                .reviews(reviews)
                 .category(item.getCategory())
                 .price(item.getPrice())
                 .stockQuantity(item.getStockQuantity())
+                .reviews(reviews)
                 .build();
 
-        given(itemService.findItemBy(any(), any())).willReturn(itemDto);
+        given(itemService.fetchItemDetailWithReview(any(), any())).willReturn(itemDto);
+
         //when
         ResultActions actions = mockMvc.perform(get("/api/items/{itemId}", 1L)
                 .characterEncoding("utf8")
@@ -140,12 +143,12 @@ class ItemControllerTest {
                                 fieldWithPath("reviews.totalPages").type(NUMBER).description("reviews.totalPages"),
                                 fieldWithPath("reviews.size").type(NUMBER).description("reviews.size"),
                                 fieldWithPath("reviews.content").type(ARRAY).description("reviews.content"),
-                                fieldWithPath("reviews.content[].id").type(NUMBER).description("reviews.content[].id"),
+                                fieldWithPath("reviews.content[].reviewId").type(NUMBER).description("reviews.content[].reviewId"),
                                 fieldWithPath("reviews.content[].userId").type(NUMBER).description("reviews.content[].userId"),
-                                fieldWithPath("reviews.content[].itemId").type(NUMBER).description("reviews.content[].itemId"),
                                 fieldWithPath("reviews.content[].rating").type(NUMBER).description("reviews.content[].rating"),
                                 fieldWithPath("reviews.content[].comment").type(STRING).description("reviews.content[].comment"),
                                 fieldWithPath("reviews.content[].help").type(NUMBER).description("reviews.content[].help"),
+                                fieldWithPath("reviews.content[].createdAt").type(STRING).description("reviews.content[].createdAt"),
                                 fieldWithPath("serverDateTime").type(STRING).description("serverDateTime")
                         )
                         ));

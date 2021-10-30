@@ -1,7 +1,7 @@
 package com.armand.ourhome.market.review.service;
 
-import com.armand.ourhome.common.error.exception.EntityDuplicateException;
 import com.armand.ourhome.common.error.exception.EntityNotFoundException;
+import com.armand.ourhome.common.error.exception.InvalidValueException;
 import com.armand.ourhome.domain.item.domain.Item;
 import com.armand.ourhome.domain.item.repository.ItemRepository;
 import com.armand.ourhome.domain.user.User;
@@ -11,7 +11,6 @@ import com.armand.ourhome.market.review.mapper.ReviewMapper;
 import com.armand.ourhome.market.review.repository.ReviewRepository;
 import com.armand.ourhome.market.review.service.dto.request.RequestAddReview;
 import com.armand.ourhome.market.review.service.dto.request.RequestReviewPages;
-import com.armand.ourhome.market.review.service.dto.ReviewDto;
 import com.armand.ourhome.market.review.service.dto.response.PageResponse;
 import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +75,7 @@ public class ReviewService {
         boolean exists = reviewRepository.existsByItemIdAndUserId(itemId, userId);
 
         if (exists) {
-            throw new EntityDuplicateException(
+            throw new InvalidValueException(
                     MessageFormat.format("사용자가 이미 리뷰를 남겼습니다. itemId = {0}, userId = {1}", itemId, userId));
         }
     }

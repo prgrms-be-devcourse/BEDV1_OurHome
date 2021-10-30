@@ -17,11 +17,6 @@ import java.util.List;
 @Mapper
 public interface ItemMapper {
 
-    @Mapping(target = "itemId", source = "item.id")
-    @Mapping(target = "reviews", source = "reviews")
-    ItemDto toItemDto(Item item, String companyName, PageResponse<List<ResponseReview>> reviews);
-
-    @Mapping(target = "reviews", ignore = true)
     ItemDto toItemDto(Item item, String companyName);
 
     default Item toItem(RequestSaveItem request, Company company) {
@@ -37,8 +32,7 @@ public interface ItemMapper {
                 .build();
     }
 
-    @Mapping(target = "reviews", source = "itemDto.reviews")
-    ResponseItemDetail toResponseItemDetail(ItemDto itemDto);
+    ResponseItemDetail toResponseItemDetail(ItemDto itemDto, PageResponse<List<ResponseReview>> reviews);
 
     ResponseItem toResponseItem(ItemDto dto);
 }
