@@ -6,20 +6,20 @@ import javax.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @NoArgsConstructor
 @Getter
 public class RequestVoucher {
 
-  @NotNull
-  @Positive
+  @NotNull(message = "바우처 할인 금액 또는 비율을 입력해주세요")
+  @Positive(message = "바우처 할인 금액 또는 비율은 0 이상입니다")
   private Integer value;
 
-  @NotNull
-  @Positive
+  @NotNull(message = "바우처 사용 최소금액을 입력해주세요")
+  @Positive(message = "바우처 사용 최소금액은 0원 이상입니다")
   private Integer minLimit;
 
+  @NotNull(message = "바우처 타입을 지정해주세요")
   private VoucherType voucherType;
 
   @Builder
