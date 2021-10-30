@@ -26,7 +26,6 @@ public class GlobalExceptionHandler {
     }
 
     // @ModelAttribute binding error
-    // @ModelAttribute 없는데 일단 작성
     @ExceptionHandler(BindException.class)
     protected ResponseEntity<ErrorResponse> handleBindException(BindException e) {
         log.error("handleBindException", e);
@@ -57,7 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         log.error("handleBusinessException", e);
-        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
 
         return ResponseEntity.internalServerError().body(errorResponse);
     }
