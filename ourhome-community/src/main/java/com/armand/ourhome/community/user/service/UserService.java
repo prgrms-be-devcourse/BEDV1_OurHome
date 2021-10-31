@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -45,7 +46,6 @@ public class UserService {
         return signUpMapper.entityToResponse(save);
     }
 
-    @Transactional(readOnly = true)
     public LoginResponse login(LoginRequest loginRequest) {
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
@@ -62,29 +62,22 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateResponse updateInfo(Long id, UpdateInfoRequest updateInfoRequest) {
+    public UpdateResponse updateInfo(Long id, UpdateInfoRequest updateInfoRequest) throws IOException {
         String nickname = updateInfoRequest.getNickname();
         isDuplicateNickname(nickname);
         String description = updateInfoRequest.getDescription();
+        String profileImageBase64 = updateInfoRequest.getProfileImageBase64();
+        String profileImageUrl = awsS3Uploader.upload(profileImageBase64, "user-profiles");
+
         User user = userRepository.findById(id).get();
-        user.updateInfo(nickname, description);
+        user.updateInfo(nickname, description, profileImageUrl);
+
         // update된 시간을 받아오기 위해 flush -> 다시 select
         userRepository.flush();
         User updatedUser = userRepository.findById(id).get();
         return UpdateResponse.of(updatedUser);
     }
 
-//    @Transactional
-//    public UpdateResponse updateProfile(Long id, MultipartFile profileImage) throws IOException {
-//        String profileImageUrl = awsS3Uploader.upload(profileImage, "user-profiles");
-//        User user = userRepository.findById(id).get();
-//        user.updateProfile(profileImageUrl);
-//        userRepository.flush();
-//        User updatedUser = userRepository.findById(id).get();
-//        return UpdateResponse.of(updatedUser);
-//    }
-
-    @Transactional(readOnly = true)
     public UserPageResponse userPage(Long id, Long token) {
         Optional<User> byId = userRepository.findById(id);
         if (byId.isEmpty())
@@ -116,6 +109,5 @@ public class UserService {
         if (userRepository.findByNickname(nickname).isPresent())
             throw new EntityNotFoundException("이미 중복되는 닉네임이 있습니다");
     }
-
 
 }

@@ -30,6 +30,11 @@ public class AwsS3Uploader {
     private String bucket;
 
     public String upload(String base64, String dirName) throws IOException {
+        if(base64 == null){
+            log.info("이미지 base64가 비어있습니다. null를 반환합니다.");
+            return null;
+        }
+        
         // content type 파싱
         String[] split = base64.split(",");
         String contentType = split[0].substring(split[0].indexOf(":") + 1, split[0].indexOf(";"));
