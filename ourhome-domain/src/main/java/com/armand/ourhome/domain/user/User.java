@@ -4,6 +4,7 @@ import com.armand.ourhome.domain.base.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -33,7 +34,9 @@ public class User extends BaseEntity {
     private String profileImageUrl;
 
     @Builder
-    public User(String email, String password, String nickname, String address, String description, String profileImageUrl) {
+    public User(LocalDateTime createdAt, LocalDateTime updatedAt, Long id, String email, String password, String nickname, String address, String description, String profileImageUrl) {
+        super(createdAt, updatedAt);
+        this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -42,7 +45,7 @@ public class User extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
     }
 
-// ------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
 
     public void updateInfo(String nickname, String description, String profileImageUrl){
         this.nickname = nickname;
