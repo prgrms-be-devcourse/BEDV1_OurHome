@@ -16,6 +16,8 @@ public class UpdateInfoRequest {
     @NotBlank(message = "닉네임을 입력해주세요")
     private String nickname;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String description;
+
+    @JsonProperty("profile_image_base64")
+    private String profileImageBase64;
 }

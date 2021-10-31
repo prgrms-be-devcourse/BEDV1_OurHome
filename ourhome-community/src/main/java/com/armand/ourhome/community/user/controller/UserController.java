@@ -12,7 +12,6 @@ import com.armand.ourhome.community.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -43,18 +42,8 @@ public class UserController {
     public ResponseEntity<UpdateResponse> updateInfo(
             @PathVariable(value = "id") Long id,
             @Valid @RequestBody UpdateInfoRequest request
-    ) {
-        UpdateResponse response = userService.updateInfo(id, request);
-        return ResponseEntity.ok(response);
-    }
-
-    // 회원정보 수정 - 프로필
-    @PatchMapping("/{id}/profile")
-    public ResponseEntity<UpdateResponse> updateProfile(
-            @PathVariable(value = "id") Long id,
-            @RequestParam(value = "profile_image") MultipartFile profileImage
     ) throws IOException {
-        UpdateResponse response = userService.updateProfile(id, profileImage);
+        UpdateResponse response = userService.updateInfo(id, request);
         return ResponseEntity.ok(response);
     }
 
