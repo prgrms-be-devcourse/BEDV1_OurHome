@@ -50,6 +50,8 @@ public class User extends BaseEntity {
         this.profileImageUrl = profileImageUrl;
     }
 
-
+    public void updatePassword(String password){
+        this.password = password;
+    }
 
 }

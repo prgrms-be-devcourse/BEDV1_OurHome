@@ -4,6 +4,7 @@ package com.armand.ourhome.community.user.controller;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
 import com.armand.ourhome.community.user.dto.request.UpdateInfoRequest;
+import com.armand.ourhome.community.user.dto.request.UpdatePasswordRequest;
 import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
 import com.armand.ourhome.community.user.dto.response.UpdateResponse;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.IOException;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -42,8 +42,18 @@ public class UserController {
     public ResponseEntity<UpdateResponse> updateInfo(
             @PathVariable(value = "id") Long id,
             @Valid @RequestBody UpdateInfoRequest request
-    ) throws IOException {
+    ) {
         UpdateResponse response = userService.updateInfo(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    // 비밀번호 변경
+    @PatchMapping("/{id}/password")
+    public ResponseEntity<UpdateResponse> updatePassword(
+            @PathVariable(value = "id") Long id,
+            @Valid @RequestBody UpdatePasswordRequest request
+    ){
+        UpdateResponse response = userService.updatePassword(id, request);
         return ResponseEntity.ok(response);
     }
 

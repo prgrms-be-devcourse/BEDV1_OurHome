@@ -8,6 +8,7 @@ import com.armand.ourhome.community.user.dto.mapper.SignUpMapper;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
 import com.armand.ourhome.community.user.dto.request.UpdateInfoRequest;
+import com.armand.ourhome.community.user.dto.request.UpdatePasswordRequest;
 import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
 import com.armand.ourhome.community.user.dto.response.UpdateResponse;
@@ -62,7 +63,7 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateResponse updateInfo(Long id, UpdateInfoRequest updateInfoRequest) throws IOException {
+    public UpdateResponse updateInfo(Long id, UpdateInfoRequest updateInfoRequest) {
         String nickname = updateInfoRequest.getNickname();
         isDuplicateNickname(nickname);
         String description = updateInfoRequest.getDescription();
@@ -73,6 +74,16 @@ public class UserService {
         user.updateInfo(nickname, description, profileImageUrl);
 
         // update된 시간을 받아오기 위해 flush -> 다시 select
+        userRepository.flush();
+        User updatedUser = userRepository.findById(id).get();
+        return UpdateResponse.of(updatedUser);
+    }
+
+    @Transactional
+    public UpdateResponse updatePassword(Long id, UpdatePasswordRequest updatePasswordRequest){
+        String password = updatePasswordRequest.getPassword();
+        User user = userRepository.findById(id).get();
+        user.updatePassword(password);
         userRepository.flush();
         User updatedUser = userRepository.findById(id).get();
         return UpdateResponse.of(updatedUser);
