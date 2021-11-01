@@ -16,15 +16,21 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody final OrderRequest orderRequest) {
         final OrderResponse orderResponse = orderService.createOrder(orderRequest);
         return ResponseEntity.ok(orderResponse);
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> lookUpOrder(@Valid @PathVariable final Long orderId) {
+    public ResponseEntity<OrderResponse> lookUpOrder(@PathVariable final Long orderId) {
         final OrderResponse orderResponse = orderService.lookUpOrder(orderId);
         return ResponseEntity.ok(orderResponse);
+    }
+
+    @PostMapping("/cancel/{orderId}")
+    public ResponseEntity<OrderResponse> deleteOrder(@PathVariable final Long orderId) {
+        final OrderResponse orderResponse = orderService.deleteOrder(orderId);
+        return  ResponseEntity.ok(orderResponse);
     }
 }

@@ -1,5 +1,7 @@
 package com.armand.ourhome.market.order.service;
 
+import com.armand.ourhome.domain.item.domain.Item;
+import com.armand.ourhome.domain.item.repository.ItemRepository;
 import com.armand.ourhome.market.order.domain.OrderItem;
 import com.armand.ourhome.market.order.dto.OrderItemRequest;
 import com.armand.ourhome.market.order.exception.ItemNotFoundException;
@@ -16,6 +18,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class OrderItemService {
 
+    final ItemRepository itemRepository;
+
     final OrderItemRepository orderItemRepository;
 
     public List<OrderItem> createOrderItems(List<OrderItemRequest> orderItemRequests) {
@@ -25,10 +29,10 @@ public class OrderItemService {
         for (var orderItemRequest : orderItemRequests) {
             Long itemId = orderItemRequest.getItemId();
 
-            OrderItem orderItem = orderItemRepository.findById(itemId)
+            Item item = itemRepository.findById(itemId)
                     .orElseThrow(() -> new ItemNotFoundException(itemId.toString()));
 
-            orderItems.add(OrderItem.createOrderItem(orderItemRequest.getOrderCount(), orderItem.getItem()));
+            orderItems.add(OrderItem.createOrderItem(orderItemRequest.getOrderCount(), item));
         }
 
         return orderItems;

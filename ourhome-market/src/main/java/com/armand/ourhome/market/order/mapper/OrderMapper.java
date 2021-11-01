@@ -13,5 +13,6 @@ public interface OrderMapper {
     Order requestToEntity(OrderRequest orderRequest);
 
     @Mapping(source = "delivery", target = "deliveryResponse")
+    @Mapping(target = "totalPrice", expression = "java(order.getTotalPrice())")
     OrderResponse entityToResponse(Order order);
 }

@@ -40,10 +40,13 @@ public class Delivery {
         return Delivery.builder().build();
     }
 
-    // business logic
     @PrePersist
     public void prePersist() {
         this.status = this.status == null ? DEFAULT_DELIVERY_STATUS : this.status;
         this.code = this.code == null ? UUID.randomUUID() : this.code;
+    }
+
+    public void updateStatus(DeliveryStatus deliveryStatus) {
+        this.status = deliveryStatus;
     }
 }

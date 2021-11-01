@@ -33,7 +33,6 @@ public class OrderService {
     private final DeliveryService deliveryService;
     private final OrderItemService orderItemService;
 
-    // 주문 생성
     @Transactional
     public OrderResponse createOrder(OrderRequest orderRequest) {
 
@@ -51,15 +50,26 @@ public class OrderService {
 
         // 주문 생성
         Order order = orderMapper.requestToEntity(orderRequest);
-        order = Order.createOrder(order.getPaymentType(), user, delivery, orderItems);
+        order = Order.createOrder(order.getPaymentType(), order.getAddress(), user, delivery, orderItems);
         Order savedOrder = orderRepository.save(order);
 
         return orderMapper.entityToResponse(savedOrder);
     }
 
+    @Transactional
     public OrderResponse lookUpOrder(Long orderId) {
         return orderRepository.findById(orderId)
                 .map(orderMapper::entityToResponse)
                 .orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+    }
+
+    @Transactional
+    public OrderResponse deleteOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+
+        order.cancelOrder();
+
+        return orderMapper.entityToResponse(order);
     }
 }

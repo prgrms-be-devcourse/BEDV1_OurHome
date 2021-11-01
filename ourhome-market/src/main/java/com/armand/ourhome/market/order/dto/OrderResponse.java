@@ -17,9 +17,13 @@ public class OrderResponse {
 
     private Long id;
 
+    private String address;
+
     private OrderStatus status;
 
     private PaymentType paymentType;
+
+    private long totalPrice;
 
     private DeliveryResponse deliveryResponse;
 }

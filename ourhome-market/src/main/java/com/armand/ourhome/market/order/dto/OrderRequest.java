@@ -21,5 +21,7 @@ public class OrderRequest {
 
     private Long userId;
 
+    private String address;
+
     private List<OrderItemRequest> orderItemRequests;
 }
