@@ -119,7 +119,7 @@ public class OrderIntegrationTest {
         orderService.createOrder(orderRequest);
 
         // When
-        final ResultActions resultActions = mockMvc.perform(get("/orders/{id}", 1L)
+        final ResultActions resultActions = mockMvc.perform(get("/orders/{order_id}", 1L)
                         .content(objectMapper.writeValueAsString(orderRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print());
@@ -131,5 +131,30 @@ public class OrderIntegrationTest {
                 .andExpect(jsonPath("status").value("ACCEPTED"))
                 .andExpect(jsonPath("paymentType").value("FUND_TRANSFER"))
                 .andExpect(jsonPath("totalPrice").value(3500));
+    }
+
+    @Test
+    @DisplayName("사용자는 주문을 취소할 수 있다.")
+    public void cancelOrder() throws Exception {
+
+        // Given
+        User user = TestHelper.createUser();
+        userRepository.save(user);
+        OrderRequest orderRequest = TestHelper.createOrderRequest();
+        orderService.createOrder(orderRequest);
+
+        // When
+        final ResultActions resultActions = mockMvc.perform(post("/orders/cancel/{order_id}", 1L)
+                        .content(objectMapper.writeValueAsString(orderRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+
+        // Then
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("id").value(1L))
+                .andExpect(jsonPath("status").value("CANCELLED"))
+                .andExpect(jsonPath("deliveryResponse.status").value("CANCELLED"));
+
     }
 }

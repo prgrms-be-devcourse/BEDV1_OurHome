@@ -1,6 +1,7 @@
 package com.armand.ourhome.market.order.domain;
 
 import com.armand.ourhome.domain.user.User;
+import com.armand.ourhome.market.order.exception.DeliveryAlreadyStartedException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -70,9 +71,30 @@ public class Order {
         this.address = this.address == null ? user.getAddress() : this.address;
     }
 
+    public void updateStatus(OrderStatus orderStatus) {
+        this.status = orderStatus;
+    }
+
+    public void cancelOrder() {
+        // 주문, 배달 정보 업데이트
+        updateStatus(OrderStatus.CANCELLED);
+        DeliveryStatus deliveryStatus = getDelivery().getStatus();
+
+        if (!deliveryStatus.equals(DeliveryStatus.READY_FOR_DELIVERY)) {
+            throw new DeliveryAlreadyStartedException();
+        }
+
+        getDelivery().updateStatus(DeliveryStatus.CANCELLED);
+
+        // 재고 수량 복구
+        for (var orderItem: getOrderItems()) {
+            orderItem.getItem().addStockQuantity(orderItem.getItem().getStockQuantity());
+        }
+    }
+
     public long getTotalPrice() {
         long totalPrice = 0;
-        for (OrderItem orderItem: orderItems) {
+        for (OrderItem orderItem: getOrderItems()) {
             totalPrice += orderItem.getPriceOfItems();
         }
         return totalPrice;
