@@ -1,13 +1,12 @@
 package com.armand.ourhome.market.voucher.service;
 
-import com.armand.ourhome.common.error.exception.EntityNotFoundException;
-import com.armand.ourhome.common.error.exception.ErrorCode;
 import com.armand.ourhome.market.voucher.converter.VoucherConverter;
 import com.armand.ourhome.market.voucher.domain.Voucher;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
 import com.armand.ourhome.market.voucher.exception.DifferentTypeVoucherException;
 import com.armand.ourhome.market.voucher.exception.DuplicateVoucherException;
+import com.armand.ourhome.market.voucher.exception.VoucherNotFoundException;
 import com.armand.ourhome.market.voucher.repository.VoucherRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +52,7 @@ public class VoucherService {
     Optional<Voucher> byId = voucherRepository.findById(id);
 
     if (byId.isEmpty()) {
-      throw new EntityNotFoundException(MESSAGE_VOUCHER_NOT_FOUND);
+      throw new VoucherNotFoundException(MESSAGE_VOUCHER_NOT_FOUND);
     }
 
     return byId.get();
@@ -63,7 +62,7 @@ public class VoucherService {
     Optional<Voucher> saved = findDuplicatedVoucher(request);
 
     if (saved.isPresent()) {
-      throw new DuplicateVoucherException(MESSAGE_DUPLICATE_VOUCHER, ErrorCode.INVALID_INPUT_VALUE);
+      throw new DuplicateVoucherException(MESSAGE_DUPLICATE_VOUCHER);
     }
   }
 
@@ -71,8 +70,7 @@ public class VoucherService {
     boolean differentType = request.getVoucherType().isDifferentType(voucher);
 
     if (differentType) {
-      throw new DifferentTypeVoucherException(MESSAGE_VOUCHER_TYPE_NOT_SAME,
-          ErrorCode.INVALID_TYPE_VALUE);
+      throw new DifferentTypeVoucherException(MESSAGE_VOUCHER_TYPE_NOT_SAME);
     }
   }
 
