@@ -51,11 +51,11 @@ class UserServiceUnitTest {
                 .build();
 
         // When
-        SignUpResponse dumdum = userService.signUp(signUpRequest);
+        SignUpResponse result = userService.signUp(signUpRequest);
 
         // Then
-        assertThat(dumdum.getId(), is(user.getId()));
-        assertThat(dumdum.getCreatedAt(), is(user.getCreatedAt()));
+        assertThat(result.getId(), is(user.getId()));
+        assertThat(result.getCreatedAt(), is(user.getCreatedAt()));
     }
 
 

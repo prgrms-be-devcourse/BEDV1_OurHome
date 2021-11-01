@@ -16,6 +16,6 @@ public class UserPageResponse {
     private Long followingCount;
     private Long bookmarkCount;
     private Long likeCount;
-    // Map<썸네일 url, 여러장체크>
-    private List<Map<String, Boolean>> postInfo;
+    private Long postCount;
+    private List<Thumbnail> thumbnailList;
 }

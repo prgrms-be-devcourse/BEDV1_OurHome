@@ -11,6 +11,7 @@ import com.armand.ourhome.community.user.dto.response.UpdateResponse;
 import com.armand.ourhome.community.user.dto.response.UserPageResponse;
 import com.armand.ourhome.community.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,9 +62,10 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserPageResponse> userPage(
             @PathVariable(value = "id") Long id,
-            @RequestParam(value = "token") Long token   // 나의 id 값 (대충 토큰이라 부름)
+            @RequestParam(value = "token") Long token,   // 나의 id 값 (대충 토큰이라 부름)
+            Pageable pageable
     ) {
-        UserPageResponse response = userService.userPage(id, token);
+        UserPageResponse response = userService.userPage(id, token, pageable);
         return ResponseEntity.ok(response);
     }
 
