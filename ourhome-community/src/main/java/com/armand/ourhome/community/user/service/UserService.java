@@ -3,7 +3,9 @@ package com.armand.ourhome.community.user.service;
 
 import com.armand.ourhome.common.error.exception.EntityNotFoundException;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
+import com.armand.ourhome.community.bookmark.repository.BookmarkRepository;
 import com.armand.ourhome.community.follow.repository.FollowRepository;
+import com.armand.ourhome.community.like.repository.LikeRepository;
 import com.armand.ourhome.community.user.dto.mapper.SignUpMapper;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
@@ -32,6 +34,9 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final BookmarkRepository bookmarkRepository;
+    private final LikeRepository likeRepository;
+
     private final AwsS3Uploader awsS3Uploader;
     private final SignUpMapper signUpMapper = Mappers.getMapper(SignUpMapper.class);
 
@@ -100,9 +105,14 @@ public class UserService {
                 .description(user.getDescription())
                 .followerCount(followerCount)
                 .followingCount(followingCount);
-        // mypage일 경우
+
+        // 마이페이지일 경우 북마크 + 좋아요 수를 추가해준다
         if (Objects.equals(id, token)) {
-//            responseBuilder.like()
+            Long bookmarkCount = bookmarkRepository.countByUser(user);
+            Long likeCount = likeRepository.countByUser(user);
+            responseBuilder
+                    .bookmarkCount(bookmarkCount)
+                    .likeCount(likeCount);
         }
         return responseBuilder.build();
     }

@@ -18,5 +18,4 @@ public class UserPageResponse {
     private Long likeCount;
     // Map<썸네일 url, 여러장체크>
     private List<Map<String, Boolean>> postInfo;
-
 }
