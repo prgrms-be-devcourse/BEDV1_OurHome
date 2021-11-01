@@ -6,7 +6,9 @@ import com.armand.ourhome.community.post.dto.PostDto;
 import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.community.post.entity.ResidentialType;
 import com.armand.ourhome.community.post.mapper.PostMapper;
+import com.armand.ourhome.community.post.repository.ContentRepository;
 import com.armand.ourhome.community.post.repository.PostRepository;
+import com.armand.ourhome.community.post.repository.TagRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,10 @@ public class PostService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final ContentRepository contentRepository;
+    private final TagRepository tagRepository;
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
+
 
     @Transactional
     public Long save(final PostDto postDto, List<String> mediaUrl){
@@ -48,6 +53,7 @@ public class PostService {
         return postMapper.toDtoList(postRepository.findAllByResidentialType(residentialType, pageable));
     }
 
+    /**
     @Transactional
     public Long update(final PostDto postDto, List<String> mediaUrl){
         int contentSize = postDto.getContentList().size();
@@ -60,6 +66,7 @@ public class PostService {
         postMapper.updateFromDto(postDto, postBeforeUpdate);
         return postDto.getPostId();
     }
+     **/
 
     @Transactional
     public PostDto getOne(final Long postId){
@@ -71,5 +78,8 @@ public class PostService {
     @Transactional
     public void delete(final Long postId){
         postRepository.deleteById(postId);
+
+
+
     }
 }

@@ -16,6 +16,18 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 class TagTest {
+
+
+    @Test
+    @DisplayName("tag entity를 생성할 수 있다. ")
+    void createTagEntity(){
+        //When, Then
+        Tag.builder()
+                .name("태크")
+                .build();
+
+    }
+
     @Test
     @DisplayName("name은 null 값을 허용하지 않는다.")
     void validCheckNOTNULL_name(){

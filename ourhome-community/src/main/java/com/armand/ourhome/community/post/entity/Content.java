@@ -31,14 +31,26 @@ public class Content {
     @Column(nullable = false)
     private PlaceType placeType;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name ="tag_id")
+    @OneToMany(mappedBy = "content", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tag> tags;
-    /***
+
+    public void addTag(Tag tag){
+        tags.add(tag);
+        tag.setContent(this);
+    }
+
+    public void removeTag(Tag tag){
+        tags.remove(tag);
+        tag.setContent(null);
+    }
+
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "post_id")
     private Post post;
-    ***/
+
+    void setPost(Post post){
+        this.post = post;
+    }
 
     @Builder
     public Content(Long contentId, String mediaUrl, String description, PlaceType placeType, List<Tag> tags){

@@ -50,10 +50,18 @@ public class Post extends BaseEntity {
     private User user;
 
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name ="content_id")
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contentList;
 
+    public void addContent(final Content content){
+        contentList.add(content);
+        content.setPost(this);
+    }
+
+    public void removeContent(final Content content){
+        contentList.remove(content);
+        content.setPost(null);
+    }
 
     public void plusViewCount(){
         this.viewCount += 1;

@@ -23,11 +23,15 @@ public class Tag extends BaseEntity {
     @Column(name="name", nullable = false, length = 30)
     private String name;
 
-    /**
+
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "content_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "content_id")
     private Content content;
-    **/
+
+    void setContent(Content content){
+        this.content = content;
+    }
 
     @Builder
     public Tag(Long tagId, String name){
