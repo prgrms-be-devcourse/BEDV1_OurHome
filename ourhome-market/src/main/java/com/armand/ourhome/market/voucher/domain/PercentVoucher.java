@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.Assert;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DiscriminatorValue("PERCENT")
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 public class PercentVoucher extends Voucher {
 
-  @Column(nullable = false)
+  @Column
   private Integer percent;
 
   private PercentVoucher(Integer percent, Integer minLimit) {
@@ -30,22 +31,35 @@ public class PercentVoucher extends Voucher {
   }
 
   @Override
+  public void update(int percent, int minLimit) {
+    validatePercent(percent);
+    validateMinLimit(minLimit);
+
+    this.percent = percent;
+    super.updateMinLimit(minLimit);
+  }
+
+  @Override
   public int getDiscountPrice(int currentPrice) {
     return currentPrice * (percent / 100);
   }
 
   //== Validation Method ==//
   public static void validateMinLimit(Integer minLimit) {
-    if (minLimit == null || minLimit <= 0) {
+    Assert.notNull(minLimit, "바우처 사용 최소금액은 null이 될 수 없습니다.");
+
+    if (minLimit <= 0) {
       throw new IllegalArgumentException(
           MessageFormat.format("바우처 사용 최소금액은 0원이상입니다. minLimit = {0}", minLimit));
     }
   }
 
   private static void validatePercent(Integer percent) {
-    if (percent == null || percent <= 0) {
+    Assert.notNull(percent, "바우처 할인비율은 null이 될 수 없습니다.");
+
+    if (percent <= 0 || percent > 100) {
       throw new IllegalArgumentException(
-          MessageFormat.format("바우처 할인비율은 0보다 커야합니다. percent = {0}", percent));
+          MessageFormat.format("바우처 할인비율은 1~100입니다. percent = {0}", percent));
     }
   }
 

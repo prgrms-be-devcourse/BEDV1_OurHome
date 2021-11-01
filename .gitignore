@@ -2,7 +2,8 @@
 
 aws.yaml
 db.yaml
-
+scheme.sql
+generated
 
 
 # --------- intelliJ 기본 설정 ---------

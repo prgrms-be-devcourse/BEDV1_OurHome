@@ -1,7 +1,9 @@
 package com.armand.ourhome.common.error;
 
 import com.armand.ourhome.common.error.exception.BusinessException;
+import com.armand.ourhome.common.error.exception.EntityNotFoundException;
 import com.armand.ourhome.common.error.exception.ErrorCode;
+import com.armand.ourhome.common.error.exception.InvalidValueException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +28,6 @@ public class GlobalExceptionHandler {
     }
 
     // @ModelAttribute binding error
-    // @ModelAttribute 없는데 일단 작성
     @ExceptionHandler(BindException.class)
     protected ResponseEntity<ErrorResponse> handleBindException(BindException e) {
         log.error("handleBindException", e);
@@ -50,14 +51,41 @@ public class GlobalExceptionHandler {
         log.error("handleAccessDeniedException", e);
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.METHOD_NOT_ALLOWED);
 
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     // Business error
     @ExceptionHandler(BusinessException.class)
     protected ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         log.error("handleBusinessException", e);
-        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR);
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
+
+        return ResponseEntity.internalServerError().body(errorResponse);
+    }
+
+    // EntityNotFoundException
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e) {
+        log.error("handleEntityNotFoundException", e);
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.ENTITY_NOT_FOUND, e.getMessage());
+
+        return ResponseEntity.internalServerError().body(errorResponse);
+    }
+
+    // InvalidValueException
+    @ExceptionHandler(InvalidValueException.class)
+    protected ResponseEntity<ErrorResponse> handleInvalidValueException(InvalidValueException e) {
+        log.error("handleInvalidValueException", e);
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, e.getMessage());
+
+        return ResponseEntity.internalServerError().body(errorResponse);
+    }
+
+    // IllegalArgumentException -> 도메인 엔티티 validation
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        log.error("handleIllegalArgumentException", e);
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, e.getMessage());
 
         return ResponseEntity.internalServerError().body(errorResponse);
     }

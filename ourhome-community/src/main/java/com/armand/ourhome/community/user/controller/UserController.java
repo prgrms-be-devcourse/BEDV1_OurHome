@@ -67,4 +67,11 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // 회원가입
+    @PostMapping
+    public ResponseEntity<SignUpResponse> signUp(@Valid @RequestBody SignUpRequest request){
+        SignUpResponse response = userService.signUp(request);
+        return ResponseEntity.ok(response);
+    }
+
 }
