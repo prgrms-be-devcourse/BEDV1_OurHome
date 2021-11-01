@@ -67,6 +67,62 @@ class PostServiceTest {
     }
 
     @Test
+    @DisplayName("사용자 정보를 통해서 post 정보를 추출할 수 있다.")
+    void findByUser(){
+        //When
+
+        postRepository.save(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.APARTMENT)
+                .styleType(StyleType.ASIAN_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-APARTMENT.jpg")
+                                .description("APARTMENT 설명란")
+                                .placeType(PlaceType.LIVINGROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("APARTMENT")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 APARTMENT")
+                                                .build()))
+                                .build()))
+                .build());
+        postRepository.save(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.DETACHED_HOUCE)
+                .styleType(StyleType.NORDIC_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-2DETACHED_HOUCE.jpg")
+                                .description("DETACHED_HOUCEt 설명란")
+                                .placeType(PlaceType.BATHROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("DETACHED_HOUCE 거실")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 DETACHED_HOUCE")
+                                                .build()))
+                                .build()))
+                .build());
+
+        List<Post> postList =postRepository.findAllByUser(userSaved, Pageable.ofSize(5).withPage(0));
+
+        //Then
+        assertThat(postList.size(), is(2));
+        assertThat(postList.get(0).getContentList().size(), is(1));
+        assertThat(postList.get(0).getContentList().get(0).getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
+
+
+    }
+
+    @Test
     @DisplayName("저장된 게시물을 추출할 수 있다.")
     void findAll(){
         //Given
