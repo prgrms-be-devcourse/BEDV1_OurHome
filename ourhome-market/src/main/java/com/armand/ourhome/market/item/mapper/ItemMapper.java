@@ -17,6 +17,11 @@ import java.util.List;
 @Mapper
 public interface ItemMapper {
 
+    @Mapping(target = "itemId", source = "item.id")
+    @Mapping(target = "reviews", source = "reviews")
+    ItemDto toItemDto(Item item, String companyName, PageResponse<List<ReviewDto>> reviews);
+
+    @Mapping(target = "reviews", ignore = true)
     ItemDto toItemDto(Item item, String companyName);
 
     default Item toItem(RequestSaveItem request, Company company) {

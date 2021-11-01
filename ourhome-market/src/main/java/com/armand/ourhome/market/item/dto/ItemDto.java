@@ -25,6 +25,7 @@ public class ItemDto {
     private String companyName;
     private Category category;
     private LocalDateTime createdAt;
+    private PageResponse<List<ReviewDto>> reviews;
 
     @Builder
     public ItemDto(Long itemId, String name, String description, String imageUrl, int price, int stockQuantity, String companyName, Category category, LocalDateTime createdAt) {
@@ -37,5 +38,6 @@ public class ItemDto {
         this.companyName = companyName;
         this.category = category;
         this.createdAt = createdAt;
+        this.reviews = reviews;
     }
 }
