@@ -10,12 +10,15 @@ import com.armand.ourhome.market.voucher.dto.VoucherType;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
 import com.armand.ourhome.market.voucher.exception.DifferentTypeVoucherException;
 import com.armand.ourhome.market.voucher.exception.DuplicateVoucherException;
+import com.armand.ourhome.market.voucher.exception.VoucherNotFoundException;
 import com.armand.ourhome.market.voucher.repository.VoucherRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -37,6 +40,20 @@ class VoucherServiceTest {
   @AfterEach
   void tearDown() {
     voucherRepository.deleteAll();
+  }
+
+  @Test
+  @DisplayName("저장된 바우처를 불러올 수 있다")
+  void testLookUp(){
+    // given
+    voucherService.save(request);
+
+    // when
+    PageRequest page = PageRequest.of(0, 10);
+    Page<VoucherDto> voucherPage = voucherService.lookUp(page);
+
+    // then
+    assertThat(voucherPage.getTotalElements()).isEqualTo(1);
   }
 
   @Test
@@ -125,6 +142,32 @@ class VoucherServiceTest {
     assertThrows(DifferentTypeVoucherException.class, () -> {
       // when
       voucherService.update(save.getId(), updatedRequest);
+    });
+  }
+
+  @Test
+  @DisplayName("바우처를 정상적으로 삭제할 수 있다")
+  void testDelete() {
+    // given
+    VoucherDto save = voucherService.save(request);
+
+    // when
+    voucherService.delete(save.getId());
+
+    // then
+    assertThat(voucherRepository.count()).isEqualTo(0);
+  }
+
+  @Test
+  @DisplayName("존재하지 않는 id값의 바우처는 삭제할 수 없다")
+  void cannot_deleteVoucher_withIncorrectId() {
+    // given
+    VoucherDto save = voucherService.save(request);
+
+    // then
+    assertThrows(VoucherNotFoundException.class, () -> {
+      // when
+      voucherService.delete(save.getId()+1);
     });
   }
 
