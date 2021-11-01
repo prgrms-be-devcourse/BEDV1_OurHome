@@ -3,10 +3,7 @@ package com.armand.ourhome.community.post.entity;
 import com.armand.ourhome.community.post.util.Checking;
 import com.armand.ourhome.domain.base.BaseEntity;
 import com.armand.ourhome.domain.user.User;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.util.Assert;
 
@@ -50,10 +47,18 @@ public class Post extends BaseEntity {
     private User user;
 
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name ="content_id")
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contentList;
 
+    public void addContent(final Content content){
+        contentList.add(content);
+        content.setPost(this);
+    }
+
+    public void removeContent(final Content content){
+        contentList.remove(content);
+        content.setPost(null);
+    }
 
     public void plusViewCount(){
         this.viewCount += 1;
@@ -82,6 +87,20 @@ public class Post extends BaseEntity {
         this.user = user;
         this.contentList = contentList;
     }
+
+//    @Override
+//    public boolean equals(Object other){
+//        if (this.getClass().isInstance(other)){
+//            return this.postId == ((Post)other).postId;
+//        } else {
+//            return false;
+//        }
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return postId.intValue();
+//    }
 
 
 }

@@ -3,6 +3,7 @@ package com.armand.ourhome.community.post.repository;
 import com.armand.ourhome.community.post.entity.PlaceType;
 import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.community.post.entity.ResidentialType;
+import com.armand.ourhome.domain.user.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,6 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllByResidentialType(ResidentialType residentialType, Pageable pageable);
-
+    List<Post> findAllByUser(User user, Pageable pageable);
 
 }
