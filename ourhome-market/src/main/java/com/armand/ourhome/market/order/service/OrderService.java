@@ -49,8 +49,7 @@ public class OrderService {
         Delivery delivery = deliveryService.findByCode(code);
 
         // 주문 생성
-        Order order = orderMapper.requestToEntity(orderRequest);
-        order = Order.createOrder(order.getPaymentType(), order.getAddress(), user, delivery, orderItems);
+        Order order = Order.createOrder(orderRequest.getPaymentType(), orderRequest.getAddress(), user, delivery, orderItems);
         Order savedOrder = orderRepository.save(order);
 
         return orderMapper.entityToResponse(savedOrder);

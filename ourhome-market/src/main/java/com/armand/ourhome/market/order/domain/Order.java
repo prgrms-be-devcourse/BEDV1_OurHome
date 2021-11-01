@@ -43,7 +43,7 @@ public class Order {
     @JoinColumn(name = "delivery_id", nullable = false)
     private Delivery delivery;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Builder
@@ -52,17 +52,33 @@ public class Order {
         this.address = address;
         this.user = user;
         this.delivery = delivery;
-        this.orderItems = orderItems;
+        this.orderItems = orderItems == null ? new ArrayList<>() : orderItems;
     }
 
-    static public Order createOrder(PaymentType paymentType, String address, User user, Delivery delivery, List<OrderItem> orderItems) {
-        return Order.builder()
+    public static Order createOrder(PaymentType paymentType, String address, User user, Delivery delivery, List<OrderItem> orderItems) {
+
+        Order order = Order.builder()
                 .paymentType(paymentType)
                 .address(address)
                 .user(user)
                 .delivery(delivery)
-                .orderItems(orderItems)
                 .build();
+
+        for (OrderItem orderItem : orderItems) {
+            order.addOrderItem(orderItem);
+        }
+
+        return order;
+    }
+
+    //== 연관관계 편의 메서드 ==//
+    public void addOrderItem(OrderItem orderItem) {
+        orderItem.updateOrder(this);
+        orderItems.add(orderItem);
+    }
+
+    public void removeOrderItem(OrderItem orderItem) {
+        orderItems.remove(orderItem);
     }
 
     @PrePersist
@@ -99,4 +115,6 @@ public class Order {
         }
         return totalPrice;
     }
+
+
 }
