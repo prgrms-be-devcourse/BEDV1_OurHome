@@ -3,6 +3,7 @@ package com.armand.ourhome.community.post.service;
 import com.armand.ourhome.common.error.exception.BusinessException;
 import com.armand.ourhome.common.error.exception.ErrorCode;
 import com.armand.ourhome.community.post.dto.PostDto;
+import com.armand.ourhome.community.post.entity.PlaceType;
 import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.community.post.entity.ResidentialType;
 import com.armand.ourhome.community.post.mapper.PostMapper;
@@ -18,6 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by yunyun on 2021/10/29.
@@ -53,6 +61,20 @@ public class PostService {
         return postMapper.toDtoList(postRepository.findAllByResidentialType(residentialType, pageable));
     }
 
+
+//    public List<PostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){
+//        s2contentRepository.findAllByPlaceType(placeType, pageable).stream()
+//                .map( v -> v.getPost() )
+//                .forEach(System.out::println);
+//        return null;
+//
+//    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+        Map<Object, Boolean> map = new ConcurrentHashMap<>();
+        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
     /**
     @Transactional
     public Long update(final PostDto postDto, List<String> mediaUrl){
@@ -67,6 +89,7 @@ public class PostService {
         return postDto.getPostId();
     }
      **/
+
 
     @Transactional
     public PostDto getOne(final Long postId){

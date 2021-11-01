@@ -11,6 +11,7 @@ import com.armand.ourhome.domain.user.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PostUpdate;
@@ -44,11 +45,12 @@ class PostServiceTest {
     private PostService postService;
 
 
+    private User userSaved;
     private Long userId;
 
     @BeforeEach
     void setUp(){
-        User userSaved = userRepository.save(User.builder()
+        userSaved = userRepository.save(User.builder()
                         .email("test@email.com")
                         .password("1223")
                         .nickname("화이팅!!")
@@ -63,6 +65,293 @@ class PostServiceTest {
         postRepository.deleteAll();
         userRepository.deleteAll();
     }
+
+    @Test
+    @DisplayName("저장된 게시물을 추출할 수 있다.")
+    void findAll(){
+        //Given
+        postRepository.save(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.APARTMENT)
+                .styleType(StyleType.ASIAN_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-APARTMENT.jpg")
+                                .description("APARTMENT 설명란")
+                                .placeType(PlaceType.LIVINGROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("APARTMENT")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 APARTMENT")
+                                                .build()))
+                                .build()))
+                .build());
+        postRepository.save(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.DETACHED_HOUCE)
+                .styleType(StyleType.NORDIC_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-2DETACHED_HOUCE.jpg")
+                                .description("DETACHED_HOUCEt 설명란")
+                                .placeType(PlaceType.BATHROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("DETACHED_HOUCE 거실")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 DETACHED_HOUCE")
+                                                .build()))
+                                .build()))
+                .build());
+
+        //When
+        List<PostDto> postDtoList = postService.getAll(Pageable.ofSize(5).withPage(0));
+
+        //Then
+        assertThat(postDtoList.size(), is(2));
+    }
+
+    @Test
+    @DisplayName("저장된 게시물을 거주형태로 검색하여 추출할 수 있다.")
+    void getAllByResidentialType(){
+        //Given
+        postRepository.save(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.APARTMENT)
+                .styleType(StyleType.ASIAN_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-APARTMENT.jpg")
+                                .description("APARTMENT 설명란")
+                                .placeType(PlaceType.LIVINGROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("APARTMENT")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 APARTMENT")
+                                                .build()))
+                                .build()))
+                .build());
+        postRepository.save(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.DETACHED_HOUCE)
+                .styleType(StyleType.NORDIC_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-2DETACHED_HOUCE.jpg")
+                                .description("DETACHED_HOUCEt 설명란")
+                                .placeType(PlaceType.BATHROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("DETACHED_HOUCE 거실")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 DETACHED_HOUCE")
+                                                .build()))
+                                .build()))
+                .build());
+
+        //When
+        List<PostDto> postDtoList = postService.getAllByResidentialType(ResidentialType.APARTMENT, Pageable.ofSize(5).withPage(0));
+
+        //Then
+        assertThat(postDtoList.size(), is(1));
+        assertThat(postDtoList.get(0).getResidentialType(), is(ResidentialType.APARTMENT));
+    }
+
+
+    @Test
+    @DisplayName("저장된 게시물에서 공간 형태로 검색하여 추출할 수 있다. (가정: 1개의 content에서 1post 해당하는 것과 2개의 content에서 2post 해당할 때)")
+    void getAllByPlaceTypeWith2Post2Content(){
+        //Given
+        postRepository.saveAndFlush(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.APARTMENT)
+                .styleType(StyleType.ASIAN_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-APARTMENT.jpg")
+                                .description("APARTMENT 설명란")
+                                .placeType(PlaceType.LIVINGROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("APARTMENT")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 APARTMENT")
+                                                .build()))
+                                .build(),
+                        Content.builder()
+                                .mediaUrl("/post/picture-2DETACHED_HOUCE122.jpg")
+                                .description("DETACHED_HOUCEt121 설명란")
+                                .placeType(PlaceType.BATHROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("추천")
+                                                .build()))
+                                .build()))
+                .build());
+        postRepository.saveAndFlush(Post.builder()
+                .title("우리 집 입니다.")
+                .squareType(SquareType.SIZE_20_PYEONG)
+                .residentialType(ResidentialType.DETACHED_HOUCE)
+                .styleType(StyleType.NORDIC_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-2DETACHED_HOUCE.jpg")
+                                .description("DETACHED_HOUCEt 설명란")
+                                .placeType(PlaceType.BATHROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("DETACHED_HOUCE 거실")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 DETACHED_HOUCE")
+                                                .build()))
+                                .build()))
+                .build());
+
+        //When
+        //List<PostDto> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
+
+        //Then
+        //assertThat(postDtoList.size(), is(2));
+    }
+    @Test
+    @DisplayName("저장된 게시물을 공간 형태로 검색하여 추출할 수 있다.(가정: 1개의 content에서 1post 해당할 때)")
+    void getAllByPlaceTypeWith1Post1Content(){
+        //Given
+        postRepository.save(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.APARTMENT)
+                .styleType(StyleType.ASIAN_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-APARTMENT.jpg")
+                                .description("APARTMENT 설명란")
+                                .placeType(PlaceType.LIVINGROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("APARTMENT")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 APARTMENT")
+                                                .build()))
+                                .build()))
+                .build());
+        postRepository.save(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.DETACHED_HOUCE)
+                .styleType(StyleType.NORDIC_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-2DETACHED_HOUCE.jpg")
+                                .description("DETACHED_HOUCEt 설명란")
+                                .placeType(PlaceType.BATHROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("DETACHED_HOUCE 거실")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 DETACHED_HOUCE")
+                                                .build()))
+                                .build()))
+                .build());
+
+        //When
+        //List<PostDto> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
+
+        //Then
+        //assertThat(postDtoList.size(), is(1));
+    }
+    @Test
+    @DisplayName("저장된 게시물을 공간 형태로 검색하여 추출할 수 있다.(가정: 2개의 content에서 1post 해당할 때)")
+    void getAllByPlaceTypeWith1Post2Content(){
+        //Given
+        postRepository.save(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.APARTMENT)
+                .styleType(StyleType.ASIAN_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-APARTMENT.jpg")
+                                .description("APARTMENT 설명란")
+                                .placeType(PlaceType.LIVINGROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("APARTMENT")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 APARTMENT")
+                                                .build()))
+                                .build()))
+                .build());
+        postRepository.save(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.DETACHED_HOUCE)
+                .styleType(StyleType.NORDIC_STYPE)
+                .user(userSaved)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-2DETACHED_HOUCE.jpg")
+                                .description("DETACHED_HOUCEt 설명란")
+                                .placeType(PlaceType.BATHROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("DETACHED_HOUCE 거실")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 DETACHED_HOUCE")
+                                                .build()))
+                                .build(),
+                        Content.builder()
+                                .mediaUrl("/post/picture-2DETACHED_HOUCEWOW.jpg")
+                                .description("DETACHED_HOUCEt WOW설명란")
+                                .placeType(PlaceType.BATHROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("DETACHED_HOUCE WOW거실")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 DETACHED_HOUCEWOW")
+                                                .build()))
+                                .build()))
+                .build());
+
+        //When
+        //List<PostDto> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
+
+        //Then
+        //assertThat(postDtoList.size(), is(1));
+    }
+    @Test
+    @DisplayName("저장된 게시물을 테그로 검색하여 추출할 수 있다.")
+    void getAllByTag(){
+
+    }
+
 
     @Test
     @DisplayName("하나의 게시글에 하나의 내용과 하나의 테그를 저장할 수 있다.")
