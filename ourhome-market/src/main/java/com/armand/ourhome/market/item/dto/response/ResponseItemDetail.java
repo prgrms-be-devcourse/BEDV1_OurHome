@@ -35,7 +35,9 @@ public class ResponseItemDetail {
     private double average;
 
     @Builder
-    public ResponseItemDetail(String name, String description, String imageUrl, int price, int stockQuantity, String companyName, Category category, LocalDateTime createdAt, PageResponse<List<ResponseReview>> reviews, LocalDateTime serverDateTime, long count, double average) {
+    public ResponseItemDetail(String name, String description, String imageUrl, int price, int stockQuantity,
+                              String companyName, Category category, LocalDateTime createdAt,
+                              PageResponse<List<ResponseReview>> reviews, long count, double average) {
         this.name = name;
         this.description = description;
         this.imageUrl = imageUrl;
@@ -45,7 +47,7 @@ public class ResponseItemDetail {
         this.category = category;
         this.createdAt = createdAt;
         this.reviews = reviews;
-        this.serverDateTime = serverDateTime;
+        this.serverDateTime = LocalDateTime.now();
         this.count = count;
         this.average = average;
     }
