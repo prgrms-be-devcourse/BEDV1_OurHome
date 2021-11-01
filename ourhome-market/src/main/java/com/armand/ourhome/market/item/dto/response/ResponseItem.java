@@ -1,22 +1,25 @@
 package com.armand.ourhome.market.item.dto.response;
 
+import com.armand.ourhome.market.item.dto.ItemDto;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class ResponseItem {
 
-    private String name;
-    private String companyName;
-    private int price;
+    private List<ItemDto> items;
+    @JsonProperty("server_date_time")
+    private LocalDateTime serverDateTime;
 
-    @Builder
-    public ResponseItem(String name, String companyName, int price) {
-        this.name = name;
-        this.companyName = companyName;
-        this.price = price;
+    public ResponseItem(List<ItemDto> items) {
+        this.items = items;
+        this.serverDateTime = LocalDateTime.now();
     }
 }

@@ -1,4 +1,4 @@
-package com.armand.ourhome.market.review.service.dto.request;
+package com.armand.ourhome.market.review.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,9 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.util.Arrays;
 
 @Getter
 @Setter
