@@ -4,16 +4,17 @@ import com.armand.ourhome.common.error.exception.BusinessException;
 import com.armand.ourhome.common.error.exception.ErrorCode;
 import com.armand.ourhome.community.post.dto.PostDto;
 import com.armand.ourhome.community.post.entity.Post;
+import com.armand.ourhome.community.post.entity.ResidentialType;
 import com.armand.ourhome.community.post.mapper.PostMapper;
 import com.armand.ourhome.community.post.repository.PostRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 /**
@@ -40,7 +41,11 @@ public class PostService {
     }
 
     public List<PostDto> getAll(Pageable pageable) {
-        return null;
+        return postMapper.toDtoList(postRepository.findAll(pageable).toList());
+    }
+
+    public List<PostDto> getAllByResidentialType(ResidentialType residentialType, Pageable pageable){
+        return postMapper.toDtoList(postRepository.findAllByResidentialType(residentialType, pageable));
     }
 
     @Transactional
