@@ -30,13 +30,13 @@ class UserServiceUnitTest {
     private UserService userService;
 
     User user = User.builder()
-//            .id(1L)
-//            .email("test@mail.com")
-//            .password("1234")
-//            .nickname("test")
-//            .createdAt(LocalDateTime.now())
-//            .build();
-//
+            .id(1L)
+            .email("test@mail.com")
+            .password("1234")
+            .nickname("test")
+            .createdAt(LocalDateTime.now())
+            .build();
+
 //// -----------------------------------------------------------------------------------------
 
     @Test
@@ -51,11 +51,11 @@ class UserServiceUnitTest {
                 .build();
 
         // When
-        SignUpResponse response = userService.signUp(signUpRequest);
+        SignUpResponse dumdum = userService.signUp(signUpRequest);
 
         // Then
-        assertThat(response.getId(), is(user.getId()));
-        assertThat(response.getCreatedAt(), is(user.getCreatedAt()));
+        assertThat(dumdum.getId(), is(user.getId()));
+        assertThat(dumdum.getCreatedAt(), is(user.getCreatedAt()));
     }
 
 

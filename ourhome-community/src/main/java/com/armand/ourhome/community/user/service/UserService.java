@@ -73,10 +73,9 @@ public class UserService {
         User user = userRepository.findById(id).get();
         user.updateInfo(nickname, description, profileImageUrl);
 
-        // update된 시간을 받아오기 위해 flush -> 다시 select
+        // update된 시간을 받아오기 위해 flush
         userRepository.flush();
-        User updatedUser = userRepository.findById(id).get();
-        return UpdateResponse.of(updatedUser);
+        return UpdateResponse.of(user);
     }
 
     @Transactional
@@ -85,8 +84,7 @@ public class UserService {
         User user = userRepository.findById(id).get();
         user.updatePassword(password);
         userRepository.flush();
-        User updatedUser = userRepository.findById(id).get();
-        return UpdateResponse.of(updatedUser);
+        return UpdateResponse.of(user);
     }
 
     public UserPageResponse userPage(Long id, Long token) {
@@ -112,12 +110,12 @@ public class UserService {
     // ------------------------------------------------------------------------
 
     private void isDuplicateEmail(String email) {
-        if (userRepository.findByEmail(email).isPresent())
+        if (userRepository.existsByEmail(email))
             throw new EntityNotFoundException("이미 중복되는 이메일이 있습니다");
     }
 
     private void isDuplicateNickname(String nickname) {
-        if (userRepository.findByNickname(nickname).isPresent())
+        if (userRepository.existsByNickname(nickname))
             throw new EntityNotFoundException("이미 중복되는 닉네임이 있습니다");
     }
 
