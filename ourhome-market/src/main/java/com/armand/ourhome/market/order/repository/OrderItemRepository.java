@@ -9,9 +9,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
-
-    @Query("select exist (select i from OrderItem i " +
-            "inner join Order o on i.order = o " +
-            "where o.user = :userId and i.item = :itemId)")
+    // limit 1로 하면 성능 더 좋지만, JPQL limit 지원안함
+    @Query("select count(i) > 0 from OrderItem i " +
+            "join i.order o " +
+            "where o.user.id = :userId and i.item.id = :itemId")
     boolean existsOrderItemByUserIdAndItemId(@Param("userId") Long userId, @Param("itemId") Long itemId);
 }

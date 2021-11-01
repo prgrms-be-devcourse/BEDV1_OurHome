@@ -1,9 +1,9 @@
 package com.armand.ourhome.market.review.mapper;
 
 import com.armand.ourhome.market.review.domain.Review;
-import com.armand.ourhome.market.review.service.dto.ReviewDto;
-import com.armand.ourhome.market.review.service.dto.request.RequestAddReview;
-import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
+import com.armand.ourhome.market.review.dto.ReviewDto;
+import com.armand.ourhome.market.review.dto.request.RequestAddReview;
+import com.armand.ourhome.market.review.dto.response.ResponseReview;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
