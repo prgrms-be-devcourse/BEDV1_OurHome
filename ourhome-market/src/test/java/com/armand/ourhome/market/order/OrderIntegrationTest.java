@@ -5,16 +5,13 @@ import com.armand.ourhome.domain.item.repository.ItemRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import com.armand.ourhome.market.TestHelper;
-import com.armand.ourhome.market.item.service.ItemService;
-import com.armand.ourhome.market.order.domain.Order;
 import com.armand.ourhome.market.order.domain.PaymentType;
+import com.armand.ourhome.market.order.dto.OrderItemRequest;
 import com.armand.ourhome.market.order.dto.OrderRequest;
-import com.armand.ourhome.market.order.dto.UserRequest;
+import com.armand.ourhome.market.order.dto.OrderResponse;
 import com.armand.ourhome.market.order.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,6 +21,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -31,6 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
@@ -52,23 +53,40 @@ public class OrderIntegrationTest {
     @Autowired
     private OrderService orderService;
 
-    @BeforeEach
-    void setUp() {
-        Item soapItem = TestHelper.createSoapItem();
-        Item ramenItem = TestHelper.createRamenitem();
+    private User userWithAddress;
+    private User userWithOutAddress;
 
-        itemRepository.save(soapItem);
-        itemRepository.save(ramenItem);
+    private Item soapItem;
+    private Item ramenItem;
+
+    @BeforeAll
+    void setUp() {
+        userWithAddress = userRepository.save(TestHelper.createUser());
+        userWithOutAddress = userRepository.save(TestHelper.createUserWithoutAddress());
+        soapItem = itemRepository.save(TestHelper.createSoapItem());
+        ramenItem = itemRepository.save(TestHelper.createRamenitem());
     }
 
     @Test
     @DisplayName("사용자는 주문을 할 수 있다.")
     public void createOrder() throws Exception {
-
         // Given
-        User user = TestHelper.createUserWithoutAddress();
-        userRepository.save(user);
-        OrderRequest orderRequest = TestHelper.createOrderRequest();
+        List<OrderItemRequest> orderItemRequests = new ArrayList<>();
+        orderItemRequests.add(OrderItemRequest.builder()
+                .orderCount(2)
+                .itemId(ramenItem.getId())
+                .build());
+        orderItemRequests.add(OrderItemRequest.builder()
+                .orderCount(1)
+                .itemId(soapItem.getId())
+                .build());
+
+        OrderRequest orderRequest = OrderRequest.builder()
+                .paymentType(PaymentType.FUND_TRANSFER)
+                .userId(userWithOutAddress.getId())
+                .address("Seoul City")
+                .orderItemRequests(orderItemRequests)
+                .build();
 
         // When
         final ResultActions resultActions = mockMvc.perform(post("/orders")
@@ -79,7 +97,6 @@ public class OrderIntegrationTest {
         // Then
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id").value(1L))
                 .andExpect(jsonPath("status").value("ACCEPTED"));
     }
 
@@ -88,9 +105,21 @@ public class OrderIntegrationTest {
     public void createOrderWithoutAddress() throws Exception {
 
         // Given
-        User user = TestHelper.createUser();
-        userRepository.save(user);
-        OrderRequest orderRequest = TestHelper.createOrderRequestWithoutAddress();
+        List<OrderItemRequest> orderItemRequests = new ArrayList<>();
+        orderItemRequests.add(OrderItemRequest.builder()
+                .orderCount(2)
+                .itemId(ramenItem.getId())
+                .build());
+        orderItemRequests.add(OrderItemRequest.builder()
+                .orderCount(1)
+                .itemId(soapItem.getId())
+                .build());
+
+        OrderRequest orderRequest = OrderRequest.builder()
+                .paymentType(PaymentType.FUND_TRANSFER)
+                .userId(userWithAddress.getId())
+                .orderItemRequests(orderItemRequests)
+                .build();;
 
         // When
         final ResultActions resultActions = mockMvc.perform(post("/orders")
@@ -103,7 +132,6 @@ public class OrderIntegrationTest {
 
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id").value(1L))
                 .andExpect(jsonPath("status").value("ACCEPTED"))
                 .andExpect(jsonPath("address").exists());
     }
@@ -113,13 +141,29 @@ public class OrderIntegrationTest {
     public void lookUpOrder() throws Exception {
 
         // Given
-        User user = TestHelper.createUser();
-        userRepository.save(user);
-        OrderRequest orderRequest = TestHelper.createOrderRequest();
-        orderService.createOrder(orderRequest);
+        List<OrderItemRequest> orderItemRequests = new ArrayList<>();
+        orderItemRequests.add(OrderItemRequest.builder()
+                .orderCount(2)
+                .itemId(ramenItem.getId())
+                .build());
+        orderItemRequests.add(OrderItemRequest.builder()
+                .orderCount(1)
+                .itemId(soapItem.getId())
+                .build());
+
+        int total = ramenItem.getPrice() * 2 + soapItem.getPrice();
+
+        OrderRequest orderRequest = OrderRequest.builder()
+                .paymentType(PaymentType.FUND_TRANSFER)
+                .userId(userWithAddress.getId())
+                .address("Seoul City")
+                .orderItemRequests(orderItemRequests)
+                .build();
+
+        OrderResponse order = orderService.createOrder(orderRequest);
 
         // When
-        final ResultActions resultActions = mockMvc.perform(get("/orders/{order_id}", 1L)
+        final ResultActions resultActions = mockMvc.perform(get("/orders/{order_id}", order.getId())
                         .content(objectMapper.writeValueAsString(orderRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print());
@@ -127,10 +171,10 @@ public class OrderIntegrationTest {
         // Then
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id").value(1L))
+                .andExpect(jsonPath("id").value(order.getId()))
                 .andExpect(jsonPath("status").value("ACCEPTED"))
                 .andExpect(jsonPath("paymentType").value("FUND_TRANSFER"))
-                .andExpect(jsonPath("totalPrice").value(3500));
+                .andExpect(jsonPath("totalPrice").value(total));
     }
 
     @Test
@@ -138,13 +182,27 @@ public class OrderIntegrationTest {
     public void cancelOrder() throws Exception {
 
         // Given
-        User user = TestHelper.createUser();
-        userRepository.save(user);
-        OrderRequest orderRequest = TestHelper.createOrderRequest();
-        orderService.createOrder(orderRequest);
+        List<OrderItemRequest> orderItemRequests = new ArrayList<>();
+        orderItemRequests.add(OrderItemRequest.builder()
+                .orderCount(2)
+                .itemId(ramenItem.getId())
+                .build());
+        orderItemRequests.add(OrderItemRequest.builder()
+                .orderCount(1)
+                .itemId(soapItem.getId())
+                .build());
+
+        OrderRequest orderRequest = OrderRequest.builder()
+                .paymentType(PaymentType.FUND_TRANSFER)
+                .userId(userWithOutAddress.getId())
+                .address("Seoul City")
+                .orderItemRequests(orderItemRequests)
+                .build();
+
+        OrderResponse order = orderService.createOrder(orderRequest);
 
         // When
-        final ResultActions resultActions = mockMvc.perform(post("/orders/cancel/{order_id}", 1L)
+        final ResultActions resultActions = mockMvc.perform(post("/orders/cancel/{order_id}", order.getId())
                         .content(objectMapper.writeValueAsString(orderRequest))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print());
@@ -152,7 +210,7 @@ public class OrderIntegrationTest {
         // Then
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id").value(1L))
+                .andExpect(jsonPath("id").value(order.getId()))
                 .andExpect(jsonPath("status").value("CANCELLED"))
                 .andExpect(jsonPath("deliveryResponse.status").value("CANCELLED"));
 
