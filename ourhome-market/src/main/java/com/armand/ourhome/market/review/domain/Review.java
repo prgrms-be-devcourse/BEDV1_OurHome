@@ -4,6 +4,7 @@ import com.armand.ourhome.domain.base.BaseEntity;
 import com.armand.ourhome.domain.item.domain.Item;
 import com.armand.ourhome.domain.user.User;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
@@ -43,7 +44,8 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private int help;
 
-    private Review(User user, Item item, int rating, String comment) {
+    @Builder
+    public Review(User user, Item item, int rating, String comment) {
 
         Assert.notNull(user, "사용자는 null이 될 수 없습니다.");
         Assert.notNull(item, "상품은 null이 될 수 없습니다.");
@@ -58,7 +60,8 @@ public class Review extends BaseEntity {
         this.help = 0;
     }
 
-    public static Review of(User user, Item item, int rating, String comment) {
+    public static Review of
+            (User user, Item item, int rating, String comment) {
         return new Review(user, item, rating, comment);
     }
 
