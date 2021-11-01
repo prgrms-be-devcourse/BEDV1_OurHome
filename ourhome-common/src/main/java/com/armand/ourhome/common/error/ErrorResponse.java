@@ -19,12 +19,21 @@ public class ErrorResponse {
     private int status;
     private List<FieldError> errors;
     private String code;
+    private String detailMessage;
 
     private ErrorResponse(ErrorCode code, List<FieldError> errors) {
         this.message = code.getMessage();
         this.status = code.getStatus();
         this.errors = errors;
         this.code = code.getCode();
+    }
+
+    private ErrorResponse(ErrorCode code, String detailMessage) {
+        this.message = code.getMessage();
+        this.status = code.getStatus();
+        this.errors = new ArrayList<>();
+        this.code = code.getCode();
+        this.detailMessage = detailMessage;
     }
 
     private ErrorResponse(ErrorCode code) {
@@ -46,11 +55,16 @@ public class ErrorResponse {
         return new ErrorResponse(code, errors);
     }
 
+    public static ErrorResponse of(ErrorCode code, String detailMessage) {
+        return new ErrorResponse(code, detailMessage);
+    }
+
     public static ErrorResponse of(MethodArgumentTypeMismatchException e) {
         final String value = e.getValue() == null ? "" : e.getValue().toString();
         final List<ErrorResponse.FieldError> errors = ErrorResponse.FieldError.of(e.getName(), value, e.getErrorCode());
         return new ErrorResponse(ErrorCode.INVALID_TYPE_VALUE, errors);
     }
+
 
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)

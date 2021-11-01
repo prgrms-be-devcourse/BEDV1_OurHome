@@ -1,7 +1,7 @@
 package com.armand.ourhome.market.review.service;
 
-import com.armand.ourhome.common.error.exception.EntityDuplicateException;
 import com.armand.ourhome.common.error.exception.EntityNotFoundException;
+import com.armand.ourhome.common.error.exception.InvalidValueException;
 import com.armand.ourhome.domain.item.domain.Item;
 import com.armand.ourhome.domain.item.repository.ItemRepository;
 import com.armand.ourhome.domain.user.User;
@@ -11,8 +11,8 @@ import com.armand.ourhome.market.review.mapper.ReviewMapper;
 import com.armand.ourhome.market.review.repository.ReviewRepository;
 import com.armand.ourhome.market.review.service.dto.request.RequestAddReview;
 import com.armand.ourhome.market.review.service.dto.request.RequestReviewPages;
-import com.armand.ourhome.market.review.service.dto.ReviewDto;
 import com.armand.ourhome.market.review.service.dto.response.PageResponse;
+import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
@@ -40,13 +40,13 @@ public class ReviewService {
         return review.getId();
     }
 
-    public PageResponse<List<ReviewDto>> fetchReviewPagesBy(Long itemId, RequestReviewPages request) {
+    public PageResponse<List<ResponseReview>> fetchReviewPagesBy(Long itemId, RequestReviewPages request) {
         Page<Review> pages = reviewRepository.findByItemId(itemId, request.of());
 
-        List<ReviewDto> reviews = pages
+        List<ResponseReview> reviews = pages
                 .getContent()
                 .stream()
-                .map(reviewMapper::toDto)
+                .map(reviewMapper::toResponseDto)
                 .collect(Collectors.toList());
 
         return new PageResponse<>(pages.getTotalElements(), pages.getTotalPages(), reviews, pages.getSize());
@@ -75,7 +75,7 @@ public class ReviewService {
         boolean exists = reviewRepository.existsByItemIdAndUserId(itemId, userId);
 
         if (exists) {
-            throw new EntityDuplicateException(
+            throw new InvalidValueException(
                     MessageFormat.format("사용자가 이미 리뷰를 남겼습니다. itemId = {0}, userId = {1}", itemId, userId));
         }
     }

@@ -20,8 +20,7 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ResponseEntity<ResponseItemDetail> fetchItemDetail(@PathVariable("itemId") Long itemId, RequestReviewPages request) {
-        ItemDto itemDto = itemService.findItemBy(itemId, request);
 
-        return ResponseEntity.ok(itemMapper.toResponseItemDetail(itemDto));
+        return ResponseEntity.ok(itemService.fetchItemDetailWithReview(itemId, request));
     }
 }

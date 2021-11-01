@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RequestMapping("/api/reviews")
 @RestController
@@ -18,7 +20,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping
-    public ResponseEntity<Long> addReview(@RequestBody RequestAddReview request) {
+    public ResponseEntity<Long> addReview(@Valid @RequestBody RequestAddReview request) {
         Long reviewId = reviewService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(reviewId);
     }
