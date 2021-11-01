@@ -10,6 +10,8 @@ import com.armand.ourhome.market.voucher.exception.VoucherNotFoundException;
 import com.armand.ourhome.market.voucher.repository.VoucherRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +26,13 @@ public class VoucherService {
 
   private final VoucherRepository<Voucher> voucherRepository;
   private final VoucherConverter voucherConverter;
-  
+
+  public Page<VoucherDto> lookUp(Pageable pageable) {
+    Page<VoucherDto> allVouchers = voucherRepository.findAll(pageable)
+        .map(voucher -> voucherConverter.toDto(voucher));
+    return allVouchers;
+  }
+
   @Transactional
   public VoucherDto save(RequestVoucher request) {
     validateDuplicateVoucher(request);
