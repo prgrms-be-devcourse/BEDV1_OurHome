@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
         log.error("handleAccessDeniedException", e);
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.METHOD_NOT_ALLOWED);
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     // Business error
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
         log.error("handleBusinessException", e);
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INTERNAL_SERVER_ERROR, e.getMessage());
 
-        return ResponseEntity.internalServerError().body(errorResponse);
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     // EntityNotFoundException
@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
         log.error("handleEntityNotFoundException", e);
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.ENTITY_NOT_FOUND, e.getMessage());
 
-        return ResponseEntity.internalServerError().body(errorResponse);
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     // InvalidValueException
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
         log.error("handleInvalidValueException", e);
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, e.getMessage());
 
-        return ResponseEntity.internalServerError().body(errorResponse);
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     // IllegalArgumentException -> 도메인 엔티티 validation
@@ -87,7 +87,7 @@ public class GlobalExceptionHandler {
         log.error("handleIllegalArgumentException", e);
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.INVALID_INPUT_VALUE, e.getMessage());
 
-        return ResponseEntity.internalServerError().body(errorResponse);
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     // other Exception

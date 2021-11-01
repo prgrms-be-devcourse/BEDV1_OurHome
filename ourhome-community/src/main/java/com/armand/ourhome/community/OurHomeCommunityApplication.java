@@ -12,7 +12,10 @@ import org.springframework.test.context.ActiveProfiles;
 
 @EnableJpaRepositories(basePackageClasses = OurHomeCommunityApplication.class)
 @EntityScan(basePackageClasses = OurHomeCommunityApplication.class)
-@SpringBootApplication(scanBasePackages = "com.armand.ourhome") // 다른 api는 제외시켜야함
+@SpringBootApplication(
+        scanBasePackages = "com.armand.ourhome",
+        excludeName = "com.armand.ourhome.community"
+)
 public class OurHomeCommunityApplication {
     public static void main(String[] args) {
         SpringApplication.run(OurHomeCommunityApplication.class, args);

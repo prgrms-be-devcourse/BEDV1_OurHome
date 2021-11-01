@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor // 자식 클래스에게 필드 넘겨주기 위함
 @EntityListeners(AuditingEntityListener.class)  // JPA Audit
 @MappedSuperclass
 public class BaseEntity {
