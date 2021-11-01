@@ -2,6 +2,7 @@ package com.armand.ourhome.community.post.service;
 
 import com.armand.ourhome.common.error.exception.BusinessException;
 import com.armand.ourhome.common.error.exception.ErrorCode;
+import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.community.post.dto.PostDto;
 import com.armand.ourhome.community.post.entity.PlaceType;
 import com.armand.ourhome.community.post.entity.Post;
@@ -41,13 +42,15 @@ public class PostService {
     private final ContentRepository contentRepository;
     private final TagRepository tagRepository;
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
-
+    private final AwsS3Uploader awsS3Uploader;
 
     @Transactional
-    public Long save(final PostDto postDto, List<String> mediaUrl){
+    public Long save(final PostDto postDto){
+
         int contentSize = postDto.getContentList().size();
         for (int i = 0; i < contentSize; i++){
-            postDto.getContentList().get(i).setMediaUrl(mediaUrl.get(i));
+            String mediaUrl = awsS3Uploader.upload(postDto.getContentList().get(i).getImageBase64(), "post");
+            postDto.getContentList().get(i).setMediaUrl(mediaUrl);
         }
         User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new BusinessException("해당 사용자 정보는 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
         return postRepository.save(postMapper.toEntity(postDto, user)).getPostId();
@@ -62,22 +65,23 @@ public class PostService {
     }
 
 
-//    public List<PostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){
-//        s2contentRepository.findAllByPlaceType(placeType, pageable).stream()
-//                .map( v -> v.getPost() )
-//                .forEach(System.out::println);
-//        return null;
-//
-//    }
+    public List<PostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){
+        return postMapper.toDtoList(contentRepository.findAllByPlaceType(placeType, pageable).stream().map( v -> v.getPost()).distinct().toList());
+
+    }
 
     public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
         Map<Object, Boolean> map = new ConcurrentHashMap<>();
         return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
-    /**
+    public List<PostDto> getAllByTag(String tagName, Pageable pageable){
+        return postMapper.toDtoList(tagRepository.findAllByName(tagName, pageable).stream().map(v -> v.getContent().getPost()).distinct().toList());
+    }
+
+
     @Transactional
-    public Long update(final PostDto postDto, List<String> mediaUrl){
+    public Long update(final PostDto postDto, List<String> mediaUrl){ //postId
         int contentSize = postDto.getContentList().size();
         for (int i = 0; i < contentSize; i++){
 
@@ -88,7 +92,7 @@ public class PostService {
         postMapper.updateFromDto(postDto, postBeforeUpdate);
         return postDto.getPostId();
     }
-     **/
+
 
 
     @Transactional
