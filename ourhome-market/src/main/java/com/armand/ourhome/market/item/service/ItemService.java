@@ -1,19 +1,26 @@
 package com.armand.ourhome.market.item.service;
 
-import com.armand.ourhome.common.error.exception.EntityNotFoundException;
-import com.armand.ourhome.domain.item.domain.Company;
 import com.armand.ourhome.domain.item.domain.Item;
-import com.armand.ourhome.domain.item.repository.CompanyRepository;
 import com.armand.ourhome.domain.item.repository.ItemRepository;
 import com.armand.ourhome.market.item.dto.ItemDto;
-import com.armand.ourhome.market.item.dto.request.RequestSaveItem;
+import com.armand.ourhome.market.item.dto.response.ResponseItem;
+import com.armand.ourhome.market.item.dto.response.ResponseItemDetail;
+import com.armand.ourhome.market.item.exception.ItemNotFoundException;
 import com.armand.ourhome.market.item.mapper.ItemMapper;
+import com.armand.ourhome.market.review.service.ReviewService;
+import com.armand.ourhome.market.review.service.dto.request.RequestReviewPages;
+import com.armand.ourhome.market.review.service.dto.response.PageResponse;
+import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -21,31 +28,38 @@ import java.text.MessageFormat;
 public class ItemService {
 
     private final ItemRepository itemRepository;
-    private final CompanyRepository companyRepository;
+    private final ReviewService reviewService;
     private final ItemMapper itemMapper = Mappers.getMapper(ItemMapper.class);
 
-    @Transactional
-    public ItemDto save(RequestSaveItem request) {
-        Item item = toItem(request);
+    public ResponseItemDetail fetchItemDetailWithReview(Long itemId, RequestReviewPages request) {
+        PageResponse<List<ResponseReview>> reviews = reviewService.fetchReviewPagesBy(itemId, request);
+        ItemDto itemDto = findItemBy(itemId);
+        return itemMapper.toResponseItemDetail(itemDto, reviews);
+    }
 
-        itemRepository.save(item);
+    public List<ResponseItem> fetchItemPagesBy(Long lastItemId, int size) {
+        Page<Item> items = fetchPages(lastItemId, size);
 
-        return itemMapper.toItemDto(item, item.getCompanyName());
+        return items.getContent().stream()
+                .map(item -> itemMapper.toItemDto(item, item.getCompanyName()))
+                .map(itemMapper::toResponseItem)
+                .collect(Collectors.toList());
     }
 
     public ItemDto findItemBy(Long itemId) {
+        Item item = getItem(itemId);
+        return itemMapper.toItemDto(item, item.getCompanyName());
+    }
+
+    private Item getItem(Long itemId) {
         return itemRepository.findById(itemId)
-                .map(item -> itemMapper.toItemDto(item, item.getCompany().getName()))
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("상품이 존재하지 않습니다. itemId = {0}", itemId)));
+               .orElseThrow(() -> new ItemNotFoundException(MessageFormat.format("상품이 존재하지 않습니다. itemId = {0}", itemId)));
     }
 
-    private Item toItem(RequestSaveItem request) {
-        Company company = findCompany(request.getCompanyId());
-        return itemMapper.toItem(request, company);
+    private Page<Item> fetchPages(Long lastItemId, int size) {
+        PageRequest pageRequest = PageRequest.of(0, size);
+
+        return itemRepository.findByIdLessThanOrderByIdDesc(lastItemId, pageRequest);
     }
 
-    private Company findCompany(Long companyId) {
-        return companyRepository.findById(companyId)
-                .orElseThrow(() -> new EntityNotFoundException(MessageFormat.format("해당 기업이 존재하지 않습니다. id = {0}", companyId)));
-    }
 }

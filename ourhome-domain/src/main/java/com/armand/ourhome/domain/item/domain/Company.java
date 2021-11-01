@@ -17,7 +17,7 @@ public class Company {
   private static final int MAX_NAME_LENGTH = 15;
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(nullable = false, length = MAX_NAME_LENGTH, unique = true)

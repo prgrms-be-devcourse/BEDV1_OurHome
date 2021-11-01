@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class PercentVoucherT {
+public class PercentVoucherTest {
 
   @Test
   @DisplayName("할인율은 null이 될 수 없다")
@@ -50,12 +50,26 @@ public class PercentVoucherT {
 
   @Test
   @DisplayName("바우처를 정상적으로 생성할 수 있다")
-  void createVoucher() {
+  void testSaveVoucher() {
     // when
     PercentVoucher voucher = PercentVoucher.of(20, 1000);
 
     // then
     assertThat(voucher).isNotNull();
+  }
+
+  @Test
+  @DisplayName("바우처 정보를 변경할 수 있다")
+  void testUpdateVoucher() {
+    // given
+    PercentVoucher voucher = PercentVoucher.of(10, 10000);
+
+    // when
+    voucher.update(20, 10000);
+
+    // then
+    assertThat(voucher.getPercent()).isEqualTo(20);
+    assertThat(voucher.getMinLimit()).isEqualTo(10000);
   }
 
 }

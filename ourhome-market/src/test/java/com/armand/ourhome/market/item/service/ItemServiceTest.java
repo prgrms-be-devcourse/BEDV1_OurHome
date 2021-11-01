@@ -7,6 +7,9 @@ import com.armand.ourhome.domain.item.repository.CompanyRepository;
 import com.armand.ourhome.domain.item.repository.ItemRepository;
 import com.armand.ourhome.market.item.dto.ItemDto;
 import com.armand.ourhome.market.item.dto.request.RequestSaveItem;
+import com.armand.ourhome.market.item.dto.response.ResponseItemDetail;
+import com.armand.ourhome.market.review.service.ReviewService;
+import com.armand.ourhome.market.review.service.dto.request.RequestReviewPages;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +38,7 @@ class ItemServiceTest {
     private ItemRepository itemRepository;
 
     @Mock
-    private CompanyRepository companyRepository;
+    private ReviewService reviewService;
 
     private Item item;
     private Company company;
@@ -53,32 +58,18 @@ class ItemServiceTest {
     }
 
     @Test
-    @DisplayName("상품이 저장된다")
-    public void testSaveItem() throws Exception {
+    @DisplayName("상품을 id로 단건 조회할 수 있다")
+    public void testFindById() throws Exception {
         //given
-        RequestSaveItem request = RequestSaveItem.builder()
-                .category(item.getCategory())
-                .companyId(1L)
-                .description(item.getDescription())
-                .imageUrl(item.getImageUrl())
-                .price(item.getPrice())
-                .name(item.getName())
-                .stockQuantity(item.getStockQuantity())
-                .build();
-
-        given(itemRepository.save(any())).willReturn(item);
-        given(companyRepository.findById(any())).willReturn(Optional.of(company));
+        given(itemRepository.findById(any())).willReturn(Optional.of(item));
 
         //when
-        ItemDto saveDto = itemService.save(request);
+        ItemDto dto = itemService.findItemBy(1L);
 
         //then
-        assertThat(saveDto).isNotNull();
-        assertThat(saveDto.getName()).isEqualTo(item.getName());
-        assertThat(saveDto.getDescription()).isEqualTo(item.getDescription());
-        assertThat(saveDto.getPrice()).isEqualTo(item.getPrice());
-        assertThat(saveDto.getStockQuantity()).isEqualTo(item.getStockQuantity());
+        assertThat(dto.getName()).isEqualTo(item.getName());
+        assertThat(dto.getPrice()).isEqualTo(item.getPrice());
+        assertThat(dto.getCompanyName()).isEqualTo(item.getCompanyName());
+        assertThat(dto.getStockQuantity()).isEqualTo(item.getStockQuantity());
     }
-
-
 }
