@@ -24,7 +24,7 @@ public class VoucherService {
 
   private final VoucherRepository<Voucher> voucherRepository;
   private final VoucherConverter voucherConverter;
-
+  
   @Transactional
   public VoucherDto save(RequestVoucher request) {
     validateDuplicateVoucher(request);
@@ -46,6 +46,12 @@ public class VoucherService {
     voucher.update(request.getValue(), request.getMinLimit());
     voucherRepository.flush(); // updatedAt 반영
     return voucherConverter.toDto(voucher);
+  }
+
+  @Transactional
+  public void delete(Long id) {
+    Voucher voucher = validateExistId(id);
+    voucherRepository.delete(voucher);
   }
 
   private Voucher validateExistId(Long id) {
