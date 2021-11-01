@@ -25,11 +25,10 @@ public class PostController {
 
     private final PostService postService;
 
-//    @PostMapping
-//    public ResponseEntity<Long> save(@RequestBody @Valid final PostDto postDto,
-//                                     @RequestPart List<MultipartFile> files) throws IOException {
-//        return ResponseEntity.ok(postService.save(postDto, postService.uploadToS3(files)));
-//    }
+    @PostMapping
+    public ResponseEntity<Long> save(@RequestBody @Valid final PostDto postDto) throws IOException {
+        return ResponseEntity.ok(postService.save(postDto));
+    }
 
     @GetMapping
     public ResponseEntity<List<PostDto>> getAll(Pageable pageable) {
@@ -43,7 +42,9 @@ public class PostController {
     }
 
     @PostMapping("/{postId}")
-    public ResponseEntity<Long> update(@Valid @PathVariable final Long postId){
+    public ResponseEntity<Long> update(@RequestBody @Valid final PostDto postDto,
+                                       @Valid @PathVariable final Long postId){
+        //return postService.update(postDto, postId);
         return null;
     }
 
