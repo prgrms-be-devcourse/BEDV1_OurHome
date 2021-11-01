@@ -31,6 +31,15 @@ public class PercentVoucher extends Voucher {
   }
 
   @Override
+  public void update(int percent, int minLimit) {
+    validatePercent(percent);
+    validateMinLimit(minLimit);
+
+    this.percent = percent;
+    super.updateMinLimit(minLimit);
+  }
+
+  @Override
   public int getDiscountPrice(int currentPrice) {
     return currentPrice * (percent / 100);
   }
@@ -48,9 +57,9 @@ public class PercentVoucher extends Voucher {
   private static void validatePercent(Integer percent) {
     Assert.notNull(percent, "바우처 할인비율은 null이 될 수 없습니다.");
 
-    if (percent <= 0) {
+    if (percent <= 0 || percent > 100) {
       throw new IllegalArgumentException(
-          MessageFormat.format("바우처 할인비율은 0보다 커야합니다. percent = {0}", percent));
+          MessageFormat.format("바우처 할인비율은 1~100입니다. percent = {0}", percent));
     }
   }
 
