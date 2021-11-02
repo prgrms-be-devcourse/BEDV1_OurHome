@@ -3,7 +3,9 @@ package com.armand.ourhome.community.post.service;
 import com.armand.ourhome.common.error.exception.BusinessException;
 import com.armand.ourhome.common.error.exception.ErrorCode;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
+import com.armand.ourhome.community.post.dto.ContentDto;
 import com.armand.ourhome.community.post.dto.PostDto;
+import com.armand.ourhome.community.post.entity.Content;
 import com.armand.ourhome.community.post.entity.PlaceType;
 import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.community.post.entity.ResidentialType;
@@ -49,7 +51,7 @@ public class PostService {
 
         int contentSize = postDto.getContentList().size();
         for (int i = 0; i < contentSize; i++){
-            String mediaUrl = awsS3Uploader.upload(postDto.getContentList().get(i).getImageBase64(), "post");
+            String mediaUrl = awsS3Uploader.upload(postDto.getContentList().get(i).getImageBase64(), "user-posts");
             postDto.getContentList().get(i).setMediaUrl(mediaUrl);
         }
         User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new BusinessException("해당 사용자 정보는 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
@@ -82,13 +84,17 @@ public class PostService {
 
     @Transactional
     public Long update(final PostDto postDto, List<String> mediaUrl){ //postId
-        int contentSize = postDto.getContentList().size();
-        for (int i = 0; i < contentSize; i++){
+        List<ContentDto> contentDtoList = postDto.getContentList();
 
-            postDto.getContentList().get(i).setMediaUrl(mediaUrl.get(i));
+        for (int i = 0; i < contentDtoList.size(); i++){
+            System.out.println("-------------------------------------------------------------------");
+            if (contentDtoList.get(i).getUpdatedFlag()) {
+                System.out.println(contentDtoList.get(i).getMediaUrl());
+                contentDtoList.get(i).setMediaUrl(awsS3Uploader.upload(contentDtoList.get(i).getImageBase64(), "user-posts"));
+                System.out.println(contentDtoList.get(i).getMediaUrl());
+            }
         }
         Post postBeforeUpdate = postRepository.findById(postDto.getPostId()).orElseThrow(() -> new BusinessException("해당 게시물은 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
-        //User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new BusinessException("해당 사용자 정보는 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
         postMapper.updateFromDto(postDto, postBeforeUpdate);
         return postDto.getPostId();
     }
