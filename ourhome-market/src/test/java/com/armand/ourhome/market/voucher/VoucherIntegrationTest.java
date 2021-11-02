@@ -10,10 +10,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.armand.ourhome.market.voucher.domain.Voucher;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
+import com.armand.ourhome.market.voucher.repository.VoucherRepository;
 import com.armand.ourhome.market.voucher.service.VoucherService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +40,9 @@ public class VoucherIntegrationTest {
   private VoucherService voucherService;
 
   @Autowired
+  private VoucherRepository<Voucher> voucherRepository;
+
+  @Autowired
   private ObjectMapper objectMapper;
 
   private RequestVoucher reqeustVoucher;
@@ -48,6 +54,11 @@ public class VoucherIntegrationTest {
         .minLimit(20000)
         .voucherType(FIXED)
         .build();
+  }
+
+  @AfterEach
+  void tearDown() {
+    voucherRepository.deleteAll();
   }
 
   @Test
@@ -81,7 +92,6 @@ public class VoucherIntegrationTest {
     // then
     resultActions.andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("voucher_id").value(1L))
         .andExpect(jsonPath("value").value(5000))
         .andExpect(jsonPath("min_limit").value(20000))
         .andExpect(jsonPath("voucher_type").value("FIXED"));
