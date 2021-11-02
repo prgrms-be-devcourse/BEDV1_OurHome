@@ -15,6 +15,7 @@ import com.armand.ourhome.community.user.dto.request.UpdatePasswordRequest;
 import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
 import com.armand.ourhome.community.user.dto.response.UpdateResponse;
+import com.armand.ourhome.community.user.dto.response.UserPageResponse;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -216,45 +218,56 @@ class UserServiceUnitTest {
     }
 
     @Test
-    void 사용자페이지() {
+    void 사용자페이지_마이페이지() {
         // Given
-        List<Post> postList = List.of(Post.builder()
-                .title("우리 집")
-                .squareType(SquareType.SIZE_10_PYEONG)
-                .residentialType(ResidentialType.APARTMENT)
-                .styleType(StyleType.ASIAN_STYPE)
-                .user(user)
-                .contentList(List.of(
-                        Content.builder()
-                                .mediaUrl("/post/picture-APARTMENT.jpg")
-                                .description("APARTMENT 설명란")
-                                .placeType(PlaceType.LIVINGROOM)
-                                .tags(List.of(
-                                        Tag.builder()
-                                                .name("APARTMENT")
-                                                .build(),
-                                        Tag.builder()
-                                                .name("깨끗 APARTMENT")
-                                                .build()))
-                                .build()))
-                .build());
-
-
-        given(postRepository.findAllByUser(user, any())).willReturn(postList);
-
+        Pageable pageable = PageRequest.of(0, 8, Sort.by("id").descending());
+        Page<Post> page = new PageImpl<>(List.of(), pageable, 0);
+        given(userRepository.findById(id)).willReturn(Optional.of(user));
+        given(postRepository.findAllByUser(user, pageable)).willReturn(page);
+        given(followRepository.countByFollower(user)).willReturn(0L);
+        given(followRepository.countByFollowing(user)).willReturn(0L);
+        given(postRepository.countAllByUser(user)).willReturn(0L);
+        given(bookmarkRepository.countByUser(user)).willReturn(0L);
+        given(likeRepository.countByUser(user)).willReturn(0L);
 
         // When
+        UserPageResponse result = userService.userPage(1L, 1L, pageable);
 
         // Then
+        assertThat(result.getNickname(), is(nickname));
+        assertThat(result.getDescription(), is(description));
+        assertThat(result.getFollowerCount(), is(0L));
+        assertThat(result.getFollowingCount(), is(0L));
+        assertThat(result.getBookmarkCount(), is(0L));
+        assertThat(result.getLikeCount(), is(0L));
+        assertThat(result.getPostCount(), is(0L));
+        assertThat(result.getThumbnailList(), hasSize(0));
+
     }
 
     @Test
-    void 사용자페이지_가입되지_않은_사용자() {
+    void 사용자페이지_타유저페이지() {
         // Given
+        Pageable pageable = PageRequest.of(0, 8, Sort.by("id").descending());
+        Page<Post> page = new PageImpl<>(List.of(), pageable, 0);
+        given(userRepository.findById(id)).willReturn(Optional.of(user));
+        given(postRepository.findAllByUser(user, pageable)).willReturn(page);
+        given(followRepository.countByFollower(user)).willReturn(0L);
+        given(followRepository.countByFollowing(user)).willReturn(0L);
+        given(postRepository.countAllByUser(user)).willReturn(0L);
 
-        // When
+        // When -> 2번 유저가 1번 유저의 정보를 조회하려 할 때
+        UserPageResponse result = userService.userPage(1L, 2L, pageable);
 
         // Then
+        assertThat(result.getNickname(), is(nickname));
+        assertThat(result.getDescription(), is(description));
+        assertThat(result.getFollowerCount(), is(0L));
+        assertThat(result.getFollowingCount(), is(0L));
+        assertThat(result.getBookmarkCount(), is(nullValue()));
+        assertThat(result.getLikeCount(), is(nullValue()));
+        assertThat(result.getPostCount(), is(0L));
+        assertThat(result.getThumbnailList(), hasSize(0));
     }
 
 }
