@@ -1,6 +1,7 @@
 package com.armand.ourhome.community.user.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,10 +9,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@JsonNaming
 public class SignUpResponse {
-    @JsonProperty("user_id")
-    private Long id;
+    private Long token;
 
-    @JsonProperty("created_at")
     private LocalDateTime createdAt;
 }

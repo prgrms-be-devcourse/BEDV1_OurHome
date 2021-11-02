@@ -3,6 +3,11 @@ package com.armand.ourhome.community.user.service;
 import com.armand.ourhome.common.error.exception.EntityNotFoundException;
 import com.armand.ourhome.common.error.exception.InvalidValueException;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
+import com.armand.ourhome.community.bookmark.repository.BookmarkRepository;
+import com.armand.ourhome.community.follow.repository.FollowRepository;
+import com.armand.ourhome.community.like.repository.LikeRepository;
+import com.armand.ourhome.community.post.entity.*;
+import com.armand.ourhome.community.post.repository.PostRepository;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
 import com.armand.ourhome.community.user.dto.request.UpdateInfoRequest;
@@ -21,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,7 +35,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +44,14 @@ class UserServiceUnitTest {
     private AwsS3Uploader awsS3Uploader;
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private PostRepository postRepository;
+    @Mock
+    private FollowRepository followRepository;
+    @Mock
+    private LikeRepository likeRepository;
+    @Mock
+    private BookmarkRepository bookmarkRepository;
 
     // @Mock 객체를 해당 객체에 DI함
     @InjectMocks
@@ -122,7 +135,7 @@ class UserServiceUnitTest {
         LoginResponse result = userService.login(loginRequest);
 
         // Then
-        assertThat(result.getId(), is(user.getId()));
+        assertThat(result.getToken(), is(user.getId()));
     }
 
     @Test
@@ -205,6 +218,29 @@ class UserServiceUnitTest {
     @Test
     void 사용자페이지() {
         // Given
+        List<Post> postList = List.of(Post.builder()
+                .title("우리 집")
+                .squareType(SquareType.SIZE_10_PYEONG)
+                .residentialType(ResidentialType.APARTMENT)
+                .styleType(StyleType.ASIAN_STYPE)
+                .user(user)
+                .contentList(List.of(
+                        Content.builder()
+                                .mediaUrl("/post/picture-APARTMENT.jpg")
+                                .description("APARTMENT 설명란")
+                                .placeType(PlaceType.LIVINGROOM)
+                                .tags(List.of(
+                                        Tag.builder()
+                                                .name("APARTMENT")
+                                                .build(),
+                                        Tag.builder()
+                                                .name("깨끗 APARTMENT")
+                                                .build()))
+                                .build()))
+                .build());
+
+
+        given(postRepository.findAllByUser(user, any())).willReturn(postList);
 
 
         // When
