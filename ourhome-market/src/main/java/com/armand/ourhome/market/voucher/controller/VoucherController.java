@@ -5,7 +5,11 @@ import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
 import com.armand.ourhome.market.voucher.service.VoucherService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +24,11 @@ public class VoucherController {
 
   private final VoucherService voucherService;
 
+  @GetMapping
+  public ResponseEntity<Page<VoucherDto>> lookUp(Pageable pageable) {
+    return ResponseEntity.ok(voucherService.lookUp(pageable));
+  }
+
   @PostMapping
   public ResponseEntity<VoucherDto> save(@Valid @RequestBody RequestVoucher request) {
     return ResponseEntity.ok(voucherService.save(request));
@@ -30,5 +39,11 @@ public class VoucherController {
       @Valid @RequestBody RequestVoucher request) {
     return ResponseEntity.ok(voucherService.update(id, request));
   }
-  
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<VoucherDto> delete(@PathVariable Long id) {
+    voucherService.delete(id);
+    return ResponseEntity.ok().build();
+  }
+
 }
