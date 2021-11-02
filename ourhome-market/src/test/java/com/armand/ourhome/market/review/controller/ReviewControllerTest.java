@@ -1,5 +1,6 @@
 package com.armand.ourhome.market.review.controller;
 
+import com.armand.ourhome.market.review.dto.request.RequestDeleteReview;
 import com.armand.ourhome.market.review.dto.request.RequestUpdateReview;
 import com.armand.ourhome.market.review.service.ReviewService;
 import com.armand.ourhome.market.review.dto.request.RequestAddReview;
@@ -18,8 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -109,8 +109,30 @@ class ReviewControllerTest {
     }
 
 
+    @Test
+    @DisplayName("리뷰를 삭제한다")
+    public void testDeleteReview() throws Exception {
+        //given
+        Long reviewId = 1L;
+        RequestDeleteReview request = RequestDeleteReview.builder()
+                .userId(1L)
+                .build();
 
+        //when
+        ResultActions actions = mockMvc.perform(delete("/api/reviews/{reviewId}", reviewId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
 
-
-
+        //then
+        actions.andExpect(status().isNoContent())
+                .andDo(print())
+                .andDo(document("review-delete",
+                        pathParameters(
+                                parameterWithName("reviewId").description("reviewId")
+                        ),
+                        requestFields(
+                                fieldWithPath("user_id").type(NUMBER).description("user_id")
+                        )
+                ));
+    }
 }

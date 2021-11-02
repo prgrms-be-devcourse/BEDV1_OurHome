@@ -9,7 +9,9 @@ import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import com.armand.ourhome.market.order.repository.OrderItemRepository;
 import com.armand.ourhome.market.review.domain.Review;
+import com.armand.ourhome.market.review.domain.ReviewStatus;
 import com.armand.ourhome.market.review.dto.request.RequestAddReview;
+import com.armand.ourhome.market.review.dto.request.RequestDeleteReview;
 import com.armand.ourhome.market.review.dto.request.RequestUpdateReview;
 import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
 import com.armand.ourhome.market.review.repository.ReviewRepository;
@@ -187,4 +189,31 @@ class ReviewServiceTest {
         });
     }
     
+    @Test 
+    @DisplayName("리뷰를 삭제할 수 있다")
+    public void testDeleteReview() throws Exception {
+        //given
+        Review review = Review.of(user, item, 5, "너무나도 좋은 제품이네요. 다음에 또 구매하고 싶습니다!");
+        given(reviewRepository.findById(any())).willReturn(Optional.of(review));
+
+        //when 
+        reviewService.delete(1L, new RequestDeleteReview(user.getId()));
+
+        //then 
+        assertThat(review.getStatus()).isEqualTo(ReviewStatus.DELETED);
+    }
+
+    @Test
+    @DisplayName("리뷰 작성자만 삭제할 수 있다")
+    public void testDeleteReviewNotWriter() throws Exception {
+        //given
+        Review review = Review.of(user, item, 5, "너무나도 좋은 제품이네요. 다음에 또 구매하고 싶습니다!");
+        given(reviewRepository.findById(any())).willReturn(Optional.of(review));
+
+        //then
+        assertThrows(UserAccessDeniedException.class, () -> {
+            //when
+            reviewService.delete(1L, new RequestDeleteReview(user.getId() + 1));
+        });
+    }
 }
