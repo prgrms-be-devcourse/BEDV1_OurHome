@@ -48,4 +48,12 @@ public class OrderItem {
     public long getPriceOfItems() {
         return (long) orderCount * item.getPrice();
     }
+
+    public void updateOrder(Order order) {
+        if (this.order != null) {
+            this.order.removeOrderItem(this);
+        }
+
+        this.order = order;
+    }
 }

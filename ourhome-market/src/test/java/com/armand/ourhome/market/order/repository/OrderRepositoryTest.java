@@ -1,8 +1,10 @@
 package com.armand.ourhome.market.order.repository;
 
 import com.armand.ourhome.domain.OurHomeDomainConfig;
+import com.armand.ourhome.domain.item.domain.Category;
 import com.armand.ourhome.domain.item.domain.Company;
 import com.armand.ourhome.domain.item.domain.Item;
+import com.armand.ourhome.domain.item.repository.ItemRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import com.armand.ourhome.market.order.domain.*;
@@ -30,6 +32,9 @@ class OrderRepositoryTest {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private ItemRepository itemRepository;
+
     @Test
     @DisplayName("status column은 기본값이 ACCEPTED이다.")
     public void save() {
@@ -47,7 +52,9 @@ class OrderRepositoryTest {
                 .name("soap")
                 .imageUrl("")
                 .description("clean")
+                .imageUrl("imageurl")
                 .company(new Company("samsung"))
+                .category(Category.DAILY_NECESSITIES)
                 .build();
 
         Item ramenItem = Item.builder()
@@ -55,8 +62,12 @@ class OrderRepositoryTest {
                 .name("ramen")
                 .imageUrl("")
                 .description("yummy")
+                .imageUrl("imageurl")
+                .category(Category.DAILY_NECESSITIES)
                 .company(new Company("samyang"))
                 .build();
+
+        itemRepository.saveAll(List.of(ramenItem, soapItem));
 
         List<OrderItem> orderItems = new ArrayList<>();
         orderItems.add(OrderItem.builder()
@@ -68,12 +79,7 @@ class OrderRepositoryTest {
                 .item(ramenItem)
                 .build());
 
-        Order order = Order.builder()
-                .paymentType(PaymentType.FUND_TRANSFER)
-                .user(user)
-                .delivery(delivery)
-                .orderItems(orderItems)
-                .build();
+        Order order = Order.createOrder(PaymentType.FUND_TRANSFER, "address", user, delivery, orderItems);
 
         deliveryRepository.save(delivery);
         userRepository.save(user);

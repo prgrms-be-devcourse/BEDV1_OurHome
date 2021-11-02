@@ -1,16 +1,17 @@
 package com.armand.ourhome.market.voucher.service;
 
-import com.armand.ourhome.common.error.exception.EntityNotFoundException;
-import com.armand.ourhome.common.error.exception.ErrorCode;
 import com.armand.ourhome.market.voucher.converter.VoucherConverter;
 import com.armand.ourhome.market.voucher.domain.Voucher;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
-import com.armand.ourhome.market.voucher.exception.DifferentTypeVoucherException;
 import com.armand.ourhome.market.voucher.exception.DuplicateVoucherException;
+import com.armand.ourhome.market.voucher.exception.VoucherNotFoundException;
 import com.armand.ourhome.market.voucher.repository.VoucherRepository;
+import java.text.MessageFormat;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class VoucherService {
 
-  private static final String MESSAGE_DUPLICATE_VOUCHER = "이미 중복된 바우처가 있습니다";
-  private static final String MESSAGE_VOUCHER_NOT_FOUND = "등록된 바우처를 찾을 수 없습니다";
-  private static final String MESSAGE_VOUCHER_TYPE_NOT_SAME = "바우처의 타입이 동일하지 않습니다";
-
   private final VoucherRepository<Voucher> voucherRepository;
   private final VoucherConverter voucherConverter;
+
+  public Page<VoucherDto> lookUp(Pageable pageable) {
+    Page<VoucherDto> allVouchers = voucherRepository.findAll(pageable)
+        .map(voucher -> voucherConverter.toDto(voucher));
+    return allVouchers;
+  }
 
   @Transactional
   public VoucherDto save(RequestVoucher request) {
@@ -38,41 +41,39 @@ public class VoucherService {
   @Transactional
   public VoucherDto update(Long id, RequestVoucher request) {
     // 같은 id값의 바우처가 존재하는지 확인
-    Voucher voucher = validateExistId(id);
+    validateExistId(id);
     // 수정하고자하는 정보와 같은 바우처가 존재하는지 확인
     validateDuplicateVoucher(request);
     // 수정하고자하는 바우처의 타입과 기존 바우처의 타입이 동일한지 확인
-    validateVoucherType(request, voucher);
+    Voucher voucher = voucherRepository.findById(id).get();
+    request.getVoucherType().validateVoucherType(voucher);
 
     voucher.update(request.getValue(), request.getMinLimit());
     voucherRepository.flush(); // updatedAt 반영
     return voucherConverter.toDto(voucher);
   }
 
-  private Voucher validateExistId(Long id) {
-    Optional<Voucher> byId = voucherRepository.findById(id);
+  @Transactional
+  public void delete(Long id) {
+    validateExistId(id);
 
-    if (byId.isEmpty()) {
-      throw new EntityNotFoundException(MESSAGE_VOUCHER_NOT_FOUND);
+    Voucher voucher = voucherRepository.findById(id).get();
+    voucherRepository.delete(voucher);
+  }
+
+  private void validateExistId(Long id) {
+    boolean existsById = voucherRepository.existsById(id);
+
+    if (!existsById) {
+      throw new VoucherNotFoundException(MessageFormat.format("등록된 바우처를 찾을 수 없습니다. id : {0}", id));
     }
-
-    return byId.get();
   }
 
   private void validateDuplicateVoucher(RequestVoucher request) {
     Optional<Voucher> saved = findDuplicatedVoucher(request);
 
     if (saved.isPresent()) {
-      throw new DuplicateVoucherException(MESSAGE_DUPLICATE_VOUCHER, ErrorCode.INVALID_INPUT_VALUE);
-    }
-  }
-
-  private void validateVoucherType(RequestVoucher request, Voucher voucher) {
-    boolean differentType = request.getVoucherType().isDifferentType(voucher);
-
-    if (differentType) {
-      throw new DifferentTypeVoucherException(MESSAGE_VOUCHER_TYPE_NOT_SAME,
-          ErrorCode.INVALID_TYPE_VALUE);
+      throw new DuplicateVoucherException("이미 중복된 바우처가 있습니다");
     }
   }
 

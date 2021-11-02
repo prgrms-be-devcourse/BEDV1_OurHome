@@ -3,6 +3,7 @@ package com.armand.ourhome.market.review.domain;
 import com.armand.ourhome.domain.base.BaseEntity;
 import com.armand.ourhome.domain.item.domain.Item;
 import com.armand.ourhome.domain.user.User;
+import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import org.springframework.util.Assert;
 
 import javax.persistence.*;
 import java.text.MessageFormat;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -98,6 +100,12 @@ public class Review extends BaseEntity {
 
         if (comment.length() > MAX_COMMENT_LENGTH || comment.length() < MIN_COMMENT_LENGTH) {
             throw new IllegalArgumentException(MessageFormat.format("comment의 길이는 최소 20이상 255자 이하입니다. comment = {0}", comment));
+        }
+    }
+
+    public void validateUser(Long userId) {
+        if (!Objects.equals(this.user.getId(), userId)) {
+            throw new UserAccessDeniedException(MessageFormat.format("리뷰 작성자가 아닙니다. userId = {0}", userId));
         }
     }
 }

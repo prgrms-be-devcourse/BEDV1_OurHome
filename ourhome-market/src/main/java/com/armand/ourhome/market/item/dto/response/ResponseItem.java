@@ -1,22 +1,28 @@
 package com.armand.ourhome.market.item.dto.response;
 
+import com.armand.ourhome.market.item.dto.ItemDto;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ResponseItem {
 
-    private String name;
-    private String companyName;
-    private int price;
+    private List<ItemDto> items;
+    private LocalDateTime serverDateTime;
 
     @Builder
-    public ResponseItem(String name, String companyName, int price) {
-        this.name = name;
-        this.companyName = companyName;
-        this.price = price;
+    public ResponseItem(List<ItemDto> items) {
+        this.items = items;
+        this.serverDateTime = LocalDateTime.now();
     }
 }

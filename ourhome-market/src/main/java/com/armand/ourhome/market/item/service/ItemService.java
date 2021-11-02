@@ -8,9 +8,9 @@ import com.armand.ourhome.market.item.dto.response.ResponseItemDetail;
 import com.armand.ourhome.market.item.exception.ItemNotFoundException;
 import com.armand.ourhome.market.item.mapper.ItemMapper;
 import com.armand.ourhome.market.review.service.ReviewService;
-import com.armand.ourhome.market.review.service.dto.request.RequestReviewPages;
-import com.armand.ourhome.market.review.service.dto.response.PageResponse;
-import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
+import com.armand.ourhome.market.review.dto.request.RequestReviewPages;
+import com.armand.ourhome.market.review.dto.response.PageResponse;
+import com.armand.ourhome.market.review.dto.response.ResponseReview;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
@@ -37,18 +37,16 @@ public class ItemService {
         return itemMapper.toResponseItemDetail(itemDto, reviews);
     }
 
-    public List<ResponseItem> fetchItemPagesBy(Long lastItemId, int size) {
-        Page<Item> items = fetchPages(lastItemId, size);
-
-        return items.getContent().stream()
-                .map(item -> itemMapper.toItemDto(item, item.getCompanyName()))
-                .map(itemMapper::toResponseItem)
+    public ResponseItem fetchItemPagesBy(Long lastItemId, int size) {
+        List<ItemDto> items = fetchPages(lastItemId, size).getContent().stream()
+                .map(item -> itemMapper.toItemDto(item, reviewService.getReviewAggregateBy(item)))
                 .collect(Collectors.toList());
+        return new ResponseItem(items);
     }
 
     public ItemDto findItemBy(Long itemId) {
         Item item = getItem(itemId);
-        return itemMapper.toItemDto(item, item.getCompanyName());
+        return itemMapper.toItemDto(item, reviewService.getReviewAggregateBy(item));
     }
 
     private Item getItem(Long itemId) {

@@ -9,9 +9,8 @@ import com.armand.ourhome.market.item.dto.response.ResponseItemDetail;
 import com.armand.ourhome.market.item.mapper.ItemMapper;
 import com.armand.ourhome.market.item.service.ItemService;
 import com.armand.ourhome.market.review.service.ReviewService;
-import com.armand.ourhome.market.review.service.dto.ReviewDto;
-import com.armand.ourhome.market.review.service.dto.response.PageResponse;
-import com.armand.ourhome.market.review.service.dto.response.ResponseReview;
+import com.armand.ourhome.market.review.dto.response.PageResponse;
+import com.armand.ourhome.market.review.dto.response.ResponseReview;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -132,26 +132,84 @@ class ItemControllerTest {
                         responseFields(
                                 fieldWithPath("name").type(STRING).description("name"),
                                 fieldWithPath("description").type(STRING).description("description"),
-                                fieldWithPath("imageUrl").type(STRING).description("imageUrl"),
+                                fieldWithPath("image_url").type(STRING).description("image_url"),
                                 fieldWithPath("price").type(NUMBER).description("price"),
-                                fieldWithPath("stockQuantity").type(NUMBER).description("stockQuantity"),
-                                fieldWithPath("companyName").type(STRING).description("companyName"),
+                                fieldWithPath("stock_quantity").type(NUMBER).description("stock_quantity"),
+                                fieldWithPath("company_name").type(STRING).description("company_name"),
                                 fieldWithPath("category").type(STRING).description("category"),
-                                fieldWithPath("createdAt").type(STRING).description("createdAt"),
+                                fieldWithPath("created_at").type(STRING).description("created_at"),
+                                fieldWithPath("count").type(NUMBER).description("count"),
+                                fieldWithPath("average").type(NUMBER).description("average"),
                                 fieldWithPath("reviews").type(OBJECT).description("reviews"),
-                                fieldWithPath("reviews.totalElements").type(NUMBER).description("reviews.totalElements"),
-                                fieldWithPath("reviews.totalPages").type(NUMBER).description("reviews.totalPages"),
+                                fieldWithPath("reviews.total_elements").type(NUMBER).description("reviews.total_elements"),
+                                fieldWithPath("reviews.total_pages").type(NUMBER).description("reviews.total_pages"),
                                 fieldWithPath("reviews.size").type(NUMBER).description("reviews.size"),
                                 fieldWithPath("reviews.content").type(ARRAY).description("reviews.content"),
-                                fieldWithPath("reviews.content[].reviewId").type(NUMBER).description("reviews.content[].reviewId"),
-                                fieldWithPath("reviews.content[].userId").type(NUMBER).description("reviews.content[].userId"),
+                                fieldWithPath("reviews.content[].review_id").type(NUMBER).description("reviews.content[].review_id"),
+                                fieldWithPath("reviews.content[].user_id").type(NUMBER).description("reviews.content[].user_id"),
                                 fieldWithPath("reviews.content[].rating").type(NUMBER).description("reviews.content[].rating"),
                                 fieldWithPath("reviews.content[].comment").type(STRING).description("reviews.content[].comment"),
                                 fieldWithPath("reviews.content[].help").type(NUMBER).description("reviews.content[].help"),
-                                fieldWithPath("reviews.content[].createdAt").type(STRING).description("reviews.content[].createdAt"),
-                                fieldWithPath("serverDateTime").type(STRING).description("serverDateTime")
+                                fieldWithPath("reviews.content[].created_at").type(STRING).description("reviews.content[].created_at"),
+                                fieldWithPath("server_date_time").type(STRING).description("server_date_time")
                         )
                         ));
 
     }
+
+    @Test
+    @DisplayName("상품을 다건 조회한다")
+    public void testFetchItemPages() throws Exception {
+        //given
+        Long lastItemId = 5L;
+        int size = 5;
+
+        List<ItemDto> items = new ArrayList<>();
+
+        for (int i = 4; i >= 0; i--) {
+            ItemDto item = ItemDto.builder()
+                    .companyName("company")
+                    .count((int) (Math.random() * 100) / 10)
+                    .average(((int)(Math.random() * 5 * 100)) / 100.0)
+                    .name("item")
+                    .itemId(4L)
+                    .price(1000)
+                    .stockQuantity(100)
+                    .category(Category.DAILY_NECESSITIES)
+                    .createdAt(LocalDateTime.now())
+                    .imageUrl("imgae")
+                    .build();
+            items.add(item);
+        }
+
+        given(itemService.fetchItemPagesBy(lastItemId, size)).willReturn(new ResponseItem(items));
+
+        //when
+        ResultActions actions = mockMvc.perform(get("/api/items")
+                .param("lastItemId", "5")
+                .param("size", "5")
+                .characterEncoding("utf8"));
+
+        //then
+        actions.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("item-get-all",
+                        responseFields(
+                                fieldWithPath("items").type(ARRAY).description("items"),
+                                fieldWithPath("items[].item_id").type(NUMBER).description("item_id"),
+                                fieldWithPath("items[].name").type(STRING).description("name"),
+                                fieldWithPath("items[].image_url").type(STRING).description("image_url"),
+                                fieldWithPath("items[].price").type(NUMBER).description("price"),
+                                fieldWithPath("items[].stock_quantity").type(NUMBER).description("stock_quantity"),
+                                fieldWithPath("items[].company_name").type(STRING).description("company_name"),
+                                fieldWithPath("items[].category").type(STRING).description("category"),
+                                fieldWithPath("items[].created_at").type(STRING).description("created_at"),
+                                fieldWithPath("items[].count").type(NUMBER).description("count"),
+                                fieldWithPath("items[].average").type(NUMBER).description("average"),
+                                fieldWithPath("server_date_time").type(STRING).description("server_date_time")
+                        )));
+
+    }
+
+
 }

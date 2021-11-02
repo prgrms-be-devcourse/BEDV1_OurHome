@@ -1,10 +1,12 @@
 package com.armand.ourhome.community.post.entity;
 
-import com.armand.ourhome.community.comment.entity.Comment;
+import com.armand.ourhome.community.post.util.Checking;
 import com.armand.ourhome.domain.base.BaseEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.Assert;
 
 import javax.persistence.*;
 
@@ -15,13 +17,28 @@ import javax.persistence.*;
 public class Tag extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name="id")
+    private Long tagId;
 
-    @Column(name="name")
+    @Column(name="name", nullable = false, length = 30)
     private String name;
 
+
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "content_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "content_id")
     private Content content;
+
+    void setContent(Content content){
+        this.content = content;
+    }
+
+    @Builder
+    public Tag(Long tagId, String name){
+        Assert.notNull(name, "name은 null 값을 허용하지 않습니다.");
+        Checking.validLength(0,30,"tag name", name);
+        this.tagId = tagId;
+        this.name = name;
+    }
 
 }
