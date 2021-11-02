@@ -24,9 +24,9 @@ public class TestHelper {
 
     public static User createUser() {
         return User.builder()
-                .email("iyj6707@naver.com")
+                .email("iyj6707@gmail.com")
                 .password("1234")
-                .nickname("iyj6707")
+                .nickname("iyj67071")
                 .address("Seoul city")
                 .build();
     }

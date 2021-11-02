@@ -1,6 +1,6 @@
-package com.armand.ourhome.market.review.service.dto.response;
+package com.armand.ourhome.market.review.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,11 +12,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResponseReview {
 
+    @JsonProperty("review_id")
     private Long reviewId;
+    @JsonProperty("user_id")
     private Long userId;
     private int rating;
     private String comment;
     private int help;
+    @JsonProperty("created_at")
     private LocalDateTime createdAt;
 
     @Builder

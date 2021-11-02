@@ -1,7 +1,7 @@
 package com.armand.ourhome.market.review.controller;
 
 import com.armand.ourhome.market.review.service.ReviewService;
-import com.armand.ourhome.market.review.service.dto.request.RequestAddReview;
+import com.armand.ourhome.market.review.dto.request.RequestAddReview;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;

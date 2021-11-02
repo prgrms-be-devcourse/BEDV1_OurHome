@@ -1,5 +1,6 @@
-package com.armand.ourhome.market.review.service.dto;
+package com.armand.ourhome.market.review.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,7 +9,9 @@ import lombok.Getter;
 public class ReviewDto {
 
     private Long id;
+    @JsonProperty("user_id")
     private Long userId;
+    @JsonProperty("itemId")
     private Long itemId;
     private int rating;
     private String comment;

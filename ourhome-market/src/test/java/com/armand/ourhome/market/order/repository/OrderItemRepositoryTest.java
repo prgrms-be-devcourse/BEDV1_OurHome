@@ -7,7 +7,10 @@ import com.armand.ourhome.domain.item.domain.Item;
 import com.armand.ourhome.domain.item.repository.ItemRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
-import com.armand.ourhome.market.order.domain.*;
+import com.armand.ourhome.market.order.domain.Delivery;
+import com.armand.ourhome.market.order.domain.Order;
+import com.armand.ourhome.market.order.domain.OrderItem;
+import com.armand.ourhome.market.order.domain.PaymentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Import(OurHomeDomainConfig.class)
 @DataJpaTest
-class OrderRepositoryTest {
+class OrderItemRepositoryTest {
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -30,15 +39,12 @@ class OrderRepositoryTest {
     private DeliveryRepository deliveryRepository;
 
     @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
     private ItemRepository itemRepository;
 
     @Test
-    @DisplayName("status column은 기본값이 ACCEPTED이다.")
-    public void save() {
-        // Given
+    @DisplayName("사용자가 구매한 상품인지 확인 가능하다")
+    public void testExist() throws Exception {
+        //given
         User user = User.builder()
                 .email("iyj6707@naver.com")
                 .password("1234")
@@ -50,24 +56,22 @@ class OrderRepositoryTest {
         Item soapItem = Item.builder()
                 .price(1000)
                 .name("soap")
-                .imageUrl("")
+                .stockQuantity(1000)
+                .imageUrl("sl;fk;sdflks;fksdl;")
                 .description("clean")
-                .imageUrl("imageurl")
                 .company(new Company("samsung"))
                 .category(Category.DAILY_NECESSITIES)
                 .build();
 
         Item ramenItem = Item.builder()
                 .price(1500)
+                .stockQuantity(1000)
                 .name("ramen")
-                .imageUrl("")
+                .imageUrl("sldfjdlkfjsdlfjdklsf")
                 .description("yummy")
-                .imageUrl("imageurl")
-                .category(Category.DAILY_NECESSITIES)
                 .company(new Company("samyang"))
+                .category(Category.DAILY_NECESSITIES)
                 .build();
-
-        itemRepository.saveAll(List.of(ramenItem, soapItem));
 
         List<OrderItem> orderItems = new ArrayList<>();
         orderItems.add(OrderItem.builder()
@@ -79,16 +83,22 @@ class OrderRepositoryTest {
                 .item(ramenItem)
                 .build());
 
-        Order order = Order.createOrder(PaymentType.FUND_TRANSFER, "address", user, delivery, orderItems);
+        Order order = Order.createOrder(PaymentType.CREDIT_CARD, "address", user, delivery, orderItems);
 
+        itemRepository.saveAll(List.of(ramenItem, soapItem));
         deliveryRepository.save(delivery);
         userRepository.save(user);
 
-        // When
+        //when
         Order savedOrder = orderRepository.save(order);
 
-        // Then
-        assertThat(savedOrder.getPaymentType()).isEqualTo(PaymentType.FUND_TRANSFER);
-        assertThat(savedOrder.getStatus()).isEqualTo(OrderStatus.ACCEPTED);
+
+        //then
+        boolean exist1 = orderItemRepository.existsOrderItemByUserIdAndItemId(user.getId(), ramenItem.getId());
+        boolean exist2 = orderItemRepository.existsOrderItemByUserIdAndItemId(user.getId(), 1000L);
+        assertThat(exist1).isTrue();
+        assertThat(exist2).isFalse();
     }
+
+
 }

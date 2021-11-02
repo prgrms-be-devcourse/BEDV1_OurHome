@@ -1,7 +1,7 @@
 package com.armand.ourhome.market.review.controller;
 
 import com.armand.ourhome.market.review.service.ReviewService;
-import com.armand.ourhome.market.review.service.dto.request.RequestAddReview;
+import com.armand.ourhome.market.review.dto.request.RequestAddReview;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

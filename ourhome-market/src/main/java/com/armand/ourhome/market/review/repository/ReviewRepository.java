@@ -22,4 +22,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findByItemIdAndRatingOrderById(Long itemId, Rating rating, Pageable pageable);
 
     boolean existsByItemIdAndUserId(Long itemId, Long userId);
+
 }

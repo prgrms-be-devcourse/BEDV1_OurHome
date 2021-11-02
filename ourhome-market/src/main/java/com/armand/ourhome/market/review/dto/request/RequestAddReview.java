@@ -1,8 +1,6 @@
-package com.armand.ourhome.market.review.service.dto.request;
+package com.armand.ourhome.market.review.dto.request;
 
-import com.armand.ourhome.domain.item.domain.Item;
-import com.armand.ourhome.domain.user.User;
-import com.armand.ourhome.market.review.domain.Review;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import javax.validation.constraints.Max;
@@ -15,9 +13,11 @@ import javax.validation.constraints.NotNull;
 public class RequestAddReview {
 
     @NotNull
+    @JsonProperty("user_id")
     private Long userId;
 
     @NotNull
+    @JsonProperty("item_id")
     private Long itemId;
 
     @NotBlank
