@@ -1,22 +1,21 @@
-package com.armand.ourhome.market.review.dto;
+package com.armand.ourhome.market.review.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotNull;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ReviewDto {
+public class RequestDeleteReview {
 
-    private Long id;
+    @NotNull
     private Long userId;
-    private Long itemId;
-    private int rating;
-    private String comment;
-    private int help;
 }

@@ -1,5 +1,7 @@
 package com.armand.ourhome.market.review.controller;
 
+import com.armand.ourhome.market.review.dto.request.RequestDeleteReview;
+import com.armand.ourhome.market.review.dto.request.RequestUpdateReview;
 import com.armand.ourhome.market.review.service.ReviewService;
 import com.armand.ourhome.market.review.dto.request.RequestAddReview;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,11 +19,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
 import static org.springframework.restdocs.payload.JsonFieldType.STRING;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,13 +69,70 @@ class ReviewControllerTest {
                 .andDo(print())
                 .andDo(document("review-add",
                             requestFields(
-                                    fieldWithPath("userId").type(NUMBER).description("userId"),
-                                    fieldWithPath("itemId").type(NUMBER).description("itemId"),
+                                    fieldWithPath("user_id").type(NUMBER).description("user_id"),
+                                    fieldWithPath("item_id").type(NUMBER).description("item_id"),
                                     fieldWithPath("comment").type(STRING).description("comment"),
                                     fieldWithPath("rating").type(NUMBER).description("rating")
                             )
                         ));
     }
 
+    @Test
+    @DisplayName("리뷰를 수정한다")
+    public void testUpdateReview() throws Exception {
+        //given
+        RequestUpdateReview request = RequestUpdateReview.builder()
+                .comment("너무나도 좋은 제품입니다. 이 리뷰는 수정되었습니다.")
+                .rating(4)
+                .userId(1L)
+                .build();
 
+        given(reviewService.update(any(), any())).willReturn(1L);
+        //when
+        ResultActions actions = mockMvc.perform(patch("/api/reviews/{reviewId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        actions.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("review-update",
+                        pathParameters(
+                                parameterWithName("reviewId").description("reviewId")
+                        ),
+                        requestFields(
+                                fieldWithPath("user_id").type(NUMBER).description("user_id"),
+                                fieldWithPath("rating").type(NUMBER).description("rating"),
+                                fieldWithPath("comment").type(STRING).description("comment")
+                        )
+                    ));
+    }
+
+
+    @Test
+    @DisplayName("리뷰를 삭제한다")
+    public void testDeleteReview() throws Exception {
+        //given
+        Long reviewId = 1L;
+        RequestDeleteReview request = RequestDeleteReview.builder()
+                .userId(1L)
+                .build();
+
+        //when
+        ResultActions actions = mockMvc.perform(delete("/api/reviews/{reviewId}", reviewId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        actions.andExpect(status().isNoContent())
+                .andDo(print())
+                .andDo(document("review-delete",
+                        pathParameters(
+                                parameterWithName("reviewId").description("reviewId")
+                        ),
+                        requestFields(
+                                fieldWithPath("user_id").type(NUMBER).description("user_id")
+                        )
+                ));
+    }
 }

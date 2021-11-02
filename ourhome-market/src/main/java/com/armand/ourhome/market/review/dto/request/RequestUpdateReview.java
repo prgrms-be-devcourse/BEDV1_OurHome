@@ -1,23 +1,23 @@
-package com.armand.ourhome.market.review.dto.response;
+package com.armand.ourhome.market.review.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ResponseReview {
+public class RequestUpdateReview {
 
-    private Long reviewId;
+    @NotNull
     private Long userId;
+    @NotNull
     private int rating;
+    @NotBlank
     private String comment;
-    private int help;
-    private LocalDateTime createdAt;
 }
