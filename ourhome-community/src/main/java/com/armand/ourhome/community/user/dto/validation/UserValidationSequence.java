@@ -1,8 +1,8 @@
-package com.armand.ourhome.community.user.dto.request.validation;
+package com.armand.ourhome.community.user.dto.validation;
 
 import javax.validation.GroupSequence;
 import javax.validation.groups.Default;
-import com.armand.ourhome.community.user.dto.request.validation.UserValidationGroups.*;
+import com.armand.ourhome.community.user.dto.validation.UserValidationGroups.*;
 
 // 검증할 순서 지정
 @GroupSequence({

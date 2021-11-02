@@ -13,7 +13,7 @@ public class UpdateResponse {
     @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
 
-    static public UpdateResponse of(User user){
+    public static UpdateResponse of(User user){
         return UpdateResponse.builder()
                 .updatedAt(user.getUpdatedAt())
                 .build();

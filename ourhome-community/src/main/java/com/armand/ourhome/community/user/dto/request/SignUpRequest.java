@@ -1,6 +1,6 @@
 package com.armand.ourhome.community.user.dto.request;
 
-import com.armand.ourhome.community.user.dto.request.validation.UserValidationGroups.*;
+import com.armand.ourhome.community.user.dto.validation.UserValidationGroups.*;
 import lombok.Builder;
 import lombok.Getter;
 
