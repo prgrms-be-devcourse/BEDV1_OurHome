@@ -10,6 +10,7 @@ import com.armand.ourhome.market.order.exception.UserNotFoundException;
 import com.armand.ourhome.market.order.repository.OrderItemRepository;
 import com.armand.ourhome.market.review.domain.Aggregate;
 import com.armand.ourhome.market.review.domain.Review;
+import com.armand.ourhome.market.review.dto.request.RequestDeleteReview;
 import com.armand.ourhome.market.review.dto.request.RequestUpdateReview;
 import com.armand.ourhome.market.review.exception.ReviewNotFoundException;
 import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
@@ -52,13 +53,20 @@ public class ReviewService {
     public Long update(Long reviewId, RequestUpdateReview request) {
         Review review = getReview(reviewId);
 
-        if (!Objects.equals(review.getUser().getId(), request.getUserId())) {
-            throw new UserAccessDeniedException(MessageFormat.format("리뷰 작성자만 수정할 수 있습니다. userId = {0}", request.getUserId()));
-        }
+        review.validateUser(request.getUserId());
 
         review.update(request.getComment(), request.getRating());
 
         return reviewId;
+    }
+
+    @Transactional
+    public void delete(Long reviewId, RequestDeleteReview request) {
+        Review review = getReview(reviewId);
+
+        review.validateUser(request.getUserId());
+
+        review.delete();
     }
 
     public PageResponse<List<ResponseReview>> fetchReviewPagesBy(Long itemId, RequestReviewPages request) {
