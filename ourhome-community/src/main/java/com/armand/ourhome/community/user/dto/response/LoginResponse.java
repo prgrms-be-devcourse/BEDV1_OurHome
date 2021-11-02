@@ -12,7 +12,7 @@ public class LoginResponse {
     @JsonProperty("user_id")
     private Long id;
 
-    static public LoginResponse of(User user){
+    public static LoginResponse of(User user){
         return LoginResponse.builder()
                 .id(user.getId())
                 .build();

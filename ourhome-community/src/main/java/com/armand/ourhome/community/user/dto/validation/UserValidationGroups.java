@@ -1,4 +1,4 @@
-package com.armand.ourhome.community.user.dto.request.validation;
+package com.armand.ourhome.community.user.dto.validation;
 
 public class UserValidationGroups {
     public interface EmailGroup {} ;

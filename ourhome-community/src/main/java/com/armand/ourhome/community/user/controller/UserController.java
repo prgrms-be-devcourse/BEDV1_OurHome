@@ -5,7 +5,7 @@ import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
 import com.armand.ourhome.community.user.dto.request.UpdateInfoRequest;
 import com.armand.ourhome.community.user.dto.request.UpdatePasswordRequest;
-import com.armand.ourhome.community.user.dto.request.validation.UserValidationSequence;
+import com.armand.ourhome.community.user.dto.validation.UserValidationSequence;
 import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
 import com.armand.ourhome.community.user.dto.response.UpdateResponse;
@@ -16,8 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
