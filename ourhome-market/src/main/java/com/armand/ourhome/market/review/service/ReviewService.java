@@ -10,6 +10,8 @@ import com.armand.ourhome.market.order.exception.UserNotFoundException;
 import com.armand.ourhome.market.order.repository.OrderItemRepository;
 import com.armand.ourhome.market.review.domain.Aggregate;
 import com.armand.ourhome.market.review.domain.Review;
+import com.armand.ourhome.market.review.dto.request.RequestUpdateReview;
+import com.armand.ourhome.market.review.exception.ReviewNotFoundException;
 import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
 import com.armand.ourhome.market.review.mapper.ReviewMapper;
 import com.armand.ourhome.market.review.repository.ReviewRepository;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -38,12 +41,24 @@ public class ReviewService {
     private final ItemRepository itemRepository;
     private final OrderItemRepository orderItemRepository;
 
-
     @Transactional
     public Long save(RequestAddReview request) {
         Review review = createReview(request);
         reviewRepository.save(review);
         return review.getId();
+    }
+
+    @Transactional
+    public Long update(Long reviewId, RequestUpdateReview request) {
+        Review review = getReview(reviewId);
+
+        if (!Objects.equals(review.getUser().getId(), request.getUserId())) {
+            throw new UserAccessDeniedException(MessageFormat.format("리뷰 작성자만 수정할 수 있습니다. userId = {0}", request.getUserId()));
+        }
+
+        review.update(request.getComment(), request.getRating());
+
+        return reviewId;
     }
 
     public PageResponse<List<ResponseReview>> fetchReviewPagesBy(Long itemId, RequestReviewPages request) {
@@ -70,6 +85,11 @@ public class ReviewService {
         Item item = getItem(request.getItemId());
 
         return Review.of(user, item, request.getRating(), request.getComment());
+    }
+
+    private Review getReview(Long reviewId) {
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException(MessageFormat.format("해당 리뷰가 존재하지 않습니다. reviewId = {0}", reviewId)));
     }
 
     private Item getItem(Long itemId) {
