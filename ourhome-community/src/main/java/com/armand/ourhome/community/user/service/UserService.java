@@ -118,7 +118,7 @@ public class UserService {
                 .description(user.getDescription())
                 .followerCount(followRepository.countByFollower(user))
                 .followingCount(followRepository.countByFollowing(user))
-                .postCount(postRepository.countByUser(user))
+                .postCount(postRepository.countAllByUser(user))
                 .thumbnailList(thumbnailList);
         // 마이페이지일 경우 북마크, 좋아요 수를 추가해준다
         if (Objects.equals(id, token)) {

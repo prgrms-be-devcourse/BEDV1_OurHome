@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @JsonNaming
 public class SignUpResponse {
-    private Long token;
+    private Long id;
 
     private LocalDateTime createdAt;
 }
