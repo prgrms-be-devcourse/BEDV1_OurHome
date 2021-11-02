@@ -1,6 +1,8 @@
 package com.armand.ourhome.market.review.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import javax.validation.constraints.Max;
@@ -10,14 +12,15 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@Builder
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class RequestAddReview {
 
     @NotNull
-    @JsonProperty("user_id")
     private Long userId;
 
     @NotNull
-    @JsonProperty("item_id")
     private Long itemId;
 
     @NotBlank
@@ -26,12 +29,4 @@ public class RequestAddReview {
     @Min(0)
     @Max(5)
     private int rating;
-
-    @Builder
-    public RequestAddReview(Long userId, Long itemId, String comment, int rating) {
-        this.userId = userId;
-        this.itemId = itemId;
-        this.comment = comment;
-        this.rating = rating;
-    }
 }

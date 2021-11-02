@@ -4,6 +4,8 @@ import com.armand.ourhome.domain.item.domain.Category;
 import com.armand.ourhome.market.review.dto.response.PageResponse;
 import com.armand.ourhome.market.review.dto.response.ResponseReview;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,22 +16,18 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ResponseItemDetail {
 
     private String name;
     private String description;
-    @JsonProperty("image_url")
     private String imageUrl;
     private int price;
-    @JsonProperty("stock_quantity")
     private int stockQuantity;
-    @JsonProperty("company_name")
     private String companyName;
     private Category category;
-    @JsonProperty("created_at")
     private LocalDateTime createdAt;
     private PageResponse<List<ResponseReview>> reviews;
-    @JsonProperty("server_date_time")
     private LocalDateTime serverDateTime;
     private long count;
     private double average;
