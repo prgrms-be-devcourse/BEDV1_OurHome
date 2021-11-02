@@ -14,13 +14,16 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @Query("select new com.armand.ourhome.market.review.domain.Aggregate(count(r), avg(r.rating)) " +
             "from Review r " +
-            "where r.item = :item")
+            "where r.item = :item and r.status = 'POSTED'")
     Aggregate countReviewAndAverageRatingOf(@Param("item") Item item);
 
-    Page<Review> findByItemId(Long itemId, Pageable pageable);
+    @Query("select r from Review r where r.item.id = :itemId and r.status = 'POSTED'")
+    Page<Review> findByItemId(@Param("itemId") Long itemId, Pageable pageable);
 
-    Page<Review> findByItemIdAndRatingOrderById(Long itemId, Rating rating, Pageable pageable);
+    @Query("select r from Review r where r.item.id = :itemId and r.rating = :rating and r.status = 'POSTED'")
+    Page<Review> findByItemIdAndRatingOrderById(@Param("itemId") Long itemId, @Param("rating") Rating rating, Pageable pageable);
 
-    boolean existsByItemIdAndUserId(Long itemId, Long userId);
+    @Query(value = "select count(*) > 0 from Review where item_id = :itemId and user_id = :userId and status = 'POSTED' limit 1", nativeQuery = true)
+    boolean existsByItemIdAndUserId(@Param("itemId") Long itemId, @Param("userId") Long userId);
 
 }
