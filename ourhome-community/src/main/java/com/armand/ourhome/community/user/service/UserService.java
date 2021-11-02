@@ -114,8 +114,10 @@ public class UserService {
         }
         // 기본 response 생성
         UserPageResponse.UserPageResponseBuilder responseBuilder = UserPageResponse.builder();
-        responseBuilder.nickname(user.getNickname())
+        responseBuilder
+                .nickname(user.getNickname())
                 .description(user.getDescription())
+                .profileImageUrl(user.getProfileImageUrl())
                 .followerCount(followRepository.countByFollower(user))
                 .followingCount(followRepository.countByFollowing(user))
                 .postCount(postRepository.countAllByUser(user))

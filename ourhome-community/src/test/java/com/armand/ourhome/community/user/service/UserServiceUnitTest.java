@@ -61,7 +61,7 @@ class UserServiceUnitTest {
 
     Long id = 1L;
     String email = "test@mail.com";
-    String password = "1234";
+    String password = "12341234";
     String nickname = "test";
     String description = "취미는 코딩임";
     LocalDateTime createdAt = LocalDateTime.now();
@@ -242,7 +242,6 @@ class UserServiceUnitTest {
         assertThat(result.getLikeCount(), is(0L));
         assertThat(result.getPostCount(), is(0L));
         assertThat(result.getThumbnailList(), hasSize(0));
-
     }
 
     @Test
