@@ -112,12 +112,12 @@ class PostServiceTest {
                                 .build()))
                 .build());
 
-        List<Post> postList =postRepository.findAllByUser(userSaved, Pageable.ofSize(5).withPage(0)).toList();
+        Page<Post> postList =postRepository.findAllByUser(userSaved, Pageable.ofSize(5).withPage(0));
 
         //Then
-        assertThat(postList.size(), is(2));
-        assertThat(postList.get(0).getContentList().size(), is(1));
-        assertThat(postList.get(0).getContentList().get(0).getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
+        assertThat(postList.getContent().size(), is(2));
+        assertThat(postList.getContent().get(0).getContentList().size(), is(1));
+        assertThat(postList.getContent().get(0).getContentList().get(0).getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
 
 
     }
@@ -170,11 +170,11 @@ class PostServiceTest {
                 .build());
 
         //When
-        List<PostDto> postDtoList = postService.getAll(Pageable.ofSize(5).withPage(0)).toList();
+        Page<PostDto> postDtoList = postService.getAll(Pageable.ofSize(5).withPage(0));
 
         //Then
-        assertThat(postDtoList.size(), is(2));
-        assertThat(postDtoList.get(1).getContentList().get(0).getMediaUrl(), is("/post/picture-2DETACHED_HOUCE.jpg"));
+        assertThat(postDtoList.getContent().size(), is(2));
+        assertThat(postDtoList.getContent().get(1).getContentList().get(0).getMediaUrl(), is("/post/picture-2DETACHED_HOUCE.jpg"));
     }
 
     @Test
@@ -223,11 +223,11 @@ class PostServiceTest {
                 .build());
 
         //When
-        List<PostDto> postDtoList = postService.getAllByResidentialType(ResidentialType.APARTMENT, Pageable.ofSize(5).withPage(0)).toList();
+        Page<PostDto> postDtoList = postService.getAllByResidentialType(ResidentialType.APARTMENT, Pageable.ofSize(5).withPage(0));
 
         //Then
-        assertThat(postDtoList.size(), is(1));
-        assertThat(postDtoList.get(0).getResidentialType(), is(ResidentialType.APARTMENT));
+        assertThat(postDtoList.getContent().size(), is(1));
+        assertThat(postDtoList.getContent().get(0).getResidentialType(), is(ResidentialType.APARTMENT));
     }
 
 
@@ -286,10 +286,10 @@ class PostServiceTest {
                 .build());
 
         //When
-        //List<PostDto> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
+        Page<PostDto> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
 
         //Then
-        //assertThat(postDtoList.size(), is(2));
+        assertThat(postDtoList.getContent().size(), is(2));
     }
     @Test
     @DisplayName("저장된 게시물을 공간 형태로 검색하여 추출할 수 있다.(가정: 1개의 content에서 1post 해당할 때)")
@@ -337,10 +337,10 @@ class PostServiceTest {
                 .build());
 
         //When
-        //List<PostDto> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
+        Page<PostDto> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
 
         //Then
-        //assertThat(postDtoList.size(), is(1));
+        assertThat(postDtoList.getContent().size(), is(1));
     }
     @Test
     @DisplayName("저장된 게시물을 공간 형태로 검색하여 추출할 수 있다.(가정: 2개의 content에서 1post 해당할 때)")
@@ -400,10 +400,10 @@ class PostServiceTest {
                 .build());
 
         //When
-        //List<PostDto> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
+        Page<PostDto> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
 
         //Then
-        //assertThat(postDtoList.size(), is(1));
+        assertThat(postDtoList.getContent().size(), is(1));
     }
 
 
@@ -465,13 +465,13 @@ class PostServiceTest {
                 .build());
 
         //When
-        var test = tagRepository.findAllByName("tag1", Pageable.ofSize(5).withPage(0)).toList();
-        assertThat(test.size(), is(3));
-        assertThat(test.get(0).getContent().getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
-        //List<PostDto> postDtoList = postService.getAllByTag("tag1", Pageable.ofSize(5).withPage(0));
+        Page<Tag> test = tagRepository.findAllByName("tag1", Pageable.ofSize(5).withPage(0));
+        assertThat(test.getContent().size(), is(3));
+        //assertThat(test.getContent().get(0).getContent().getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
+        //Page<PostDto> postDtoList = postService.getAllByTag("tag1", Pageable.ofSize(5).withPage(0));
 
         //Then
-        //assertThat(postDtoList.size(), is(2));
+        //assertThat(postDtoList.getContent().size(), is(2));
     }
 
 

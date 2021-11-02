@@ -5,10 +5,7 @@ import com.armand.ourhome.common.error.exception.ErrorCode;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.community.post.dto.ContentDto;
 import com.armand.ourhome.community.post.dto.PostDto;
-import com.armand.ourhome.community.post.entity.Content;
-import com.armand.ourhome.community.post.entity.PlaceType;
-import com.armand.ourhome.community.post.entity.Post;
-import com.armand.ourhome.community.post.entity.ResidentialType;
+import com.armand.ourhome.community.post.entity.*;
 import com.armand.ourhome.community.post.mapper.PostMapper;
 import com.armand.ourhome.community.post.repository.ContentRepository;
 import com.armand.ourhome.community.post.repository.PostRepository;
@@ -18,6 +15,7 @@ import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,24 +58,22 @@ public class PostService {
     }
 
     public Page<PostDto> getAll(Pageable pageable) {
-        //return postMapper.toDtoList(postRepository.findAll(pageable));
-        return null;
+        Page<Post> postWithPage = postRepository.findAll(pageable);
+        List<PostDto> postDtoList = postMapper.toDtoList(postWithPage.getContent());
+        return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
     public Page<PostDto> getAllByResidentialType(ResidentialType residentialType, Pageable pageable){
-        //return postMapper.toDtoList(postRepository.findAllByResidentialType(residentialType, pageable));
-        return null;
+        Page<Post> postWithPage = postRepository.findAllByResidentialType(residentialType, pageable);
+        List<PostDto> postDtoList = postMapper.toDtoList(postWithPage.getContent());
+        return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
 
-    public Page<PostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){
-//        return postMapper.toDtoList(contentRepository.findAllByPlaceType(placeType, pageable)
-//                .stream()
-//                .map( v -> v.getPost())
-//                .distinct()
-//                .toList());
-        return null;
-
+    public Page<PostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){ // 중복 post 제거 필요
+        Page<Content> contentWithPage = contentRepository.findAllByPlaceType(placeType, pageable);
+        List<PostDto> contentDtoList = postMapper.toDtoList(contentWithPage.getContent().stream().map(v -> v.getPost()).toList());
+        return new PageImpl<>(contentDtoList, pageable, contentWithPage.getTotalElements());
     }
 
     public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
@@ -85,9 +81,10 @@ public class PostService {
         return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
-    public Page<PostDto> getAllByTag(String tagName, Pageable pageable){
-        //return postMapper.toDtoList(tagRepository.findAllByName(tagName, pageable).stream().map(v -> v.getContent().getPost()).distinct().toList());
-        return null;
+    public Page<PostDto> getAllByTag(String tagName, Pageable pageable){ // 중복 post 제거 필요
+        Page<Tag> tagWithPage = tagRepository.findAllByName(tagName, pageable);
+        List<PostDto> tagDtoList = postMapper.toDtoList(tagWithPage.getContent().stream().map(v -> v.getContent().getPost()).toList());
+        return new PageImpl<>(tagDtoList, pageable, tagWithPage.getTotalElements());
     }
 
 
@@ -117,8 +114,5 @@ public class PostService {
     @Transactional
     public void delete(final Long postId){
         postRepository.deleteById(postId);
-
-
-
     }
 }
