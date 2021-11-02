@@ -83,18 +83,15 @@ public class PostService {
 
 
     @Transactional
-    public Long update(final PostDto postDto, List<String> mediaUrl){ //postId
+    public Long update(final PostDto postDto, Long postId){
         List<ContentDto> contentDtoList = postDto.getContentList();
 
         for (int i = 0; i < contentDtoList.size(); i++){
-            System.out.println("-------------------------------------------------------------------");
             if (contentDtoList.get(i).getUpdatedFlag()) {
-                System.out.println(contentDtoList.get(i).getMediaUrl());
                 contentDtoList.get(i).setMediaUrl(awsS3Uploader.upload(contentDtoList.get(i).getImageBase64(), "user-posts"));
-                System.out.println(contentDtoList.get(i).getMediaUrl());
             }
         }
-        Post postBeforeUpdate = postRepository.findById(postDto.getPostId()).orElseThrow(() -> new BusinessException("해당 게시물은 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
+        Post postBeforeUpdate = postRepository.findById(postId).orElseThrow(() -> new BusinessException("해당 게시물은 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
         postMapper.updateFromDto(postDto, postBeforeUpdate);
         return postDto.getPostId();
     }

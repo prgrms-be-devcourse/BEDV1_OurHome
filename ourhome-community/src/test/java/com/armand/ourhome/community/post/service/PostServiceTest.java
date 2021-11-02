@@ -716,7 +716,7 @@ class PostServiceTest {
 
 
         //When
-        postService.update(postDtoUpdated, List.of( "/post/postpicture_1.jpg", "/post/postpicture_3.jpg")); // 수정한 곳
+        postService.update(postDtoUpdated, dataSaved); // 수정한 곳
 
         //Then
         Post postSavedAfterUpdate = postRepository.findById(dataSaved).orElseThrow( () -> new RuntimeException("해당 게시물 정보는 존재하지 않습니다."));
