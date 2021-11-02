@@ -40,7 +40,7 @@ class UserServiceUnitTest {
 //// -----------------------------------------------------------------------------------------
 
     @Test
-    void 회원가입을_할수있다() {
+    void 회원가입() {
         // Given
         // userRepository.save의 리턴값을 미리 정의
         given(userRepository.save(any())).willReturn(user);
@@ -57,6 +57,71 @@ class UserServiceUnitTest {
         assertThat(result.getId(), is(user.getId()));
         assertThat(result.getCreatedAt(), is(user.getCreatedAt()));
     }
+
+    @Test
+    void 회원가입_이메일_중복() {
+        // Given
+
+        // When
+
+        // Then
+    }
+
+    @Test
+    void 회원가입_닉네임_중복() {
+        // Given
+
+        // When
+
+        // Then
+    }
+
+    @Test
+    void 로그인() {
+        // Given
+
+        // When
+
+        // Then
+    }
+
+    @Test
+    void 로그인_가입되지_않은_이메일() {
+        // Given
+
+        // When
+
+        // Then
+    }
+
+    @Test
+    void 로그인_비밀번호_불일치() {
+        // Given
+
+        // When
+
+        // Then
+    }
+
+    @Test
+    void 내정보_수정() {
+        // Given
+
+        // When
+
+        // Then
+    }
+
+    @Test
+    void 내정보_수정_닉네임_중복() {
+        // Given
+
+        // When
+
+        // Then
+    }
+
+
 
 
 }
