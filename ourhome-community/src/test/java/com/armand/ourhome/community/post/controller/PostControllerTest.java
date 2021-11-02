@@ -154,7 +154,7 @@ class PostControllerTest {
     @DisplayName("게시된 모든 정보를 추출할 수 있다.")
     void getAll() throws Exception {
         //When, Then
-       mockMvc.perform(get("/api/v1/post?size=1&page=0")
+       mockMvc.perform(get("/api/v1/post?size=5&page=0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -199,6 +199,42 @@ class PostControllerTest {
                 .andExpect(jsonPath("$").value(post.getPostId()))
                 .andDo(print());
         assertThat(postRepository.count(), is(0L));
+    }
+    @Test
+    @DisplayName("게시물을 수정할 수 있다.")
+    void update() throws Exception {
+        //Given
+
+        Post postSavedBeforeUpdate = postRepository.findById(post.getPostId()).orElseThrow( () -> new RuntimeException("해당 게시물 정보는 존재하지 않습니다."));
+        System.out.println(postSavedBeforeUpdate.getPostId());
+        System.out.println(postSavedBeforeUpdate.getContentList().size());
+        var postDtoUpdated = PostDto.builder()
+                .postId(postSavedBeforeUpdate.getPostId())
+                .residentialType(postSavedBeforeUpdate.getResidentialType())
+                .squareType(postSavedBeforeUpdate.getSquareType())
+                .styleType(postSavedBeforeUpdate.getStyleType())
+                .title(postSavedBeforeUpdate.getTitle())
+                .userId(user.getId())
+                .contentList(List.of(ContentDto.builder()
+                                .updatedFlag(false)
+                                .mediaUrl(postSavedBeforeUpdate.getContentList().get(0).getMediaUrl())
+                                .description("[수정]집 안 내용입니다.")  // 수정한 곳
+                                .placeType(postSavedBeforeUpdate.getContentList().get(0).getPlaceType())
+                                .tags(List.of(TagDto.builder()
+                                                .name(postSavedBeforeUpdate.getContentList().get(0).getTags().get(0).getName())
+                                                .build()))
+
+                                .build()))
+                .build();
+
+        //When, Then
+        mockMvc.perform(post("/api/v1/post/"+post.getPostId())
+                        .content(objectMapper.writeValueAsString(postDtoUpdated))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                //.andExpect(jsonPath("$").value(post.getPostId()))
+                .andDo(print());
     }
 
 

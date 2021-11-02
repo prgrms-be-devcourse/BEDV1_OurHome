@@ -9,6 +9,7 @@ import lombok.Getter;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ import java.util.List;
 public class PostDto {
     private Long postId;
     @NotBlank
-    @Max(50)
+    @Size(min = 0, max = 150)
     private String title;
     private SquareType squareType;
     private ResidentialType residentialType;

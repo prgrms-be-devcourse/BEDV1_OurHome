@@ -17,6 +17,7 @@ import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,17 +59,24 @@ public class PostService {
         return postRepository.save(postMapper.toEntity(postDto, user)).getPostId();
     }
 
-    public List<PostDto> getAll(Pageable pageable) {
-        return postMapper.toDtoList(postRepository.findAll(pageable).toList());
+    public Page<PostDto> getAll(Pageable pageable) {
+        //return postMapper.toDtoList(postRepository.findAll(pageable));
+        return null;
     }
 
-    public List<PostDto> getAllByResidentialType(ResidentialType residentialType, Pageable pageable){
-        return postMapper.toDtoList(postRepository.findAllByResidentialType(residentialType, pageable));
+    public Page<PostDto> getAllByResidentialType(ResidentialType residentialType, Pageable pageable){
+        //return postMapper.toDtoList(postRepository.findAllByResidentialType(residentialType, pageable));
+        return null;
     }
 
 
-    public List<PostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){
-        return postMapper.toDtoList(contentRepository.findAllByPlaceType(placeType, pageable).stream().map( v -> v.getPost()).distinct().toList());
+    public Page<PostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){
+//        return postMapper.toDtoList(contentRepository.findAllByPlaceType(placeType, pageable)
+//                .stream()
+//                .map( v -> v.getPost())
+//                .distinct()
+//                .toList());
+        return null;
 
     }
 
@@ -77,8 +85,9 @@ public class PostService {
         return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
-    public List<PostDto> getAllByTag(String tagName, Pageable pageable){
-        return postMapper.toDtoList(tagRepository.findAllByName(tagName, pageable).stream().map(v -> v.getContent().getPost()).distinct().toList());
+    public Page<PostDto> getAllByTag(String tagName, Pageable pageable){
+        //return postMapper.toDtoList(tagRepository.findAllByName(tagName, pageable).stream().map(v -> v.getContent().getPost()).distinct().toList());
+        return null;
     }
 
 

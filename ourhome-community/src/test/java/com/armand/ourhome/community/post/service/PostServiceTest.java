@@ -11,6 +11,7 @@ import com.armand.ourhome.domain.user.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,7 +112,7 @@ class PostServiceTest {
                                 .build()))
                 .build());
 
-        List<Post> postList =postRepository.findAllByUser(userSaved, Pageable.ofSize(5).withPage(0));
+        List<Post> postList =postRepository.findAllByUser(userSaved, Pageable.ofSize(5).withPage(0)).toList();
 
         //Then
         assertThat(postList.size(), is(2));
@@ -169,7 +170,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        List<PostDto> postDtoList = postService.getAll(Pageable.ofSize(5).withPage(0));
+        List<PostDto> postDtoList = postService.getAll(Pageable.ofSize(5).withPage(0)).toList();
 
         //Then
         assertThat(postDtoList.size(), is(2));
@@ -222,7 +223,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        List<PostDto> postDtoList = postService.getAllByResidentialType(ResidentialType.APARTMENT, Pageable.ofSize(5).withPage(0));
+        List<PostDto> postDtoList = postService.getAllByResidentialType(ResidentialType.APARTMENT, Pageable.ofSize(5).withPage(0)).toList();
 
         //Then
         assertThat(postDtoList.size(), is(1));
@@ -464,7 +465,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        var test = tagRepository.findAllByName("tag1", Pageable.ofSize(5).withPage(0));
+        var test = tagRepository.findAllByName("tag1", Pageable.ofSize(5).withPage(0)).toList();
         assertThat(test.size(), is(3));
         assertThat(test.get(0).getContent().getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
         //List<PostDto> postDtoList = postService.getAllByTag("tag1", Pageable.ofSize(5).withPage(0));

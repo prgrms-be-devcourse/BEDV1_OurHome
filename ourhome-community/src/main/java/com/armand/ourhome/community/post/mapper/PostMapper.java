@@ -5,6 +5,7 @@ import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.domain.user.User;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -26,8 +27,8 @@ public interface PostMapper {
     @Mapping(target = "contentDto.updatedFlag", ignore = true)
     PostDto toDto(Post post);
 
-    @Mapping(target = "userId", ignore = true)
-    List<PostDto> toDtoList(List<Post> post);
+//    @Mapping(target = "userId", ignore = true)
+//    Page<PostDto> toDtoList(Page<Post> post);
 
     @Transactional
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
