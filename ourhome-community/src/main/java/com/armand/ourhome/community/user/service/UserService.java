@@ -132,7 +132,7 @@ public class UserService {
         else{
             User curUser = userRepository.findById(token).get();   // 현재 사용자
             responseBuilder
-                    .isFollow(followRepository.existsByFollowerAndFollowing(curUser, user));
+                    .isFollowing(followRepository.existsByFollowerAndFollowing(curUser, user));
         }
         return responseBuilder.build();
     }
