@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -111,5 +112,22 @@ class PraiseRepositoryTest {
 
         //then
         assertThat(exist).isFalse();
+    }
+
+    @Test
+    @DisplayName("User.id와 Review.id로 Praise.id로 조회할 수 있다.")
+    public void testFindByIdAndUserIdAndReviewId() throws Exception {
+        //given
+        Praise praise1 = new Praise(1L, 2L);
+        Praise praise2 = new Praise(1L, 3L);
+
+        praiseRepository.saveAll(List.of(praise1, praise2));
+
+        //when
+        Optional<Praise> actual1 = praiseRepository.findByIdAndUserIdAndReviewId(1L, 1L, 2L);
+        Optional<Praise> actual2 = praiseRepository.findByIdAndUserIdAndReviewId(1L, 1L, 1000L);
+        //then
+        assertThat(actual1).isPresent();
+        assertThat(actual2).isEmpty();
     }
 }

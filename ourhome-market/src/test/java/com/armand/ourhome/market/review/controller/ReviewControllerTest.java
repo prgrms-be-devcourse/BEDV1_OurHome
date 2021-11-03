@@ -1,9 +1,7 @@
 package com.armand.ourhome.market.review.controller;
 
-import com.armand.ourhome.market.review.dto.request.RequestDeleteReview;
-import com.armand.ourhome.market.review.dto.request.RequestUpdateReview;
+import com.armand.ourhome.market.review.dto.request.*;
 import com.armand.ourhome.market.review.service.ReviewService;
-import com.armand.ourhome.market.review.dto.request.RequestAddReview;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -129,6 +127,60 @@ class ReviewControllerTest {
                 .andDo(document("review-delete",
                         pathParameters(
                                 parameterWithName("reviewId").description("reviewId")
+                        ),
+                        requestFields(
+                                fieldWithPath("user_id").type(NUMBER).description("user_id")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("리뷰에 '도움이 돼요' 를 생성한다")
+    public void testPraiseReview() throws Exception {
+        //given
+        Long reviewId = 1L;
+        RequestPraiseReview request = new RequestPraiseReview(1L);
+
+        given(reviewService.praiseReview(1L, request)).willReturn(1L);
+
+        //when
+        ResultActions actions = mockMvc.perform(post("/api/reviews/{reviewId}/praise", reviewId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        actions.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("review/praise",
+                        pathParameters(
+                                parameterWithName("reviewId").description("reviewId")
+                        ),
+                        requestFields(
+                                fieldWithPath("user_id").type(NUMBER).description("user_id")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("리뷰에 '도움이 돼요' 를 제거한다")
+    public void testRemovePraiseReview() throws Exception {
+        //given
+        Long reviewId = 1L;
+        Long praiseId = 1L;
+        RequestRemovePraiseReview request = new RequestRemovePraiseReview(1L);
+
+        //when
+        ResultActions actions = mockMvc.perform(delete("/api/reviews/{reviewId}/praise/{praiseId}", reviewId, praiseId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)));
+
+        //then
+        actions.andExpect(status().isNoContent())
+                .andDo(print())
+                .andDo(document("review/praise",
+                        pathParameters(
+                                parameterWithName("reviewId").description("reviewId"),
+                                parameterWithName("praiseId").description("praiseId")
                         ),
                         requestFields(
                                 fieldWithPath("user_id").type(NUMBER).description("user_id")
