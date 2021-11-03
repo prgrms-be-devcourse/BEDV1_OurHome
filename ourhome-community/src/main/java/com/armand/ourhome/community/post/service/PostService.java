@@ -54,8 +54,9 @@ public class PostService {
             postDto.getContentList().get(i).setMediaUrl(mediaUrl);
         }
         User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new BusinessException("해당 사용자 정보는 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
-        return postRepository.save(postMapper.toEntity(postDto, user)).getPostId();
+        return postRepository.save(postMapper.toEntity(postDto, user)).getId();
     }
+
 
     public Page<PostDto> getAll(Pageable pageable) {
         Page<Post> postWithPage = postRepository.findAll(pageable);
@@ -99,7 +100,7 @@ public class PostService {
         }
         Post postBeforeUpdate = postRepository.findById(postId).orElseThrow(() -> new BusinessException("해당 게시물은 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
         postMapper.updateFromDto(postDto, postBeforeUpdate);
-        return postDto.getPostId();
+        return postDto.getId();
     }
 
 

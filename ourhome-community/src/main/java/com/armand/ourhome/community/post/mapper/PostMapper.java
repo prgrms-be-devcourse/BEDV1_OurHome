@@ -20,6 +20,7 @@ public interface PostMapper {
     PostMapper INSTANCE = Mappers.getMapper(PostMapper.class);
 
     @Mapping(source="user", target = "user")
+    @Mapping(source = "postDto.id", target = "id")
     Post toEntity(PostDto postDto, User user);
 
     @Mapping(target = "userId", ignore = true)

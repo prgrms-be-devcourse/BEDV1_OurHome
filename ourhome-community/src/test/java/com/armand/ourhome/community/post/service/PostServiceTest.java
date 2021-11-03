@@ -129,7 +129,7 @@ class PostServiceTest {
     @DisplayName("저장된 게시물을 추출할 수 있다.")
     void findAll(){
         //Given
-        postRepository.save(Post.builder()
+        postRepository.saveAndFlush(Post.builder()
                 .title("우리 집")
                 .squareType(SquareType.SIZE_10_PYEONG)
                 .residentialType(ResidentialType.APARTMENT)
@@ -149,7 +149,7 @@ class PostServiceTest {
                                                 .build()))
                                 .build()))
                 .build());
-        postRepository.save(Post.builder()
+        postRepository.saveAndFlush(Post.builder()
                 .title("우리 집")
                 .squareType(SquareType.SIZE_10_PYEONG)
                 .residentialType(ResidentialType.DETACHED_HOUCE)
@@ -646,7 +646,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        PostDto getOnePost = postService.getOne(postSaved.getPostId());
+        PostDto getOnePost = postService.getOne(postSaved.getId());
 
         //Then
         assertThat(getOnePost.getResidentialType(), is(ResidentialType.APARTMENT));
@@ -694,7 +694,7 @@ class PostServiceTest {
         var dataSaved = postService.save(postDto);
         Post postSavedBeforeUpdate = postRepository.findById(dataSaved).orElseThrow( () -> new RuntimeException("해당 게시물 정보는 존재하지 않습니다."));
         var postDtoUpdated = PostDto.builder()
-                .postId(postSavedBeforeUpdate.getPostId())
+                .id(postSavedBeforeUpdate.getId())
                 .residentialType(postSavedBeforeUpdate.getResidentialType())
                 .squareType(postSavedBeforeUpdate.getSquareType())
                 .styleType(postSavedBeforeUpdate.getStyleType())
@@ -764,11 +764,11 @@ class PostServiceTest {
                 .build());
 
         //When
-        assertThat(postRepository.findById(postSaved.getPostId()).isEmpty(), is(Boolean.FALSE));
-        postService.delete(postSaved.getPostId());
+        assertThat(postRepository.findById(postSaved.getId()).isEmpty(), is(Boolean.FALSE));
+        postService.delete(postSaved.getId());
 
         //Then
-        assertThat(postRepository.findById(postSaved.getPostId()).isEmpty(), is(Boolean.TRUE));
+        assertThat(postRepository.findById(postSaved.getId()).isEmpty(), is(Boolean.TRUE));
     }
 
 }
