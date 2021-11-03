@@ -12,8 +12,7 @@ import com.armand.ourhome.market.review.domain.Aggregate;
 import com.armand.ourhome.market.review.domain.Praise;
 import com.armand.ourhome.market.review.domain.Review;
 import com.armand.ourhome.market.review.dto.request.*;
-import com.armand.ourhome.market.review.dto.response.ResponseAddReview;
-import com.armand.ourhome.market.review.dto.response.ResponseReviewImage;
+import com.armand.ourhome.market.review.dto.response.*;
 import com.armand.ourhome.market.review.exception.PraiseDuplicationException;
 import com.armand.ourhome.market.review.exception.PraiseNotFoundException;
 import com.armand.ourhome.market.review.exception.ReviewNotFoundException;
@@ -21,8 +20,6 @@ import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
 import com.armand.ourhome.market.review.mapper.ReviewMapper;
 import com.armand.ourhome.market.review.repository.PraiseRepository;
 import com.armand.ourhome.market.review.repository.ReviewRepository;
-import com.armand.ourhome.market.review.dto.response.PageResponse;
-import com.armand.ourhome.market.review.dto.response.ResponseReview;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
@@ -53,13 +50,17 @@ public class ReviewService {
         Review review = createReview(request);
         reviewRepository.save(review);
 
-        ResponseReviewImage responseReviewImage = reviewImageService.saveReviewImage(review.getId(), request.getUserId(), request.getReviewImageBase64());
+        ResponseReviewImage responseReviewImage = saveReviewImage(request, review);
 
         return new ResponseAddReview(review.getId(), responseReviewImage);
     }
 
+    private ResponseReviewImage saveReviewImage(RequestAddReview request, Review review) {
+        return reviewImageService.saveReviewImage(review.getId(), request.getUserId(), request.getReviewImageBase64());
+    }
+
     @Transactional
-    public Long update(Long reviewId, RequestUpdateReview request) {
+    public ResponseUpdateReview update(Long reviewId, RequestUpdateReview request) {
         Review review = getReview(reviewId);
 
         if (!review.isWrittenBy(request.getUserId())) {
@@ -68,7 +69,16 @@ public class ReviewService {
 
         review.update(request.getComment(), request.getRating());
 
-        return reviewId;
+        ResponseReviewImage responseReviewImage = updateReviewImage(request, review);
+
+        return new ResponseUpdateReview(reviewId, responseReviewImage);
+    }
+
+    private ResponseReviewImage updateReviewImage(RequestUpdateReview request, Review review) {
+        if (request.getReviewImageBase64() != null)  {
+            return reviewImageService.updateReviewImage(review.getId(), request.getUserId(), request.getReviewImageBase64());
+        }
+        return null;
     }
 
     @Transactional
@@ -80,6 +90,13 @@ public class ReviewService {
         }
 
         review.delete();
+
+        deleteReviewImage(request);
+    }
+
+    private void deleteReviewImage(RequestDeleteReview request) {
+        if (request.getReviewImageId() != null)
+            reviewImageService.deleteReviewImage(request.getReviewImageId());
     }
 
     @Transactional
@@ -111,6 +128,11 @@ public class ReviewService {
         review.removeHelp();
 
         praiseRepository.delete(praise);
+    }
+
+    @Transactional
+    public void deleteReviewImageBy(Long reviewId) {
+        reviewImageService.deleteReviewImage(reviewId);
     }
 
     public PageResponse<List<ResponseReview>> fetchReviewPagesBy(Long itemId, RequestReviewPages request) {

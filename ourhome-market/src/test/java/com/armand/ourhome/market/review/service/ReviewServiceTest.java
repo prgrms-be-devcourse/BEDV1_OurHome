@@ -10,6 +10,7 @@ import com.armand.ourhome.domain.user.UserRepository;
 import com.armand.ourhome.market.order.repository.OrderItemRepository;
 import com.armand.ourhome.market.review.domain.Praise;
 import com.armand.ourhome.market.review.domain.Review;
+import com.armand.ourhome.market.review.domain.ReviewImage;
 import com.armand.ourhome.market.review.domain.ReviewStatus;
 import com.armand.ourhome.market.review.dto.request.*;
 import com.armand.ourhome.market.review.exception.PraiseDuplicationException;
@@ -53,6 +54,9 @@ class ReviewServiceTest {
 
     @Mock
     private PraiseRepository praiseRepository;
+
+    @Mock
+    private ReviewImageService reviewImageService;
 
     private User user = User.builder()
             .description("Hello i'm user")
@@ -201,7 +205,7 @@ class ReviewServiceTest {
         given(reviewRepository.findById(any())).willReturn(Optional.of(review));
 
         //when 
-        reviewService.delete(1L, new RequestDeleteReview(user.getId()));
+        reviewService.delete(1L, new RequestDeleteReview(user.getId(), 1L));
 
         //then 
         assertThat(review.getStatus()).isEqualTo(ReviewStatus.DELETED);
@@ -212,12 +216,13 @@ class ReviewServiceTest {
     public void testDeleteReviewNotWriter() throws Exception {
         //given
         Review review = Review.of(user, item, 5, "너무나도 좋은 제품이네요. 다음에 또 구매하고 싶습니다!");
+
         given(reviewRepository.findById(any())).willReturn(Optional.of(review));
 
         //then
         assertThrows(UserAccessDeniedException.class, () -> {
             //when
-            reviewService.delete(1L, new RequestDeleteReview(user.getId() + 1));
+            reviewService.delete(1L, new RequestDeleteReview(user.getId() + 1, null));
         });
     }
 
@@ -225,7 +230,6 @@ class ReviewServiceTest {
     @DisplayName("리뷰에 '도움이 돼요'를 생성할 수 있다.")
     public void testPraiseReview() throws Exception {
         //given
-
         RequestPraiseReview request = new RequestPraiseReview(user.getId() + 1);
 
         Review review = Review.of(user, item, 5, "너무나도 좋은 제품이네요. 다음에 다시 구매하고 싶습니다.");

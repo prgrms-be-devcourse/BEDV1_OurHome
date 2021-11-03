@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -53,5 +54,9 @@ public class ReviewImage {
 
     public void delete() {
         this.status = ReviewImageStatus.INACTIVE;
+    }
+
+    public boolean isWrittenBy(Long userId) {
+        return Objects.equals(this.userId, userId);
     }
 }

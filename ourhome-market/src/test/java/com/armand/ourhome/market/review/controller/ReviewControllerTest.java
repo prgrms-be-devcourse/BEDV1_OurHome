@@ -3,6 +3,7 @@ package com.armand.ourhome.market.review.controller;
 import com.armand.ourhome.market.review.dto.request.*;
 import com.armand.ourhome.market.review.dto.response.ResponseAddReview;
 import com.armand.ourhome.market.review.dto.response.ResponseReviewImage;
+import com.armand.ourhome.market.review.dto.response.ResponseUpdateReview;
 import com.armand.ourhome.market.review.service.ReviewService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -94,9 +95,13 @@ class ReviewControllerTest {
                 .comment("너무나도 좋은 제품입니다. 이 리뷰는 수정되었습니다.")
                 .rating(4)
                 .userId(1L)
+                .reviewImageBase64("imageBase64")
                 .build();
 
-        given(reviewService.update(any(), any())).willReturn(1L);
+        ResponseUpdateReview response = new ResponseUpdateReview(1L, new ResponseReviewImage(1L, "imageUrl"));
+
+        given(reviewService.update(any(), any())).willReturn(response);
+
         //when
         ResultActions actions = mockMvc.perform(patch("/api/reviews/{reviewId}", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -112,11 +117,17 @@ class ReviewControllerTest {
                         requestFields(
                                 fieldWithPath("user_id").type(NUMBER).description("user_id"),
                                 fieldWithPath("rating").type(NUMBER).description("rating"),
-                                fieldWithPath("comment").type(STRING).description("comment")
+                                fieldWithPath("comment").type(STRING).description("comment"),
+                                fieldWithPath("review_image_base64").type(STRING).description("review_image_base64")
+                        ),
+                        responseFields(
+                                fieldWithPath("review_id").type(NUMBER).description("review_id"),
+                                fieldWithPath("review_image").type(OBJECT).description("review_image"),
+                                fieldWithPath("review_image.id").type(NUMBER).description("review_image.id"),
+                                fieldWithPath("review_image.image_url").type(STRING).description("review_image.image_url")
                         )
                     ));
     }
-
 
     @Test
     @DisplayName("리뷰를 삭제한다")
@@ -125,6 +136,7 @@ class ReviewControllerTest {
         Long reviewId = 1L;
         RequestDeleteReview request = RequestDeleteReview.builder()
                 .userId(1L)
+                .reviewImageId(1L)
                 .build();
 
         //when
@@ -140,7 +152,8 @@ class ReviewControllerTest {
                                 parameterWithName("reviewId").description("reviewId")
                         ),
                         requestFields(
-                                fieldWithPath("user_id").type(NUMBER).description("user_id")
+                                fieldWithPath("user_id").type(NUMBER).description("user_id"),
+                                fieldWithPath("review_image_id").type(NUMBER).description("review_image_id")
                         )
                 ));
     }

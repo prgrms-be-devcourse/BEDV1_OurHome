@@ -2,6 +2,7 @@ package com.armand.ourhome.market.review.controller;
 
 import com.armand.ourhome.market.review.dto.request.*;
 import com.armand.ourhome.market.review.dto.response.ResponseAddReview;
+import com.armand.ourhome.market.review.dto.response.ResponseUpdateReview;
 import com.armand.ourhome.market.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,8 +24,8 @@ public class ReviewController {
     }
 
     @PatchMapping("/{reviewId}")
-    public ResponseEntity<Long> updateReview(@PathVariable("reviewId") Long reviewId,
-                                             @Valid @RequestBody RequestUpdateReview request) {
+    public ResponseEntity<ResponseUpdateReview> updateReview(@PathVariable("reviewId") Long reviewId,
+                                                             @Valid @RequestBody RequestUpdateReview request) {
         return ResponseEntity.ok(reviewService.update(reviewId, request));
     }
 
@@ -32,6 +33,12 @@ public class ReviewController {
     public ResponseEntity<Void> deleteReview(@PathVariable("reviewId") Long reviewId,
                                              @RequestBody RequestDeleteReview request) {
         reviewService.delete(reviewId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{reviewId}/images")
+    public ResponseEntity<Void> deleteReviewImage(@PathVariable("reviewId") Long reviewId) {
+        reviewService.deleteReviewImageBy(reviewId);
         return ResponseEntity.noContent().build();
     }
 

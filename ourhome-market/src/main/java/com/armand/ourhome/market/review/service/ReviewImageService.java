@@ -4,6 +4,8 @@ import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.market.review.domain.ReviewImage;
 import com.armand.ourhome.market.review.dto.response.ResponseReviewImage;
 import com.armand.ourhome.market.review.exception.ReviewImageDuplicateException;
+import com.armand.ourhome.market.review.exception.ReviewImageNotFoundException;
+import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
 import com.armand.ourhome.market.review.repository.ReviewImageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,11 +32,35 @@ public class ReviewImageService {
             throw new ReviewImageDuplicateException(MessageFormat.format("리뷰에 등록한 이미지가 이미 존재합니다. userId = {0}", userId));
         }
 
-        String reviewImageUrl = awsS3Uploader.upload(reviewImageBase64, "review-images");
+        String reviewImageUrl = awsS3Uploader.upload(reviewImageBase64, "review");
         ReviewImage reviewImage = ReviewImage.of(reviewId, userId, reviewImageUrl);
 
         reviewImageRepository.save(reviewImage);
 
         return new ResponseReviewImage(reviewImage.getId(), reviewImageUrl);
+    }
+
+    @Transactional
+    public ResponseReviewImage updateReviewImage(Long id, Long userId, String reviewImageBase64) {
+        ReviewImage reviewImage = reviewImageRepository.findById(id)
+                .orElseThrow(() -> new ReviewImageNotFoundException(MessageFormat.format("리뷰 이미지가 존재 하지 않습니다. id = {0}", id)));
+
+        if (reviewImage.isWrittenBy(userId)) {
+            throw new UserAccessDeniedException(MessageFormat.format("작성자만 이미지를 수정할 수 있습니다. userId = {0}", userId));
+        }
+
+        String reviewImageUrl = awsS3Uploader.upload(reviewImageBase64, "review");
+
+        reviewImage.update(reviewImageUrl);
+
+        return new ResponseReviewImage(id, reviewImageUrl);
+    }
+
+    @Transactional
+    public void deleteReviewImage(Long reviewId) {
+        ReviewImage reviewImage = reviewImageRepository.findByReviewId(reviewId)
+                .orElseThrow(() -> new ReviewImageNotFoundException(MessageFormat.format("리뷰 이미지가 존재 하지 않습니다. reviewId = {0}", reviewId)));
+
+        reviewImage.delete();
     }
 }
