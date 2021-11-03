@@ -276,6 +276,7 @@ class UserControllerTest {
                                         fieldWithPath("profile_image_url").type(JsonFieldType.STRING).description("profile_image_url"),
                                         fieldWithPath("follower_count").type(JsonFieldType.NUMBER).description("follower_count"),
                                         fieldWithPath("following_count").type(JsonFieldType.NUMBER).description("following_count"),
+                                        fieldWithPath("is_follow").type(JsonFieldType.NULL).description("following_count"),
                                         fieldWithPath("bookmark_count").type(JsonFieldType.NUMBER).description("bookmark_count"),
                                         fieldWithPath("like_count").type(JsonFieldType.NUMBER).description("like_count"),
                                         fieldWithPath("post_count").type(JsonFieldType.NUMBER).description("post_count"),

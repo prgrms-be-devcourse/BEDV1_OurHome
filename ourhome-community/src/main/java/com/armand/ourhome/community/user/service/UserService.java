@@ -3,6 +3,7 @@ package com.armand.ourhome.community.user.service;
 
 import com.armand.ourhome.common.error.exception.EntityNotFoundException;
 import com.armand.ourhome.common.error.exception.InvalidValueException;
+import com.armand.ourhome.common.error.exception.user.UserNotFoundException;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.community.bookmark.repository.BookmarkRepository;
 import com.armand.ourhome.community.follow.repository.FollowRepository;
@@ -75,9 +76,9 @@ public class UserService {
         isDuplicateNickname(nickname);
         String description = updateInfoRequest.getDescription();
         String profileImageBase64 = updateInfoRequest.getProfileImageBase64();
-        String profileImageUrl = awsS3Uploader.upload(profileImageBase64, "user-profiles");
+        String profileImageUrl = awsS3Uploader.upload(profileImageBase64, "profile");
 
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         user.updateInfo(nickname, description, profileImageUrl);
 
         // update된 시간을 받아오기 위해 flush
@@ -88,7 +89,7 @@ public class UserService {
     @Transactional
     public UpdateResponse updatePassword(Long id, UpdatePasswordRequest updatePasswordRequest) {
         String password = updatePasswordRequest.getPassword();
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         user.updatePassword(password);
         userRepository.flush();
         return UpdateResponse.of(user);
@@ -97,10 +98,9 @@ public class UserService {
     public UserPageResponse userPage(Long id, Long token, Pageable pageable) {
         Optional<User> byId = userRepository.findById(id);
         if (byId.isEmpty())
-            throw new EntityNotFoundException("해당 사용자를 찾을 수 없습니다");
+            throw new UserNotFoundException(id);
         User user = byId.get();
         // Thumnail list 생성
-        // FIXME : Page<>로 변경
         var postList = postRepository.findAllByUser(user, pageable);
         List<Thumbnail> thumbnailList = new ArrayList<>();
         for (Post post : postList) {
@@ -127,6 +127,12 @@ public class UserService {
             responseBuilder
                     .bookmarkCount(bookmarkRepository.countByUser(user))
                     .likeCount(likeRepository.countByUser(user));
+        }
+        // 타유저페이지일 경우 팔로우 여부를 추가
+        else{
+            User curUser = userRepository.findById(token).get();   // 현재 사용자
+            responseBuilder
+                    .isFollow(followRepository.existsByFollowerAndFollowing(curUser, user));
         }
         return responseBuilder.build();
     }
