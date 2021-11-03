@@ -1,5 +1,8 @@
 package com.armand.ourhome.community.post.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,7 +14,9 @@ import javax.validation.constraints.NotBlank;
  */
 
 @Getter
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TagDto {
+    @JsonProperty("id")
     private Long tagId;
 
     @NotBlank
