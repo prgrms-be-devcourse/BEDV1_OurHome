@@ -3,9 +3,12 @@ package com.armand.ourhome.community.post.dto;
 import com.armand.ourhome.community.post.entity.PlaceType;
 import com.armand.ourhome.community.post.entity.Tag;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.persistence.JoinColumn;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -14,8 +17,11 @@ import java.util.List;
  */
 
 @Getter
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ContentDto {
+    @JsonProperty("id")
     private Long contentId;
+
     @NotBlank
     private String mediaUrl;
     private String description;
