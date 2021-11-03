@@ -47,7 +47,7 @@ class PraiseRepositoryTest {
         praiseRepository.saveAll(List.of(praise1, praise2, praise3, praise));
 
         //then
-        long count = praiseRepository.countByReviewId(1L);
+        long count = praiseRepository.countByReviewId(praise.getReviewId());
         assertThat(count).isEqualTo(4);
     }
 
@@ -75,7 +75,7 @@ class PraiseRepositoryTest {
         praiseRepository.saveAll(List.of(praise1, praise2));
 
         //when
-        praiseRepository.deletePraiseByUserIdAndReviewId(1L, 2L);
+        praiseRepository.deletePraiseByUserIdAndReviewId(praise1.getUserId(), praise2.getReviewId());
 
         //then
         long count = praiseRepository.count();
@@ -92,7 +92,7 @@ class PraiseRepositoryTest {
         praiseRepository.saveAll(List.of(praise1, praise2));
 
         //when
-        boolean exist = praiseRepository.existsByUserIdAndReviewId(1L, 2L);
+        boolean exist = praiseRepository.existsByUserIdAndReviewId(praise1.getUserId(), praise1.getReviewId());
 
         //then
         assertThat(exist).isTrue();
@@ -108,7 +108,7 @@ class PraiseRepositoryTest {
         praiseRepository.saveAll(List.of(praise1, praise2));
 
         //when
-        boolean exist = praiseRepository.existsByUserIdAndReviewId(1L, 5L);
+        boolean exist = praiseRepository.existsByUserIdAndReviewId(praise2.getUserId(), praise2.getReviewId() + 100);
 
         //then
         assertThat(exist).isFalse();
@@ -124,8 +124,9 @@ class PraiseRepositoryTest {
         praiseRepository.saveAll(List.of(praise1, praise2));
 
         //when
-        Optional<Praise> actual1 = praiseRepository.findByIdAndUserIdAndReviewId(1L, 1L, 2L);
-        Optional<Praise> actual2 = praiseRepository.findByIdAndUserIdAndReviewId(1L, 1L, 1000L);
+        Optional<Praise> actual1 = praiseRepository.findByIdAndUserIdAndReviewId(praise1.getId(), praise1.getUserId(), praise1.getReviewId());
+        Optional<Praise> actual2 = praiseRepository.findByIdAndUserIdAndReviewId(praise1.getId(), praise1.getUserId(), praise1.getReviewId() + 1000);
+
         //then
         assertThat(actual1).isPresent();
         assertThat(actual2).isEmpty();

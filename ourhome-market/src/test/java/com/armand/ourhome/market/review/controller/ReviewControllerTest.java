@@ -65,7 +65,7 @@ class ReviewControllerTest {
         //then
         actions.andExpect(status().isCreated())
                 .andDo(print())
-                .andDo(document("review-add",
+                .andDo(document("review/review-add",
                             requestFields(
                                     fieldWithPath("user_id").type(NUMBER).description("user_id"),
                                     fieldWithPath("item_id").type(NUMBER).description("item_id"),
@@ -94,7 +94,7 @@ class ReviewControllerTest {
         //then
         actions.andExpect(status().isOk())
                 .andDo(print())
-                .andDo(document("review-update",
+                .andDo(document("review/review-update",
                         pathParameters(
                                 parameterWithName("reviewId").description("reviewId")
                         ),
@@ -124,7 +124,7 @@ class ReviewControllerTest {
         //then
         actions.andExpect(status().isNoContent())
                 .andDo(print())
-                .andDo(document("review-delete",
+                .andDo(document("review/review-delete",
                         pathParameters(
                                 parameterWithName("reviewId").description("reviewId")
                         ),
@@ -177,7 +177,7 @@ class ReviewControllerTest {
         //then
         actions.andExpect(status().isNoContent())
                 .andDo(print())
-                .andDo(document("review/praise",
+                .andDo(document("review/praise-remove",
                         pathParameters(
                                 parameterWithName("reviewId").description("reviewId"),
                                 parameterWithName("praiseId").description("praiseId")
