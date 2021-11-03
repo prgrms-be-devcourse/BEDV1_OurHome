@@ -4,6 +4,9 @@ import com.armand.ourhome.community.post.entity.Content;
 import com.armand.ourhome.community.post.entity.ResidentialType;
 import com.armand.ourhome.community.post.entity.SquareType;
 import com.armand.ourhome.community.post.entity.StyleType;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,8 +20,10 @@ import java.util.List;
  */
 
 @Getter
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PostDto {
-    private Long postId;
+
+    private Long id;
     @NotBlank
     @Size(min = 0, max = 150)
     private String title;
@@ -33,8 +38,8 @@ public class PostDto {
     private int viewCount;
 
     @Builder
-    public PostDto(Long postId, String title, SquareType squareType, ResidentialType residentialType, StyleType styleType, List<ContentDto> contentList, int viewCount, Long userId){
-        this.postId = postId;
+    public PostDto(Long id, String title, SquareType squareType, ResidentialType residentialType, StyleType styleType, List<ContentDto> contentList, int viewCount, Long userId){
+        this.id = id;
         this.title = title;
         this.squareType = squareType;
         this.residentialType = residentialType;

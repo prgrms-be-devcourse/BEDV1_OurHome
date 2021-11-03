@@ -158,7 +158,7 @@ class PostControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].squareType").value("SIZE_10_PYEONG"))
+                .andExpect(jsonPath("$[0].square_type").value("SIZE_10_PYEONG"))
                 .andDo(print());
 
     }
@@ -180,11 +180,11 @@ class PostControllerTest {
     @DisplayName("특정 게시물을 추출할 수 있다.")
     void getOne() throws Exception {
         //When, Then
-        mockMvc.perform(get("/api/v1/post/"+post.getPostId())
+        mockMvc.perform(get("/api/v1/post/"+post.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("postId").value(post.getPostId()))
+                .andExpect(jsonPath("postId").value(post.getId()))
                 .andDo(print());
     }
 
@@ -192,11 +192,11 @@ class PostControllerTest {
     @DisplayName("특정 게시물을 삭제 할 수 있다.")
     void deleteTest() throws Exception {
         //When, Then
-        mockMvc.perform(delete("/api/v1/post/"+post.getPostId())
+        mockMvc.perform(delete("/api/v1/post/"+post.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").value(post.getPostId()))
+                .andExpect(jsonPath("$").value(post.getId()))
                 .andDo(print());
         assertThat(postRepository.count(), is(0L));
     }
@@ -205,11 +205,11 @@ class PostControllerTest {
     void update() throws Exception {
         //Given
 
-        Post postSavedBeforeUpdate = postRepository.findById(post.getPostId()).orElseThrow( () -> new RuntimeException("해당 게시물 정보는 존재하지 않습니다."));
-        System.out.println(postSavedBeforeUpdate.getPostId());
+        Post postSavedBeforeUpdate = postRepository.findById(post.getId()).orElseThrow( () -> new RuntimeException("해당 게시물 정보는 존재하지 않습니다."));
+        System.out.println(postSavedBeforeUpdate.getId());
         System.out.println(postSavedBeforeUpdate.getContentList().size());
         var postDtoUpdated = PostDto.builder()
-                .postId(postSavedBeforeUpdate.getPostId())
+                .id(postSavedBeforeUpdate.getId())
                 .residentialType(postSavedBeforeUpdate.getResidentialType())
                 .squareType(postSavedBeforeUpdate.getSquareType())
                 .styleType(postSavedBeforeUpdate.getStyleType())
@@ -228,7 +228,7 @@ class PostControllerTest {
                 .build();
 
         //When, Then
-        mockMvc.perform(post("/api/v1/post/"+post.getPostId())
+        mockMvc.perform(post("/api/v1/post/"+post.getId())
                         .content(objectMapper.writeValueAsString(postDtoUpdated))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

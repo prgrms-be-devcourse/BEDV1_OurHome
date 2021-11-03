@@ -20,7 +20,7 @@ public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private Long postId;
+    private Long id;
 
 
     @Column(name="title", nullable = false, length = 50)
@@ -42,7 +42,7 @@ public class Post extends BaseEntity {
     @ColumnDefault("0")
     private int viewCount;
 
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
@@ -65,7 +65,7 @@ public class Post extends BaseEntity {
     }
 
     @Builder
-    public Post(Long postId,
+    public Post(Long id,
                 String title,
                 SquareType squareType,
                 ResidentialType residentialType,
@@ -78,7 +78,7 @@ public class Post extends BaseEntity {
         Assert.notNull(user, "사용자 정보는 null 값을 허용하지 않습니다.");
         Checking.validLength(0, 50, "post title", title);
 
-        this.postId = postId;
+        this.id = id;
         this.title = title;
         this.squareType = squareType;
         this.residentialType = residentialType;
