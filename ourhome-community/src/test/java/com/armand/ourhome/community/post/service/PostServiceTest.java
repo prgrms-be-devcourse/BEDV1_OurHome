@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PostUpdate;
@@ -228,6 +229,7 @@ class PostServiceTest {
         //Then
         assertThat(postDtoList.getContent().size(), is(1));
         assertThat(postDtoList.getContent().get(0).getResidentialType(), is(ResidentialType.APARTMENT));
+        assertThat(postDtoList.getContent().get(0).getContentList().get(0).getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
     }
 
 
@@ -289,6 +291,10 @@ class PostServiceTest {
         Page<PostDto> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
 
         //Then
+        assertThat(postDtoList.getContent().get(1).getContentList().get(0).getMediaUrl(), is("/post/picture-2DETACHED_HOUCE.jpg"));
+        assertThat(postDtoList.getContent().get(1).getTitle(), is("우리 집 입니다."));
+        assertThat(postDtoList.getContent().get(1).getContentList().get(0).getPlaceType(), is(PlaceType.BATHROOM));
+        assertThat(postDtoList.getContent().get(1).getContentList().get(0).getTags().get(0).getName(), is("깨끗 DETACHED_HOUCE"));
         assertThat(postDtoList.getContent().size(), is(2));
     }
     @Test
@@ -409,6 +415,8 @@ class PostServiceTest {
 
     @Test
     @DisplayName("저장된 게시물을 테그로 검색하여 추출할 수 있다.")
+    @Transactional
+    @Rollback(value = false)
     void getAllByTag(){
         //Given
         postRepository.save(Post.builder()
@@ -431,6 +439,7 @@ class PostServiceTest {
                                                 .build()))
                                 .build()))
                 .build());
+
         postRepository.save(Post.builder()
                 .title("우리 집")
                 .squareType(SquareType.SIZE_10_PYEONG)
@@ -464,7 +473,11 @@ class PostServiceTest {
                                 .build()))
                 .build());
 
+
+
         //When
+        assertThat(contentRepository.findAll().get(0).getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
+
         Page<Tag> test = tagRepository.findAllByName("tag1", Pageable.ofSize(5).withPage(0));
         assertThat(test.getContent().size(), is(3));
         //assertThat(test.getContent().get(0).getContent().getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
@@ -505,7 +518,6 @@ class PostServiceTest {
 
         Post postSaved = postRepository.findAll().get(0);
         assertThat(postSaved.getSquareType(), is(SquareType.SIZE_10_PYEONG));
-        assertThat(postSaved.getContentList().get(0).getMediaUrl(), is("/post/postpicture.jpg"));
         assertThat(postSaved.getContentList().get(0).getTags().get(0).getName(), is("아파트"));
     }
 
@@ -549,10 +561,7 @@ class PostServiceTest {
         Post postSaved = postRepository.findAll().get(0);
 
         assertThat(postSaved.getSquareType(), is(SquareType.SIZE_10_PYEONG));
-        assertThat(postSaved.getContentList().get(0).getMediaUrl(), is("/post/postpicture_1.jpg"));
         assertThat(postSaved.getContentList().get(0).getTags().get(0).getName(), is("내부"));
-
-        assertThat(postSaved.getContentList().get(1).getMediaUrl(), is("/post/postpicture_2.jpg"));
         assertThat(postSaved.getContentList().get(1).getTags().get(0).getName(), is("외관"));
     }
 
