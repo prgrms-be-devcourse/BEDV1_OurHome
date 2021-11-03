@@ -8,8 +8,10 @@ import org.mapstruct.Mapping;
 @Mapper
 public interface WalletMapper {
 
+  VoucherConverter voucherConverter = new VoucherConverter();
+
   @Mapping(target = "userId", source = "user.id")
-  @Mapping(target = "voucherDto", source = "voucher")
+  @Mapping(target = "voucherDto", expression = "java(voucherConverter.toDto(wallet.getVoucher()))")
   WalletDto toDto(Wallet wallet);
 
 }
