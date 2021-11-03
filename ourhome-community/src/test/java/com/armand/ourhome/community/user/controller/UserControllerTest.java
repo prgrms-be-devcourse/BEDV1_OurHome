@@ -216,7 +216,7 @@ class UserControllerTest {
 
     @Transactional
     @Test
-    void 마이페이지() throws Exception {
+    void 유저_페이지() throws Exception {
         // Given
         Post post = Post.builder()
                 .title("제목")
@@ -260,7 +260,7 @@ class UserControllerTest {
                 .andDo(print())
                 .andDo(
                         document(
-                                "user/my-page", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                                "user/page", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
                                 pathParameters(
                                         parameterWithName("id").description("user_id")
                                 ),
@@ -286,16 +286,6 @@ class UserControllerTest {
                                 )
                         )
                 );
-    }
-
-    @Test
-    void 타유저페이지() throws Exception {
-        // Given
-
-        // When
-
-        // Then
-
     }
 
 }

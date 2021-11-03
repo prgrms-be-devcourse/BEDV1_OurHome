@@ -4,6 +4,7 @@ server:
 spring:
   profiles:
     active: local
+    default: local
     include:
       - common
       - domain
