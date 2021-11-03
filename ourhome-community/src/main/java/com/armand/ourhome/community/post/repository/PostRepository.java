@@ -21,6 +21,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Long countAllByUser(User user);
 
 
-    Page<Post> findAllByPlaceType(PlaceType placeType, Pageable pageable);
 
 }
