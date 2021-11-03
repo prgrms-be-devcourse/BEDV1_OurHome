@@ -1,6 +1,7 @@
 package com.armand.ourhome.market.voucher.domain;
 
 import com.armand.ourhome.domain.user.User;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -10,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,7 +33,8 @@ public class Wallet {
   @JoinColumn(name = "voucher_id", nullable = false)
   private Voucher voucher;
 
-  private Wallet(User user, Voucher voucher) {
+  @Builder
+  public Wallet(User user, Voucher voucher) {
     this.user = user;
     this.voucher = voucher;
   }
