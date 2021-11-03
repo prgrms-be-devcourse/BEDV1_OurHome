@@ -101,7 +101,6 @@ public class UserService {
             throw new UserNotFoundException(id);
         User user = byId.get();
         // Thumnail list 생성
-        // FIXME : Page<>로 변경
         var postList = postRepository.findAllByUser(user, pageable);
         List<Thumbnail> thumbnailList = new ArrayList<>();
         for (Post post : postList) {
@@ -128,6 +127,12 @@ public class UserService {
             responseBuilder
                     .bookmarkCount(bookmarkRepository.countByUser(user))
                     .likeCount(likeRepository.countByUser(user));
+        }
+        // 타유저페이지일 경우 팔로우 여부를 추가
+        else{
+            User curUser = userRepository.findById(token).get();   // 현재 사용자
+            responseBuilder
+                    .isFollow(followRepository.existsByFollowerAndFollowing(curUser, user));
         }
         return responseBuilder.build();
     }
