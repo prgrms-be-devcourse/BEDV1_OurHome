@@ -103,9 +103,7 @@ public class Review extends BaseEntity {
         }
     }
 
-    public void validateUser(Long userId) {
-        if (!Objects.equals(this.user.getId(), userId)) {
-            throw new UserAccessDeniedException(MessageFormat.format("리뷰 작성자가 아닙니다. userId = {0}", userId));
-        }
+    public boolean isWrittenBy(Long userId ) {
+        return Objects.equals(this.user.getId(), userId);
     }
 }

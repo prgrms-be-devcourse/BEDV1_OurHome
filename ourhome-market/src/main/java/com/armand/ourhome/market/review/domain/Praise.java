@@ -30,4 +30,8 @@ public class Praise {
         this.userId = userId;
         this.reviewId = reviewId;
     }
+
+    public boolean isNotCreatedIn(Long reviewId) {
+        return false;
+    }
 }

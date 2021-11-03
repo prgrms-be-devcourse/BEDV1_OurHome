@@ -8,12 +8,13 @@ import com.armand.ourhome.domain.item.repository.ItemRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import com.armand.ourhome.market.order.repository.OrderItemRepository;
+import com.armand.ourhome.market.review.domain.Praise;
 import com.armand.ourhome.market.review.domain.Review;
 import com.armand.ourhome.market.review.domain.ReviewStatus;
-import com.armand.ourhome.market.review.dto.request.RequestAddReview;
-import com.armand.ourhome.market.review.dto.request.RequestDeleteReview;
-import com.armand.ourhome.market.review.dto.request.RequestUpdateReview;
+import com.armand.ourhome.market.review.dto.request.*;
+import com.armand.ourhome.market.review.exception.PraiseDuplicationException;
 import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
+import com.armand.ourhome.market.review.repository.PraiseRepository;
 import com.armand.ourhome.market.review.repository.ReviewRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -49,6 +50,9 @@ class ReviewServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private PraiseRepository praiseRepository;
 
     private User user = User.builder()
             .description("Hello i'm user")
@@ -115,14 +119,14 @@ class ReviewServiceTest {
         given(reviewRepository.existsByItemIdAndUserId(any(), any())).willReturn(true);
 
         //then
-        Assertions.assertThrows(InvalidValueException.class, () -> {
+        assertThrows(InvalidValueException.class, () -> {
             //when
             reviewService.save(request);
         });
     }
 
     @Test
-    @DisplayName("리뷰를 저장한다")
+    @DisplayName("상품을 구매하지 않은 사용자는 리뷰를 생성할 수 없다.")
     public void testSaveReviewNotOrderItem() throws Exception {
         //given
         RequestAddReview request = RequestAddReview.builder()
@@ -216,4 +220,87 @@ class ReviewServiceTest {
             reviewService.delete(1L, new RequestDeleteReview(user.getId() + 1));
         });
     }
+
+    @Test
+    @DisplayName("리뷰에 '도움이 돼요'를 생성할 수 있다.")
+    public void testPraiseReview() throws Exception {
+        //given
+
+        RequestPraiseReview request = new RequestPraiseReview(user.getId() + 1);
+
+        Review review = Review.of(user, item, 5, "너무나도 좋은 제품이네요. 다음에 다시 구매하고 싶습니다.");
+        Praise praise = new Praise(user.getId() + 1, 1L);
+
+        given(reviewRepository.findById(any())).willReturn(Optional.of(review));
+        given(praiseRepository.existsByUserIdAndReviewId(any(), any())).willReturn(false);
+        given(praiseRepository.save(any())).willReturn(praise);
+
+        //when
+        reviewService.praiseReview(1L, request);
+
+        //then
+        assertThat(review.getHelp()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("리뷰 작성자는 '도움이 돼요'를 생성할 수 없다.")
+    public void testPraiseReviewWriter() throws Exception {
+        //given
+
+        RequestPraiseReview request = new RequestPraiseReview(user.getId());
+
+        Review review = Review.of(user, item, 5, "너무나도 좋은 제품이네요. 다음에 다시 구매하고 싶습니다.");
+        Praise praise = new Praise(user.getId() + 1, 1L);
+
+        given(reviewRepository.findById(any())).willReturn(Optional.of(review));
+
+        //then
+        assertThrows(UserAccessDeniedException.class, () -> {
+            //when
+            reviewService.praiseReview(1L, request);
+        });
+    }
+    
+    @Test
+    @DisplayName("'도움이 돼요'는 중복 생성할 수 없다")
+    public void testPraiseReviewDuplicate() throws Exception {
+        //given
+
+        RequestPraiseReview request = new RequestPraiseReview(user.getId() + 1);
+
+        Review review = Review.of(user, item, 5, "너무나도 좋은 제품이네요. 다음에 다시 구매하고 싶습니다.");
+        Praise praise = new Praise(user.getId() + 1, 1L);
+
+        given(reviewRepository.findById(any())).willReturn(Optional.of(review));
+        given(praiseRepository.existsByUserIdAndReviewId(any(), any())).willReturn(true);
+
+        //then
+        assertThrows(PraiseDuplicationException.class, () -> {
+            //when
+            reviewService.praiseReview(1L, request);
+        });
+    }
+
+    @Test
+    @DisplayName("'도움이 돼요' 를 제거할 수 있다.")
+    public void testRemovePraiseReview() throws Exception {
+        //given
+        RequestRemovePraiseReview request = new RequestRemovePraiseReview(user.getId() + 1);
+
+        Review review = Review.of(user, item, 5, "너무나도 좋은 제품이네요. 다음에 다시 구매하고 싶습니다.");
+        Praise praise = new Praise(user.getId() + 1, 1L);
+        review.addHelp();
+
+        given(reviewRepository.findById(any())).willReturn(Optional.of(review));
+        given(praiseRepository.findByIdAndUserIdAndReviewId(any(), any(), any())).willReturn(Optional.of(praise));
+
+        //when
+        reviewService.removePraise(1L, 1L, request);
+
+        //then
+        assertThat(review.getHelp()).isEqualTo(0);
+    }
+
+
+
 }

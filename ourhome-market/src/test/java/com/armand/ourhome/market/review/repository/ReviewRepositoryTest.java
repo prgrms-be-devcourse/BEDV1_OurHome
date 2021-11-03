@@ -87,6 +87,24 @@ class ReviewRepositoryTest {
     }
 
     @Test
+    @DisplayName("POSTED 상태의 리뷰만 조회한다")
+    public void testFindPostedReview() throws Exception {
+        //given
+        Review review = reviews.get(0);
+        userRepository.save(users.get(0));
+        itemRepository.save(item);
+        reviewRepository.save(review);
+
+        //when
+        review.delete();
+
+        //then
+        Page<Review> page = reviewRepository.findByItemId(item.getId(), PageRequest.of(1, 5));
+        List<Review> actual = page.getContent();
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
     @DisplayName("상품의 리뷰 수와 평점 평균을 알 수 있다.")
     public void testGetAggregate() throws Exception {
         //given
@@ -114,16 +132,23 @@ class ReviewRepositoryTest {
         int size = 3;
         userRepository.saveAll(users);
         itemRepository.save(item);
-        reviewRepository.saveAll(reviews);
-        Rating rating = Rating.of(5);
 
+        Review review1 = Review.of(users.get(0), item, 5, "slfjlsfjlsdkfjlsdkfjlsdkfjsldfkjls1");
+        Review review2 = Review.of(users.get(0), item, 5, "slfjlsfjlsdkfjlsdkfjlsdkfjsldfkjls2");
+        Review review3 = Review.of(users.get(0), item, 5, "slfjlsfjlsdkfjlsdkfjlsdkfjsldfkjls3");
+
+        reviewRepository.saveAll(List.of(review1, review2, review3));
+
+        Rating rating = Rating.of(5);
+        review3.delete();
 
         //when
         Page<Review> page = reviewRepository.findByItemIdAndRatingOrderById(item.getId(), rating, PageRequest.of(0, size));
 
         //then
         List<Integer> ratings = page.getContent().stream().map(Review::getRating).collect(Collectors.toList());
-        assertThat(ratings).containsExactly(rating.getRating(), rating.getRating(), rating.getRating());
+        assertThat(ratings).hasSize(size - 1);
+        assertThat(ratings).containsExactly(rating.getRating(), rating.getRating());
     }
 
     @Test

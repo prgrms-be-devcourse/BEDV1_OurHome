@@ -125,7 +125,7 @@ class ItemControllerTest {
                 .andExpect(jsonPath("name").value(item.getName()))
                 .andExpect(jsonPath("description").value(item.getDescription()))
                 .andDo(print())
-                .andDo(document("items-get-one",
+                .andDo(document("item/item-get-one",
                         pathParameters(
                                 parameterWithName("itemId").description("itemId")
                         ),
@@ -193,7 +193,7 @@ class ItemControllerTest {
         //then
         actions.andExpect(status().isOk())
                 .andDo(print())
-                .andDo(document("item-get-all",
+                .andDo(document("item/item-get-all",
                         responseFields(
                                 fieldWithPath("items").type(ARRAY).description("items"),
                                 fieldWithPath("items[].item_id").type(NUMBER).description("item_id"),

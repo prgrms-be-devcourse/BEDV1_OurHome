@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,7 +47,7 @@ class PraiseRepositoryTest {
         praiseRepository.saveAll(List.of(praise1, praise2, praise3, praise));
 
         //then
-        long count = praiseRepository.countByReviewId(1L);
+        long count = praiseRepository.countByReviewId(praise.getReviewId());
         assertThat(count).isEqualTo(4);
     }
 
@@ -74,7 +75,7 @@ class PraiseRepositoryTest {
         praiseRepository.saveAll(List.of(praise1, praise2));
 
         //when
-        praiseRepository.deletePraiseByUserIdAndReviewId(1L, 2L);
+        praiseRepository.deletePraiseByUserIdAndReviewId(praise1.getUserId(), praise2.getReviewId());
 
         //then
         long count = praiseRepository.count();
@@ -91,7 +92,7 @@ class PraiseRepositoryTest {
         praiseRepository.saveAll(List.of(praise1, praise2));
 
         //when
-        boolean exist = praiseRepository.existsByUserIdAndReviewId(1L, 2L);
+        boolean exist = praiseRepository.existsByUserIdAndReviewId(praise1.getUserId(), praise1.getReviewId());
 
         //then
         assertThat(exist).isTrue();
@@ -107,9 +108,27 @@ class PraiseRepositoryTest {
         praiseRepository.saveAll(List.of(praise1, praise2));
 
         //when
-        boolean exist = praiseRepository.existsByUserIdAndReviewId(1L, 5L);
+        boolean exist = praiseRepository.existsByUserIdAndReviewId(praise2.getUserId(), praise2.getReviewId() + 100);
 
         //then
         assertThat(exist).isFalse();
+    }
+
+    @Test
+    @DisplayName("User.id와 Review.id로 Praise.id로 조회할 수 있다.")
+    public void testFindByIdAndUserIdAndReviewId() throws Exception {
+        //given
+        Praise praise1 = new Praise(1L, 2L);
+        Praise praise2 = new Praise(1L, 3L);
+
+        praiseRepository.saveAll(List.of(praise1, praise2));
+
+        //when
+        Optional<Praise> actual1 = praiseRepository.findByIdAndUserIdAndReviewId(praise1.getId(), praise1.getUserId(), praise1.getReviewId());
+        Optional<Praise> actual2 = praiseRepository.findByIdAndUserIdAndReviewId(praise1.getId(), praise1.getUserId(), praise1.getReviewId() + 1000);
+
+        //then
+        assertThat(actual1).isPresent();
+        assertThat(actual2).isEmpty();
     }
 }
