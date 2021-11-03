@@ -9,15 +9,16 @@ import com.armand.ourhome.market.item.exception.ItemNotFoundException;
 import com.armand.ourhome.market.order.exception.UserNotFoundException;
 import com.armand.ourhome.market.order.repository.OrderItemRepository;
 import com.armand.ourhome.market.review.domain.Aggregate;
+import com.armand.ourhome.market.review.domain.Praise;
 import com.armand.ourhome.market.review.domain.Review;
-import com.armand.ourhome.market.review.dto.request.RequestDeleteReview;
-import com.armand.ourhome.market.review.dto.request.RequestUpdateReview;
+import com.armand.ourhome.market.review.dto.request.*;
+import com.armand.ourhome.market.review.exception.PraiseDuplicationException;
+import com.armand.ourhome.market.review.exception.PraiseNotFoundException;
 import com.armand.ourhome.market.review.exception.ReviewNotFoundException;
 import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
 import com.armand.ourhome.market.review.mapper.ReviewMapper;
+import com.armand.ourhome.market.review.repository.PraiseRepository;
 import com.armand.ourhome.market.review.repository.ReviewRepository;
-import com.armand.ourhome.market.review.dto.request.RequestAddReview;
-import com.armand.ourhome.market.review.dto.request.RequestReviewPages;
 import com.armand.ourhome.market.review.dto.response.PageResponse;
 import com.armand.ourhome.market.review.dto.response.ResponseReview;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -41,6 +41,8 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final OrderItemRepository orderItemRepository;
+    private final PraiseRepository praiseRepository;
+
 
     @Transactional
     public Long save(RequestAddReview request) {
@@ -53,7 +55,10 @@ public class ReviewService {
     public Long update(Long reviewId, RequestUpdateReview request) {
         Review review = getReview(reviewId);
 
-        review.validateUser(request.getUserId());
+
+        if (!review.isWrittenBy(request.getUserId())) {
+            throw new UserAccessDeniedException(MessageFormat.format("리뷰 작성자가 아닙니다. userId = {0}", request.getUserId()));
+        }
 
         review.update(request.getComment(), request.getRating());
 
@@ -64,9 +69,42 @@ public class ReviewService {
     public void delete(Long reviewId, RequestDeleteReview request) {
         Review review = getReview(reviewId);
 
-        review.validateUser(request.getUserId());
+        if (!review.isWrittenBy(request.getUserId())) {
+            throw new UserAccessDeniedException(MessageFormat.format("리뷰 작성자가 아닙니다. userId = {0}", request.getUserId()));
+        }
 
         review.delete();
+    }
+
+    @Transactional
+    public Long praiseReview(Long reviewId, RequestPraiseReview request) {
+
+        Review review = getReview(reviewId);
+
+        if (review.isWrittenBy(request.getUserId())) {
+            throw new UserAccessDeniedException(MessageFormat.format("리뷰 작성자는 '도움이 돼요' 를 생성할 수 없습니다. reviewId = {0}, userId = {1}", reviewId, request.getUserId()));
+        }
+
+        review.addHelp();
+
+        Praise praise = createPraise(reviewId, request.getUserId());
+        praiseRepository.save(praise);
+
+        return reviewId;
+    }
+
+    @Transactional
+    public void removePraise(Long praiseId, Long reviewId, RequestRemovePraiseReview request) {
+
+        Praise praise = praiseRepository.findByIdAndUserIdAndReviewId(praiseId, request.getUserId(), reviewId)
+                .orElseThrow(() -> new PraiseNotFoundException(
+                        MessageFormat.format("'도움이 돼요' 가 존재하지 않습니다. praiseId = {0}, reviewId = {1}, userId = {2}",
+                        praiseId, reviewId, request.getUserId())));
+
+        Review review = getReview(reviewId);
+        review.removeHelp();
+
+        praiseRepository.delete(praise);
     }
 
     public PageResponse<List<ResponseReview>> fetchReviewPagesBy(Long itemId, RequestReviewPages request) {
@@ -125,5 +163,16 @@ public class ReviewService {
             throw new InvalidValueException(
                     MessageFormat.format("사용자가 이미 리뷰를 남겼습니다. itemId = {0}, userId = {1}", itemId, userId));
         }
+    }
+
+    private Praise createPraise(Long reviewId, Long userId) {
+
+        boolean exists = praiseRepository.existsByUserIdAndReviewId(userId, reviewId);
+
+        if(exists) {
+            throw new PraiseDuplicationException(MessageFormat.format("'도움이 돼요' 가 이미 생성되었습니다. reviewId = {0}, userId = {1}", reviewId, userId));
+        }
+
+        return new Praise(userId, reviewId);
     }
 }

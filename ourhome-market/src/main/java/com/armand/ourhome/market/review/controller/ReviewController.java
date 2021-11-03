@@ -1,10 +1,7 @@
 package com.armand.ourhome.market.review.controller;
 
-import com.armand.ourhome.market.review.dto.request.RequestDeleteReview;
-import com.armand.ourhome.market.review.dto.request.RequestUpdateReview;
+import com.armand.ourhome.market.review.dto.request.*;
 import com.armand.ourhome.market.review.service.ReviewService;
-import com.armand.ourhome.market.review.dto.request.RequestAddReview;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +32,21 @@ public class ReviewController {
     public ResponseEntity<Void> deleteReview(@PathVariable("reviewId") Long reviewId,
                                              @RequestBody RequestDeleteReview request) {
         reviewService.delete(reviewId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{reviewId}/praise")
+    public ResponseEntity<Long> praiseReview(@PathVariable("reviewId") Long reviewId, @RequestBody @Valid RequestPraiseReview request) {
+
+        return ResponseEntity.ok(reviewService.praiseReview(reviewId, request));
+    }
+
+    @DeleteMapping("/{reviewId}/praise/{praiseId}")
+    public ResponseEntity<Void> removePraiseReview(@PathVariable("reviewId") Long reviewId,
+                                                   @PathVariable("praiseId") Long praiseId,
+                                                   @RequestBody @Valid RequestRemovePraiseReview request) {
+        reviewService.removePraise(praiseId, reviewId, request);
+
         return ResponseEntity.noContent().build();
     }
 }
