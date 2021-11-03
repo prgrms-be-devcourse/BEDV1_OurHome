@@ -26,7 +26,7 @@ public class FollowService {
     public void follow(Long followingId, Long token) {
         User follower = userRepository.findById(token).get();
         User following = userRepository.findById(followingId).orElseThrow(() -> new UserNotFoundException(followingId));
-        if(followRepository.existsByFollowerAndFollowing(follower, following))
+        if (followRepository.existsByFollowerAndFollowing(follower, following))
             throw new InvalidValueException("이미 팔로우하고 있는 사용자입니다.");
         followRepository.save(
                 Follow.builder()
@@ -40,20 +40,29 @@ public class FollowService {
     public void unfollow(Long followingId, Long token) {
         User follower = userRepository.findById(token).get();
         User following = userRepository.findById(followingId).orElseThrow(() -> new UserNotFoundException(followingId));
-        if(!followRepository.existsByFollowerAndFollowing(follower, following))
+        if (!followRepository.existsByFollowerAndFollowing(follower, following))
             throw new InvalidValueException("이미 팔로우 해제된 사용자입니다.");
         followRepository.deleteByFollowerAndFollowing(follower, following);
     }
 
-    public List<FollowInfoResponse> followingPage(Long token){
+    public List<FollowInfoResponse> followingPage(Long token) {
         User user = userRepository.findById(token).get();
         return followRepository.findByFollower(user).stream()   // 다 들고오기 vs following 컬럼만 들고오기 ???
                 .map(follow -> FollowInfoResponse.of(follow.getFollowing(), true))
                 .collect(Collectors.toList());
     }
 
-
-
+    public List<FollowInfoResponse> followerPage(Long token) {
+        User user = userRepository.findById(token).get();
+        return followRepository.findByFollowing(user).stream()
+                .map(follow ->
+                        FollowInfoResponse.of(
+                                follow.getFollower(),
+                                followRepository.existsByFollowerAndFollowing(user, follow.getFollower())
+                        )
+                )
+                .collect(Collectors.toList());
+    }
 
 
 }

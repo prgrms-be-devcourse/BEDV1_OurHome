@@ -33,19 +33,20 @@ public class FollowController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/followers")
-    public ResponseEntity<List<FollowInfoResponse>> followerPage(
+    @GetMapping("/followings")
+    public ResponseEntity<List<FollowInfoResponse>> followingPage(
             @RequestParam(value = "token") Long token
     ) {
         List<FollowInfoResponse> response = followService.followingPage(token);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/follower")
-    public ResponseEntity<FollowInfoResponse> followingPage(
+    @GetMapping("/followers")
+    public ResponseEntity<List<FollowInfoResponse>> followerPage(
             @RequestParam(value = "token") Long token
     ){
-
+        List<FollowInfoResponse> response = followService.followerPage(token);
+        return ResponseEntity.ok(response);
     }
 
 
