@@ -1,6 +1,8 @@
 # --------- 직접 추가 ---------
 
 aws.yaml
+dev-db.yaml
+prod-db.yaml
 db.yaml
 scheme.sql
 generated
