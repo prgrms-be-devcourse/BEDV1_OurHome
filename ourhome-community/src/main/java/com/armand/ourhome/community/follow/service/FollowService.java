@@ -24,10 +24,8 @@ public class FollowService {
     public void follow(Long followingId, Long token) {
         User follower = userRepository.findById(token).orElseThrow(() -> new UserNotFoundException(token));
         User following = userRepository.findById(followingId).orElseThrow(() -> new UserNotFoundException(followingId));
-
         if(followRepository.existsByFollowerAndFollowing(follower, following))
             throw new InvalidValueException("이미 팔로우하고 있는 사용자입니다.");
-
         followRepository.save(
                 Follow.builder()
                         .follower(follower)
@@ -35,6 +33,16 @@ public class FollowService {
                         .build()
         );
     }
+
+    @Transactional
+    public void unfollow(Long followingId, Long token) {
+        User follower = userRepository.findById(token).orElseThrow(() -> new UserNotFoundException(token));
+        User following = userRepository.findById(followingId).orElseThrow(() -> new UserNotFoundException(followingId));
+        if(!followRepository.existsByFollowerAndFollowing(follower, following))
+            throw new InvalidValueException("이미 팔로우 해제된 사용자입니다.");
+        followRepository.deleteByFollowerAndFollowing(follower, following);
+    }
+
 
 
 }

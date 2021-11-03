@@ -21,9 +21,13 @@ public class FollowController {
         return ResponseEntity.ok().build();
     }
 
-//    @DeleteMapping()
-//    public ResponseEntity<Void> unfollow() {
-//        return ResponseEntity.ok().build();
-//    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> unfollow(
+            @PathVariable(value = "id") Long followingId,
+            @RequestParam(value = "token") Long token
+    ) {
+        followService.unfollow(followingId, token);
+        return ResponseEntity.ok().build();
+    }
 
 }

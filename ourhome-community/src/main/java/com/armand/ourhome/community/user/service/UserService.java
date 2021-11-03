@@ -76,7 +76,7 @@ public class UserService {
         isDuplicateNickname(nickname);
         String description = updateInfoRequest.getDescription();
         String profileImageBase64 = updateInfoRequest.getProfileImageBase64();
-        String profileImageUrl = awsS3Uploader.upload(profileImageBase64, "user-profiles");
+        String profileImageUrl = awsS3Uploader.upload(profileImageBase64, "profile");
 
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         user.updateInfo(nickname, description, profileImageUrl);
