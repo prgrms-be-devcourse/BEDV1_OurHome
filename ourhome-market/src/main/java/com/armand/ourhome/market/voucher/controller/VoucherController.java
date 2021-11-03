@@ -48,15 +48,15 @@ public class VoucherController {
     return ResponseEntity.ok().build();
   }
 
-  @PostMapping("/assign-to-user")
-  public ResponseEntity<WalletDto> assignToUser(@RequestParam Long id, @RequestParam Long userId) {
+  @PostMapping("/{id}/assign-to-user")
+  public ResponseEntity<WalletDto> assignToUser(@PathVariable Long id, @RequestParam Long userId) {
     return ResponseEntity.ok(voucherService.assignToUser(id, userId));
   }
-
-  @DeleteMapping("/use-voucher")
-  public ResponseEntity<Void> use(@RequestParam Long id, @RequestParam Long userId) {
-    voucherService.use(id, userId);
-    return ResponseEntity.ok().build();
-  }
+//
+//  @DeleteMapping("/{id}/use-voucher")
+//  public ResponseEntity<Void> use(@PathVariable Long id, @RequestParam Long userId) {
+//    voucherService.use(id, userId);
+//    return ResponseEntity.ok().build();
+//  }
 
 }
