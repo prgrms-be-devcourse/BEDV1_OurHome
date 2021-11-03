@@ -1,7 +1,5 @@
 package com.armand.ourhome.market.review.dto.response;
 
-import com.armand.ourhome.market.review.service.ResponseReviewImage;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;

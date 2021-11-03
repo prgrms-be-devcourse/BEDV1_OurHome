@@ -12,6 +12,8 @@ import com.armand.ourhome.market.review.domain.Aggregate;
 import com.armand.ourhome.market.review.domain.Praise;
 import com.armand.ourhome.market.review.domain.Review;
 import com.armand.ourhome.market.review.dto.request.*;
+import com.armand.ourhome.market.review.dto.response.ResponseAddReview;
+import com.armand.ourhome.market.review.dto.response.ResponseReviewImage;
 import com.armand.ourhome.market.review.exception.PraiseDuplicationException;
 import com.armand.ourhome.market.review.exception.PraiseNotFoundException;
 import com.armand.ourhome.market.review.exception.ReviewNotFoundException;
@@ -36,6 +38,8 @@ import java.util.stream.Collectors;
 @Service
 public class ReviewService {
 
+    private final ReviewImageService reviewImageService;
+
     private final ReviewMapper reviewMapper = Mappers.getMapper(ReviewMapper.class);
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
@@ -45,16 +49,18 @@ public class ReviewService {
 
 
     @Transactional
-    public Long save(RequestAddReview request) {
+    public ResponseAddReview save(RequestAddReview request) {
         Review review = createReview(request);
         reviewRepository.save(review);
-        return review.getId();
+
+        ResponseReviewImage responseReviewImage = reviewImageService.saveReviewImage(review.getId(), request.getUserId(), request.getReviewImageBase64());
+
+        return new ResponseAddReview(review.getId(), responseReviewImage);
     }
 
     @Transactional
     public Long update(Long reviewId, RequestUpdateReview request) {
         Review review = getReview(reviewId);
-
 
         if (!review.isWrittenBy(request.getUserId())) {
             throw new UserAccessDeniedException(MessageFormat.format("리뷰 작성자가 아닙니다. userId = {0}", request.getUserId()));

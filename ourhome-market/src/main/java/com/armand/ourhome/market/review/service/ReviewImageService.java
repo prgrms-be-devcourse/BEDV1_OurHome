@@ -2,6 +2,7 @@ package com.armand.ourhome.market.review.service;
 
 import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.market.review.domain.ReviewImage;
+import com.armand.ourhome.market.review.dto.response.ResponseReviewImage;
 import com.armand.ourhome.market.review.exception.ReviewImageDuplicateException;
 import com.armand.ourhome.market.review.repository.ReviewImageRepository;
 import lombok.RequiredArgsConstructor;

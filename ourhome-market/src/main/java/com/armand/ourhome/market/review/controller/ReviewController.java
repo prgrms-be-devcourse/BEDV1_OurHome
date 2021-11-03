@@ -1,6 +1,7 @@
 package com.armand.ourhome.market.review.controller;
 
 import com.armand.ourhome.market.review.dto.request.*;
+import com.armand.ourhome.market.review.dto.response.ResponseAddReview;
 import com.armand.ourhome.market.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,8 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping
-    public ResponseEntity<Long> addReview(@Valid @RequestBody RequestAddReview request) {
-        Long reviewId = reviewService.save(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(reviewId);
+    public ResponseEntity<ResponseAddReview> addReview(@Valid @RequestBody RequestAddReview request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.save(request));
     }
 
     @PatchMapping("/{reviewId}")

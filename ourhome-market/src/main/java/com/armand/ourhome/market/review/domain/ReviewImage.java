@@ -42,7 +42,6 @@ public class ReviewImage {
         Assert.notNull(url, "Review 이미지 URL은 null이 될 수 없습니다");
         Assert.notNull(userId, "User.id는 null이 될 수 없습니다.");
 
-
         return new ReviewImage(reviewId, userId, url);
     }
 

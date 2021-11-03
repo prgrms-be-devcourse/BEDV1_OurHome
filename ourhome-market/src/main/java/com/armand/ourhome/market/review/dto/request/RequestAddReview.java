@@ -29,4 +29,6 @@ public class RequestAddReview {
     @Min(0)
     @Max(5)
     private int rating;
+
+    private String reviewImageBase64;
 }

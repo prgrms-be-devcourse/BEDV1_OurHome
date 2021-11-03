@@ -1,6 +1,8 @@
 package com.armand.ourhome.market.review.controller;
 
 import com.armand.ourhome.market.review.dto.request.*;
+import com.armand.ourhome.market.review.dto.response.ResponseAddReview;
+import com.armand.ourhome.market.review.dto.response.ResponseReviewImage;
 import com.armand.ourhome.market.review.service.ReviewService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
-import static org.springframework.restdocs.payload.JsonFieldType.STRING;
+import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -54,9 +55,12 @@ class ReviewControllerTest {
                 .comment(comment)
                 .itemId(itemId)
                 .rating(rating)
+                .reviewImageBase64("imageBase64")
                 .build();
 
-        given(reviewService.save(any())).willReturn(1L);
+        ResponseAddReview response = new ResponseAddReview(1L, new ResponseReviewImage(1L, "imageUrl"));
+
+        given(reviewService.save(any())).willReturn(response);
 
         //when
         ResultActions actions = mockMvc.perform(post("/api/reviews")
@@ -70,7 +74,14 @@ class ReviewControllerTest {
                                     fieldWithPath("user_id").type(NUMBER).description("user_id"),
                                     fieldWithPath("item_id").type(NUMBER).description("item_id"),
                                     fieldWithPath("comment").type(STRING).description("comment"),
-                                    fieldWithPath("rating").type(NUMBER).description("rating")
+                                    fieldWithPath("rating").type(NUMBER).description("rating"),
+                                    fieldWithPath("review_image_base64").type(STRING).description("review_image_base64")
+                            ),
+                            responseFields(
+                                    fieldWithPath("review_id").type(NUMBER).description("review_id"),
+                                    fieldWithPath("review_image").type(OBJECT).description("review_image"),
+                                    fieldWithPath("review_image.id").type(NUMBER).description("review_image.id"),
+                                    fieldWithPath("review_image.image_url").type(STRING).description("review_image.image_url")
                             )
                         ));
     }
