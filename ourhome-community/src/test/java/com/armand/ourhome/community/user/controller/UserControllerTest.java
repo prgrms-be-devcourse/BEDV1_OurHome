@@ -150,8 +150,9 @@ class UserControllerTest {
 
         // When
         ResultActions resultActions = mockMvc.perform(
-                patch("/api/users/{id}", user.getId())
+                patch("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("token", String.valueOf(user.getId()))
                         .content(request)
         );
 
@@ -162,8 +163,8 @@ class UserControllerTest {
                 .andDo(
                         document(
                                 "user/update-info", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("id").description("user_id")
+                                requestParameters(
+                                        parameterWithName("token").description("token")
                                 ),
                                 requestFields(
                                         fieldWithPath("nickname").type(JsonFieldType.STRING).description("nickname"),
@@ -188,8 +189,9 @@ class UserControllerTest {
 
         // When
         ResultActions resultActions = mockMvc.perform(
-                patch("/api/users/{id}/password", user.getId())
+                patch("/api/users/password")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("token", String.valueOf(user.getId()))
                         .content(request)
         );
 
@@ -200,8 +202,8 @@ class UserControllerTest {
                 .andDo(
                         document(
                                 "user/update-password", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("id").description("user_id")
+                                requestParameters(
+                                        parameterWithName("token").description("token")
                                 ),
                                 requestFields(
                                         fieldWithPath("password").type(JsonFieldType.STRING).description("password")

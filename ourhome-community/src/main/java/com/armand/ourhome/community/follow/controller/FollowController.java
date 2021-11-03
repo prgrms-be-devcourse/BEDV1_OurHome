@@ -30,6 +30,9 @@ public class FollowController {
         return ResponseEntity.ok().build();
     }
 
+//    @GetMapping("/follower")
+//    public ResponseEntity
+
 
 
 }

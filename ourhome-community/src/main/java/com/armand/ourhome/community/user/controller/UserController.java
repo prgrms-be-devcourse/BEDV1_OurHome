@@ -43,22 +43,22 @@ public class UserController {
     }
 
     // 회원정보 수정
-    @PatchMapping("/{id}")
+    @PatchMapping
     public ResponseEntity<UpdateResponse> updateInfo(
-            @PathVariable(value = "id") Long id,
+            @RequestParam(value = "token") Long token,
             @Validated(UserValidationSequence.class) @RequestBody UpdateInfoRequest request
     ) {
-        UpdateResponse response = userService.updateInfo(id, request);
+        UpdateResponse response = userService.updateInfo(token, request);
         return ResponseEntity.ok(response);
     }
 
     // 비밀번호 변경
-    @PatchMapping("/{id}/password")
+    @PatchMapping("/password")
     public ResponseEntity<UpdateResponse> updatePassword(
-            @PathVariable(value = "id") Long id,
+            @RequestParam(value = "token") Long token,
             @Validated(UserValidationSequence.class) @RequestBody UpdatePasswordRequest request
     ) {
-        UpdateResponse response = userService.updatePassword(id, request);
+        UpdateResponse response = userService.updatePassword(token, request);
         return ResponseEntity.ok(response);
     }
 

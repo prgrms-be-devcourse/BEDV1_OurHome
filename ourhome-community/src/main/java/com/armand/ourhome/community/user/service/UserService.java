@@ -71,14 +71,14 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateResponse updateInfo(Long id, UpdateInfoRequest updateInfoRequest) {
+    public UpdateResponse updateInfo(Long token, UpdateInfoRequest updateInfoRequest) {
         String nickname = updateInfoRequest.getNickname();
         isDuplicateNickname(nickname);
         String description = updateInfoRequest.getDescription();
         String profileImageBase64 = updateInfoRequest.getProfileImageBase64();
         String profileImageUrl = awsS3Uploader.upload(profileImageBase64, "profile");
 
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        User user = userRepository.findById(token).orElseThrow(() -> new UserNotFoundException(token));
         user.updateInfo(nickname, description, profileImageUrl);
 
         // update된 시간을 받아오기 위해 flush
@@ -87,9 +87,9 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateResponse updatePassword(Long id, UpdatePasswordRequest updatePasswordRequest) {
+    public UpdateResponse updatePassword(Long token, UpdatePasswordRequest updatePasswordRequest) {
         String password = updatePasswordRequest.getPassword();
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        User user = userRepository.findById(token).orElseThrow(() -> new UserNotFoundException(token));
         user.updatePassword(password);
         userRepository.flush();
         return UpdateResponse.of(user);
