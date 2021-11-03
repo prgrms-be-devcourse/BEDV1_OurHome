@@ -1,7 +1,6 @@
 package com.armand.ourhome.market.voucher.domain;
 
 import com.armand.ourhome.domain.base.BaseEntity;
-import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -40,7 +39,7 @@ public abstract class Voucher extends BaseEntity {
 
   public abstract void update(int value, int minLimit);
 
-  public void updateMinLimit(int minLimit){
+  public void updateMinLimit(int minLimit) {
     this.minLimit = minLimit;
   }
 
