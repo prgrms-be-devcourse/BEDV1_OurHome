@@ -1,4 +1,4 @@
-package com.armand.ourhome.community.comment.exception;
+package com.armand.ourhome.community.exception;
 
 import com.armand.ourhome.common.error.exception.EntityNotFoundException;
 import java.text.MessageFormat;
