@@ -5,6 +5,7 @@ import com.armand.ourhome.community.comment.dto.request.CreateCommentRequest;
 import com.armand.ourhome.community.comment.dto.response.CreateCommentResponse;
 import com.armand.ourhome.community.comment.entity.Comment;
 import com.armand.ourhome.community.comment.repository.CommentRepository;
+import com.armand.ourhome.community.exception.CommentNotFountException;
 import com.armand.ourhome.community.exception.PostNotFountException;
 import com.armand.ourhome.community.exception.UserNotFountException;
 import com.armand.ourhome.community.post.entity.Post;
@@ -36,5 +37,16 @@ public class CommentService {
         Comment saveComment = commentRepository.save(comment);
 
         return CreateCommentMapper.INSTANCE.commentToCreateCommentResponse(saveComment);
+    }
+
+    @Transactional
+    public Long removeComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+            .orElseThrow(() -> new CommentNotFountException(commentId));
+
+        comment.removeComment();
+        Comment removeComment = commentRepository.save(comment);
+
+        return removeComment.getId();
     }
 }
