@@ -138,7 +138,7 @@ public class ReviewService {
         List<ResponseReview> reviews = pages
                 .getContent()
                 .stream()
-                .map(reviewMapper::toResponseDto)
+                .map(review -> reviewMapper.toResponseDto(review, checkReviewPraised(request.getUserId(), review.getId())))
                 .collect(Collectors.toList());
 
         return new PageResponse<>(pages.getTotalElements(), pages.getTotalPages(), reviews, pages.getSize());

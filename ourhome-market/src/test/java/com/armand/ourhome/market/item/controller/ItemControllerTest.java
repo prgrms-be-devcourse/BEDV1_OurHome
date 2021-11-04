@@ -150,6 +150,7 @@ class ItemControllerTest {
                                 fieldWithPath("reviews.content[].rating").type(NUMBER).description("reviews.content[].rating"),
                                 fieldWithPath("reviews.content[].comment").type(STRING).description("reviews.content[].comment"),
                                 fieldWithPath("reviews.content[].help").type(NUMBER).description("reviews.content[].help"),
+                                fieldWithPath("reviews.content[].is_praise").type(BOOLEAN).description("reviews.content[].is_praise"),
                                 fieldWithPath("reviews.content[].created_at").type(STRING).description("reviews.content[].created_at"),
                                 fieldWithPath("server_date_time").type(STRING).description("server_date_time")
                         )

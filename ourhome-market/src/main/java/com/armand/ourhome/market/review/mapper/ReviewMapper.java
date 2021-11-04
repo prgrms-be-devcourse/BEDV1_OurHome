@@ -10,10 +10,10 @@ import org.mapstruct.Mapping;
 @Mapper
 public interface ReviewMapper {
 
-    Review toEntity(RequestAddReview request);
-
-    @Mapping(target = "reviewId", source = "id")
-    ResponseReview toResponseDto(Review review);
+    @Mapping(target = "reviewId", source = "review.id")
+    @Mapping(target = "praise", source = "isPraise")
+    @Mapping(target = "userId", expression = "java(review.getUser().getId())")
+    ResponseReview toResponseDto(Review review, boolean isPraise);
 
     default ReviewDto toDto(Review review) {
         return ReviewDto.builder()
