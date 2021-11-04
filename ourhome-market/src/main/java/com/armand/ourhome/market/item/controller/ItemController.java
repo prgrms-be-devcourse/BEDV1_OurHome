@@ -5,6 +5,7 @@ import com.armand.ourhome.market.item.dto.response.ResponseItemDetail;
 import com.armand.ourhome.market.item.mapper.ItemMapper;
 import com.armand.ourhome.market.item.service.ItemService;
 import com.armand.ourhome.market.review.dto.request.RequestReviewPages;
+import com.armand.ourhome.market.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.http.ResponseEntity;

@@ -31,7 +31,7 @@ public class ReviewController {
 
     @DeleteMapping("/{reviewId}")
     public ResponseEntity<Void> deleteReview(@PathVariable("reviewId") Long reviewId,
-                                             @RequestBody RequestDeleteReview request) {
+                                             @Valid @RequestBody RequestDeleteReview request) {
         reviewService.delete(reviewId, request);
         return ResponseEntity.noContent().build();
     }
@@ -43,16 +43,16 @@ public class ReviewController {
     }
 
     @PostMapping("/{reviewId}/praise")
-    public ResponseEntity<Long> praiseReview(@PathVariable("reviewId") Long reviewId, @RequestBody @Valid RequestPraiseReview request) {
+    public ResponseEntity<Long> praiseReview(@PathVariable("reviewId") Long reviewId, @Valid @RequestBody RequestPraiseReview request) {
 
         return ResponseEntity.ok(reviewService.praiseReview(reviewId, request));
     }
 
     @DeleteMapping("/{reviewId}/praise/{praiseId}")
-    public ResponseEntity<Void> removePraiseReview(@PathVariable("reviewId") Long reviewId,
+    public ResponseEntity<Void> deletePraiseReview(@PathVariable("reviewId") Long reviewId,
                                                    @PathVariable("praiseId") Long praiseId,
-                                                   @RequestBody @Valid RequestRemovePraiseReview request) {
-        reviewService.removePraise(praiseId, reviewId, request);
+                                                   @Valid @RequestBody RequestRemovePraiseReview request) {
+        reviewService.deletePraise(praiseId, reviewId, request);
 
         return ResponseEntity.noContent().build();
     }

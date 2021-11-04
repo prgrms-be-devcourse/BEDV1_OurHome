@@ -15,7 +15,6 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class ReviewImageService {
 
@@ -28,7 +27,7 @@ public class ReviewImageService {
         if (Objects.isNull(reviewImageBase64))
             return null;
 
-        if (reviewImageRepository.existsByUserId(userId)) {
+        if (reviewImageRepository.existsActiveImageByUserId(userId)) {
             throw new ReviewImageDuplicateException(MessageFormat.format("리뷰에 등록한 이미지가 이미 존재합니다. userId = {0}", userId));
         }
 
@@ -42,12 +41,12 @@ public class ReviewImageService {
 
     @Transactional
     public ResponseReviewImage updateReviewImage(Long id, Long userId, String reviewImageBase64) {
-        ReviewImage reviewImage = reviewImageRepository.findById(id)
-                .orElseThrow(() -> new ReviewImageNotFoundException(MessageFormat.format("리뷰 이미지가 존재 하지 않습니다. id = {0}", id)));
 
-        if (reviewImage.isWrittenBy(userId)) {
-            throw new UserAccessDeniedException(MessageFormat.format("작성자만 이미지를 수정할 수 있습니다. userId = {0}", userId));
-        }
+        if (Objects.isNull(reviewImageBase64))
+            return null;
+
+        ReviewImage reviewImage = reviewImageRepository.findActiveImageByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ReviewImageNotFoundException(MessageFormat.format("리뷰 이미지가 존재 하지 않습니다. id = {0}, userId = {0}", id, userId)));
 
         String reviewImageUrl = awsS3Uploader.upload(reviewImageBase64, "review");
 
@@ -58,7 +57,7 @@ public class ReviewImageService {
 
     @Transactional
     public void deleteReviewImage(Long reviewId) {
-        ReviewImage reviewImage = reviewImageRepository.findByReviewId(reviewId)
+        ReviewImage reviewImage = reviewImageRepository.findActiveImageByReviewId(reviewId)
                 .orElseThrow(() -> new ReviewImageNotFoundException(MessageFormat.format("리뷰 이미지가 존재 하지 않습니다. reviewId = {0}", reviewId)));
 
         reviewImage.delete();

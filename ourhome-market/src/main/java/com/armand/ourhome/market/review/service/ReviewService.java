@@ -75,10 +75,8 @@ public class ReviewService {
     }
 
     private ResponseReviewImage updateReviewImage(RequestUpdateReview request, Review review) {
-        if (request.getReviewImageBase64() != null)  {
-            return reviewImageService.updateReviewImage(review.getId(), request.getUserId(), request.getReviewImageBase64());
-        }
-        return null;
+
+        return reviewImageService.updateReviewImage(review.getId(), request.getUserId(), request.getReviewImageBase64());
     }
 
     @Transactional
@@ -91,12 +89,11 @@ public class ReviewService {
 
         review.delete();
 
-        deleteReviewImage(request);
+        deleteReviewImage(reviewId);
     }
 
-    private void deleteReviewImage(RequestDeleteReview request) {
-        if (request.getReviewImageId() != null)
-            reviewImageService.deleteReviewImage(request.getReviewImageId());
+    private void deleteReviewImage(Long reviewId) {
+        reviewImageService.deleteReviewImage(reviewId);
     }
 
     @Transactional
@@ -117,7 +114,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public void removePraise(Long praiseId, Long reviewId, RequestRemovePraiseReview request) {
+    public void deletePraise(Long praiseId, Long reviewId, RequestRemovePraiseReview request) {
 
         Praise praise = praiseRepository.findByIdAndUserIdAndReviewId(praiseId, request.getUserId(), reviewId)
                 .orElseThrow(() -> new PraiseNotFoundException(
@@ -145,6 +142,10 @@ public class ReviewService {
                 .collect(Collectors.toList());
 
         return new PageResponse<>(pages.getTotalElements(), pages.getTotalPages(), reviews, pages.getSize());
+    }
+
+    public boolean checkReviewPraised(Long userId, Long reviewId) {
+        return praiseRepository.existsByUserIdAndReviewId(userId, reviewId);
     }
 
     public Aggregate getReviewAggregateBy(Item item) {

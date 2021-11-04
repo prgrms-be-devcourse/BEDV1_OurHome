@@ -10,14 +10,12 @@ import com.armand.ourhome.domain.user.UserRepository;
 import com.armand.ourhome.market.order.repository.OrderItemRepository;
 import com.armand.ourhome.market.review.domain.Praise;
 import com.armand.ourhome.market.review.domain.Review;
-import com.armand.ourhome.market.review.domain.ReviewImage;
 import com.armand.ourhome.market.review.domain.ReviewStatus;
 import com.armand.ourhome.market.review.dto.request.*;
 import com.armand.ourhome.market.review.exception.PraiseDuplicationException;
 import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
 import com.armand.ourhome.market.review.repository.PraiseRepository;
 import com.armand.ourhome.market.review.repository.ReviewRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -299,7 +296,7 @@ class ReviewServiceTest {
         given(praiseRepository.findByIdAndUserIdAndReviewId(any(), any(), any())).willReturn(Optional.of(praise));
 
         //when
-        reviewService.removePraise(1L, 1L, request);
+        reviewService.deletePraise(1L, 1L, request);
 
         //then
         assertThat(review.getHelp()).isEqualTo(0);
