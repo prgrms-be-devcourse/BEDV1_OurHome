@@ -1,9 +1,11 @@
 package com.armand.ourhome.market.voucher.controller;
 
+import com.armand.ourhome.market.voucher.dto.PageResponse;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.WalletDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
 import com.armand.ourhome.market.voucher.service.VoucherService;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,7 +29,7 @@ public class VoucherController {
   private final VoucherService voucherService;
 
   @GetMapping
-  public ResponseEntity<Page<VoucherDto>> lookUp(Pageable pageable) {
+  public ResponseEntity<PageResponse<List<VoucherDto>>> lookUp(Pageable pageable) {
     return ResponseEntity.ok(voucherService.lookUp(pageable));
   }
 

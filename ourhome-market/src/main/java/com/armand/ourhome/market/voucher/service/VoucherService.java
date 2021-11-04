@@ -7,6 +7,7 @@ import com.armand.ourhome.market.voucher.converter.VoucherConverter;
 import com.armand.ourhome.market.voucher.converter.WalletMapper;
 import com.armand.ourhome.market.voucher.domain.Voucher;
 import com.armand.ourhome.market.voucher.domain.Wallet;
+import com.armand.ourhome.market.voucher.dto.PageResponse;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.WalletDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
@@ -16,7 +17,9 @@ import com.armand.ourhome.market.voucher.exception.VoucherNotFoundException;
 import com.armand.ourhome.market.voucher.repository.VoucherRepository;
 import com.armand.ourhome.market.voucher.repository.WalletRepository;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
@@ -36,10 +39,15 @@ public class VoucherService {
   private final UserRepository userRepository;
   private final WalletMapper walletMapper = Mappers.getMapper(WalletMapper.class);
 
-  public Page<VoucherDto> lookUp(Pageable pageable) {
-    Page<VoucherDto> allVouchers = voucherRepository.findAll(pageable)
+  public PageResponse<List<VoucherDto>> lookUp(Pageable pageable) {
+    Page<VoucherDto> pages = voucherRepository.findAll(pageable)
         .map(voucher -> voucherConverter.toDto(voucher));
-    return allVouchers;
+
+    List<VoucherDto> allVouchers = voucherRepository.findAll().stream()
+        .map(voucher -> voucherConverter.toDto(voucher)).collect(Collectors.toList());
+
+    return new PageResponse<>(allVouchers, pages.getTotalElements(), pages.getTotalPages(),
+        pages.getSize());
   }
 
   @Transactional
