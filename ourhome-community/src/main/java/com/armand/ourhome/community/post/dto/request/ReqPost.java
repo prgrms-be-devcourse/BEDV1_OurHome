@@ -18,7 +18,7 @@ import java.util.List;
 
 @Getter
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ReqPostDto {
+public class ReqPost {
 
     private Long id;
     @NotBlank
@@ -28,14 +28,14 @@ public class ReqPostDto {
     private ResidentialType residentialType;
     private StyleType styleType;
 
-    private List<ReqContentDto> contentList;
+    private List<ReqContent> contentList;
 
     private Long userId;
 
     private int viewCount;
 
     @Builder
-    public ReqPostDto(Long id, String title, SquareType squareType, ResidentialType residentialType, StyleType styleType, List<ReqContentDto> contentList, int viewCount, Long userId){
+    public ReqPost(Long id, String title, SquareType squareType, ResidentialType residentialType, StyleType styleType, List<ReqContent> contentList, int viewCount, Long userId){
         this.id = id;
         this.title = title;
         this.squareType = squareType;

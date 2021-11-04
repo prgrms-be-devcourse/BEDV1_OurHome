@@ -89,6 +89,7 @@ public class Post extends BaseEntity {
         contentList.stream().forEach( content -> addContent(content));
     }
 
+
 //    @Override
 //    public boolean equals(Object other){
 //        if (this.getClass().isInstance(other)){

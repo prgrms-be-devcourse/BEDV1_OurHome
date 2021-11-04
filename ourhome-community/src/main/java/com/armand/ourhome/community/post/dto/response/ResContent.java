@@ -1,6 +1,7 @@
 package com.armand.ourhome.community.post.dto.response;
 
 import com.armand.ourhome.community.post.entity.PlaceType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -16,7 +17,8 @@ import java.util.List;
 
 @Getter
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ResContentDto {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ResContent {
     @JsonProperty("id")
     private Long contentId;
 
@@ -25,14 +27,14 @@ public class ResContentDto {
     private String description;
     @NotBlank
     private PlaceType placeType;
-    private List<ResTagDto> tags;
+    private List<ResTag> tags;
 
     @Builder
-    public ResContentDto(Long contentId,
-                         String mediaUrl,
-                         String description,
-                         PlaceType placeType,
-                         List<ResTagDto> tags){
+    public ResContent(Long contentId,
+                      String mediaUrl,
+                      String description,
+                      PlaceType placeType,
+                      List<ResTag> tags){
         this.contentId = contentId;
         this.mediaUrl = mediaUrl;
         this.description = description;

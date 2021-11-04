@@ -1,5 +1,6 @@
 package com.armand.ourhome.community.post.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -15,7 +16,8 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ResTagDto {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ResTag {
     @JsonProperty("id")
     private Long tagId;
 
@@ -24,8 +26,8 @@ public class ResTagDto {
     private String name;
 
     @Builder
-    public ResTagDto(Long tagId,
-                     String name){
+    public ResTag(Long tagId,
+                  String name){
         this.tagId = tagId;
         this.name = name;
     }
