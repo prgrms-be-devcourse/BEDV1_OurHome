@@ -11,6 +11,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Builder
 @EqualsAndHashCode
@@ -18,15 +21,21 @@ import lombok.ToString;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderResponse {
 
+    @NotNull
     private Long id;
 
+    @NotBlank
     private String address;
 
+    @NotNull
     private OrderStatus status;
 
+    @NotNull
     private PaymentType paymentType;
 
+    @NotNull
     private long totalPrice;
 
+    @NotNull
     private DeliveryResponse deliveryResponse;
 }
