@@ -11,8 +11,8 @@ import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.WalletDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
 import com.armand.ourhome.market.voucher.exception.DuplicateVoucherException;
+import com.armand.ourhome.market.voucher.exception.DuplicateWalletException;
 import com.armand.ourhome.market.voucher.exception.VoucherNotFoundException;
-import com.armand.ourhome.market.voucher.exception.WalletNotFoundException;
 import com.armand.ourhome.market.voucher.repository.VoucherRepository;
 import com.armand.ourhome.market.voucher.repository.WalletRepository;
 import java.text.MessageFormat;
@@ -78,20 +78,13 @@ public class VoucherService {
   public WalletDto assignToUser(Long id, Long userId) {
     validateExistVoucherById(id);
     validateExistUserById(userId);
+    validateDuplicatedWallet(id, userId);
 
     Voucher voucher = voucherRepository.findById(id).get();
     User user = userRepository.findById(userId).get();
 
     Wallet wallet = walletRepository.save(Wallet.of(user, voucher));
     return walletMapper.toDto(wallet);
-  }
-
-  @Transactional
-  public void use(Long id, Long userId){
-    validateUserHasVoucher(id, userId);
-
-    Wallet wallet = walletRepository.findByUserIdAndVoucherId(userId, id).get();
-    walletRepository.delete(wallet);
   }
 
   private void validateExistVoucherById(Long id) {
@@ -128,11 +121,12 @@ public class VoucherService {
     }
   }
 
-  private void validateUserHasVoucher(Long id, Long userId) {
+  private void validateDuplicatedWallet(Long id, Long userId) {
     boolean existsByUserIdAndVoucherId = walletRepository.existsByUserIdAndVoucherId(userId, id);
 
-    if(!existsByUserIdAndVoucherId){
-      throw new WalletNotFoundException(MessageFormat.format(" 사용자(userId : {0})는 바우처(voucherId : {1})를 갖고있지 않습니다.", userId, id));
+    if (existsByUserIdAndVoucherId) {
+      throw new DuplicateWalletException(
+          MessageFormat.format(" 사용자(userId : {0})는 바우처(voucherId : {1})를 이미 갖고있습니다.", userId, id));
     }
   }
 
