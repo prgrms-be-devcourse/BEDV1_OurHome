@@ -14,6 +14,7 @@ public interface CreateCommentMapper {
 
     CreateCommentMapper INSTANCE = Mappers.getMapper(CreateCommentMapper.class);
 
+    @Mapping(target = "removed", ignore = true)
     @Mapping(target = "user", source = "user")
     @Mapping(target = "post", source = "post")
     Comment createCommentRequestToComment(CreateCommentRequest createCommentRequest, User user, Post post);

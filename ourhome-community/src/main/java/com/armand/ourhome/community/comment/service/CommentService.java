@@ -1,8 +1,10 @@
 package com.armand.ourhome.community.comment.service;
 
 import com.armand.ourhome.community.comment.dto.mapper.CreateCommentMapper;
+import com.armand.ourhome.community.comment.dto.mapper.RemoveCommentMapper;
 import com.armand.ourhome.community.comment.dto.request.CreateCommentRequest;
 import com.armand.ourhome.community.comment.dto.response.CreateCommentResponse;
+import com.armand.ourhome.community.comment.dto.response.RemoveCommentResponse;
 import com.armand.ourhome.community.comment.entity.Comment;
 import com.armand.ourhome.community.comment.repository.CommentRepository;
 import com.armand.ourhome.community.exception.CommentNotFountException;
@@ -40,13 +42,13 @@ public class CommentService {
     }
 
     @Transactional
-    public Long removeComment(Long commentId) {
+    public RemoveCommentResponse removeComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new CommentNotFountException(commentId));
 
         comment.removeComment();
         Comment removeComment = commentRepository.save(comment);
 
-        return removeComment.getId();
+        return RemoveCommentMapper.INSTANCE.commentToRemoveCommentResponse(removeComment);
     }
 }

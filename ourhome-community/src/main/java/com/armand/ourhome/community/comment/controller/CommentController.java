@@ -2,6 +2,7 @@ package com.armand.ourhome.community.comment.controller;
 
 import com.armand.ourhome.community.comment.dto.request.CreateCommentRequest;
 import com.armand.ourhome.community.comment.dto.response.CreateCommentResponse;
+import com.armand.ourhome.community.comment.dto.response.RemoveCommentResponse;
 import com.armand.ourhome.community.comment.service.CommentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,8 @@ public class CommentController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Long> removeComment(@PathVariable("id") final Long commentId) {
-        Long removeCommentId = commentService.removeComment(commentId);
-        return ResponseEntity.ok(removeCommentId);
+    public ResponseEntity<RemoveCommentResponse> removeComment(@PathVariable("id") final Long commentId) {
+        RemoveCommentResponse removeCommentResponse = commentService.removeComment(commentId);
+        return ResponseEntity.ok(removeCommentResponse);
     }
 }
