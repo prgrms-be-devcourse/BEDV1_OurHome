@@ -8,6 +8,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,7 +49,7 @@ public class Post extends BaseEntity {
 
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Content> contentList;
+    private List<Content> contentList = new ArrayList<>();
 
     public void addContent(final Content content){
         contentList.add(content);
@@ -85,7 +86,7 @@ public class Post extends BaseEntity {
         this.styleType = styleType;
         this.viewCount = viewCount;
         this.user = user;
-        this.contentList = contentList;
+        contentList.stream().forEach( content -> addContent(content));
     }
 
 //    @Override

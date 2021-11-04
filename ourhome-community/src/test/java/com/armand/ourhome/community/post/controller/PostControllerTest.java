@@ -158,7 +158,7 @@ class PostControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].square_type").value("SIZE_10_PYEONG"))
+                .andExpect(jsonPath("content[0].square_type").value("SIZE_10_PYEONG"))
                 .andDo(print());
 
     }
@@ -171,7 +171,7 @@ class PostControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].residentialType").value("APARTMENT"))
+                .andExpect(jsonPath("content[0].residentialType").value("APARTMENT"))
                 .andDo(print());
 
     }

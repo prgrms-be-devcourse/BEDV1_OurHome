@@ -48,15 +48,16 @@ public class PostService {
     @Transactional
     public Long save(final PostDto postDto){
 
+        User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new BusinessException("해당 사용자 정보는 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
+
         int contentSize = postDto.getContentList().size();
         for (int i = 0; i < contentSize; i++){
             String mediaUrl = awsS3Uploader.upload(postDto.getContentList().get(i).getImageBase64(), "user-posts");
             postDto.getContentList().get(i).setMediaUrl(mediaUrl);
         }
-        User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new BusinessException("해당 사용자 정보는 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
+
         return postRepository.save(postMapper.toEntity(postDto, user)).getId();
     }
-
 
     public Page<PostDto> getAll(Pageable pageable) {
         Page<Post> postWithPage = postRepository.findAll(pageable);
@@ -69,7 +70,6 @@ public class PostService {
         List<PostDto> postDtoList = postMapper.toDtoList(postWithPage.getContent());
         return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
-
 
     public Page<PostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){ // 중복 post 제거 필요
         Page<Content> contentWithPage = contentRepository.findAllByPlaceType(placeType, pageable);
@@ -88,7 +88,6 @@ public class PostService {
         return new PageImpl<>(tagDtoList, pageable, tagWithPage.getTotalElements());
     }
 
-
     @Transactional
     public Long update(final PostDto postDto, Long postId){
         List<ContentDto> contentDtoList = postDto.getContentList();
@@ -102,8 +101,6 @@ public class PostService {
         postMapper.updateFromDto(postDto, postBeforeUpdate);
         return postDto.getId();
     }
-
-
 
     @Transactional
     public PostDto getOne(final Long postId){
