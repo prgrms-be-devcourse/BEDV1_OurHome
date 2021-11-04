@@ -34,6 +34,9 @@ public class Comment extends BaseEntity {
     @Column(name = "comment", length = MAX_LENGTH_OF_COMMENT, nullable = false)
     private String comment;
 
+    @Column(name = "removed", columnDefinition = "boolean default false", nullable = false)
+    private boolean removed;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
@@ -43,10 +46,18 @@ public class Comment extends BaseEntity {
     private Post post;
 
     @Builder
-    public Comment(String comment, User user, Post post) {
+    public Comment(String comment, boolean removed, User user, Post post) {
         this.comment = comment;
+        this.removed = removed;
         this.user = user;
         this.post = post;
+    }
+
+    public void removeComment() {
+        final String REMOVE_COMMENT = "삭제된 댓글입니다.";
+
+        this.removed = true;
+        this.comment = REMOVE_COMMENT;
     }
 
     public String getFormatterCreateAt() {
