@@ -1,7 +1,7 @@
 package com.armand.ourhome.community.post.mapper;
 
-import com.armand.ourhome.community.post.dto.request.ReqPostDto;
-import com.armand.ourhome.community.post.dto.response.ResPostDto;
+import com.armand.ourhome.community.post.dto.request.ReqPost;
+import com.armand.ourhome.community.post.dto.response.ResPost;
 import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.domain.user.User;
 import org.mapstruct.*;
@@ -20,17 +20,17 @@ public interface PostMapper {
     PostMapper INSTANCE = Mappers.getMapper(PostMapper.class);
 
     @Mapping(source="user", target = "user")
-    @Mapping(source = "reqPostDto.id", target = "id")
-    Post toEntity(ReqPostDto reqPostDto, User user);
+    @Mapping(source = "reqPost.id", target = "id")
+    Post toEntity(ReqPost reqPost, User user);
 
     @Mapping(target = "userId", ignore = true)
-    ResPostDto toDto(Post post);
+    ResPost toDto(Post post);
 
     @Mapping(target = "userId", ignore = true)
-    List<ResPostDto> toDtoList(List<Post> post);
+    List<ResPost> toDtoList(List<Post> post);
 
 
     @Transactional
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateFromDto(ReqPostDto reqPostDto,  @MappingTarget Post post);
+    void updateFromDto(ReqPost reqPost, @MappingTarget Post post);
 }

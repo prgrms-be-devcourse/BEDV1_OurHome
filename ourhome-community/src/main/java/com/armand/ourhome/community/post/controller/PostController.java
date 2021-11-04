@@ -1,8 +1,8 @@
 package com.armand.ourhome.community.post.controller;
 
-import com.armand.ourhome.community.post.dto.request.ReqPostDto;
-import com.armand.ourhome.community.post.dto.response.ResPostDto;
-import com.armand.ourhome.community.post.dto.response.ResReturnIdDto;
+import com.armand.ourhome.community.post.dto.request.ReqPost;
+import com.armand.ourhome.community.post.dto.response.ResPost;
+import com.armand.ourhome.community.post.dto.response.ResReturnId;
 import com.armand.ourhome.community.post.entity.ResidentialType;
 import com.armand.ourhome.community.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -19,48 +19,48 @@ import javax.validation.Valid;
  */
 
 @RestController
-@RequestMapping("/api/v1/post")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<ResReturnIdDto> save(@RequestBody @Valid final ReqPostDto postDto) {
-        return ResponseEntity.ok(ResReturnIdDto.builder()
+    public ResponseEntity<ResReturnId> save(@Valid @RequestBody final ReqPost postDto) {
+        return ResponseEntity.ok(ResReturnId.builder()
                 .id(postService.save(postDto))
                 .build());
     }
 
     @GetMapping
-    public ResponseEntity<Page<ResPostDto>> getAll(Pageable pageable) {
+    public ResponseEntity<Page<ResPost>> getAll(Pageable pageable) {
         return ResponseEntity.ok(postService.getAll(pageable));
     }
 
-    @GetMapping("/residentialType/{residentialType}")
-    public ResponseEntity<Page<ResPostDto>> getAllByResidentialType(Pageable pageable,
-                                                                 @Valid @PathVariable final ResidentialType residentialType) {
+    @GetMapping("/residentialType/{residential_type}")
+    public ResponseEntity<Page<ResPost>> getAllByResidentialType(Pageable pageable,
+                                                                 @PathVariable(value = "residential_type") final ResidentialType residentialType) {
         return ResponseEntity.ok(postService.getAllByResidentialType(residentialType, pageable));
     }
 
-    @PostMapping("/{postId}")
-    public ResponseEntity<ResReturnIdDto> update(@RequestBody @Valid final ReqPostDto postDto,
-                                       @Valid @PathVariable final Long postId){
-        return ResponseEntity.ok(ResReturnIdDto.builder()
-                .id(postService.update(postDto, postId))
+    @PostMapping("/{id}")
+    public ResponseEntity<ResReturnId> update(@RequestBody @Valid final ReqPost postDto,
+                                       @PathVariable final Long id){
+        return ResponseEntity.ok(ResReturnId.builder()
+                .id(postService.update(postDto, id))
                 .build());
     }
 
-    @GetMapping("/{postId}")
-    public ResponseEntity<ResPostDto> getOne(@Valid @PathVariable final Long postId){
-     return ResponseEntity.ok(postService.getOne(postId));
+    @GetMapping("/{id}")
+    public ResponseEntity<ResPost> getOne(@PathVariable final Long id){
+     return ResponseEntity.ok(postService.getOne(id));
     }
 
-    @DeleteMapping("/{postId}")
-    public ResponseEntity<ResReturnIdDto> delete(@Valid @PathVariable final Long postId){
-        postService.delete(postId);
-        return ResponseEntity.ok(ResReturnIdDto.builder()
-                .id(postId)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResReturnId> delete(@PathVariable final Long id){
+        postService.delete(id);
+        return ResponseEntity.ok(ResReturnId.builder()
+                .id(id)
                 .build());
     }
 

@@ -1,5 +1,6 @@
 package com.armand.ourhome.community.post.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ResReturnIdDto {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ResReturnId {
     private Long id;
 }

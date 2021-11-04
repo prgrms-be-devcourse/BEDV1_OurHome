@@ -16,33 +16,35 @@ import java.util.List;
 
 @Getter
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ReqContentDto {
+public class ReqContent {
     @JsonProperty("id")
     private Long contentId;
 
     @NotBlank
-    private String mediaUrl;
+    private String mediaUrl; // 삭제
+
     private String description;
     @NotBlank
     private PlaceType placeType;
-    private List<ReqTagDto> tags;
+    private List<ReqTag> tags;
 
     public void setMediaUrl(String mediaUrl){
         this.mediaUrl = mediaUrl;
     }
 
     @JsonProperty("image_base64")
-    private String imageBase64;
-    private Boolean updatedFlag = false;
+    private String imageBase64; // null
+
+    private Boolean updatedFlag = false; // 필드 삭제
 
     @Builder
-    public ReqContentDto(Long contentId,
-                         String mediaUrl,
-                         String description,
-                         PlaceType placeType,
-                         List<ReqTagDto> tags,
-                         String imageBase64,
-                         Boolean updatedFlag){
+    public ReqContent(Long contentId,
+                      String mediaUrl,
+                      String description,
+                      PlaceType placeType,
+                      List<ReqTag> tags,
+                      String imageBase64,
+                      Boolean updatedFlag){
         this.contentId = contentId;
         this.mediaUrl = mediaUrl;
         this.description = description;

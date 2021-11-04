@@ -88,6 +88,7 @@ public class Post extends BaseEntity {
         this.contentList = contentList;
     }
 
+
 //    @Override
 //    public boolean equals(Object other){
 //        if (this.getClass().isInstance(other)){
