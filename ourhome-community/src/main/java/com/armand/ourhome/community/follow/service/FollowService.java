@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.MessageFormat;
+
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -23,7 +25,8 @@ public class FollowService {
         User follower = userRepository.findById(myId).get();
         User following = userRepository.findById(followingId).orElseThrow(() -> new UserNotFoundException(followingId));
         if (followRepository.existsByFollowerAndFollowing(follower, following))
-            throw new InvalidValueException("이미 팔로우하고 있는 사용자입니다.");
+            // 이렇게 사용자 id를 알려주는게 맞을까? 로깅할때만 써주면 될지도?
+            throw new InvalidValueException(MessageFormat.format("이미 팔로우하고 있는 사용자입니다. (id : {})", followingId));
         followRepository.save(
                 Follow.builder()
                         .follower(follower)
@@ -37,7 +40,7 @@ public class FollowService {
         User follower = userRepository.findById(myId).get();
         User following = userRepository.findById(followingId).orElseThrow(() -> new UserNotFoundException(followingId));
         if (!followRepository.existsByFollowerAndFollowing(follower, following))
-            throw new InvalidValueException("이미 팔로우 해제된 사용자입니다.");
+            throw new InvalidValueException(MessageFormat.format("이미 언팔로우한 사용자입니다. (id : {})", followingId));
         followRepository.deleteByFollowerAndFollowing(follower, following);
     }
 
