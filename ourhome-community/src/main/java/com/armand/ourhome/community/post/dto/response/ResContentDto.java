@@ -1,14 +1,12 @@
-package com.armand.ourhome.community.post.dto;
+package com.armand.ourhome.community.post.dto.response;
 
 import com.armand.ourhome.community.post.entity.PlaceType;
-import com.armand.ourhome.community.post.entity.Tag;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
-import javax.persistence.JoinColumn;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
@@ -18,7 +16,7 @@ import java.util.List;
 
 @Getter
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class ContentDto {
+public class ResContentDto {
     @JsonProperty("id")
     private Long contentId;
 
@@ -27,24 +25,18 @@ public class ContentDto {
     private String description;
     @NotBlank
     private PlaceType placeType;
-    private List<TagDto> tags;
-
-    public void setMediaUrl(String mediaUrl){
-        this.mediaUrl = mediaUrl;
-    }
-
-    @JsonProperty("image_base64")
-    private String imageBase64;
-    private Boolean updatedFlag = false;
+    private List<ResTagDto> tags;
 
     @Builder
-    public ContentDto(Long contentId, String mediaUrl, String description, PlaceType placeType, List<TagDto> tags, String imageBase64, Boolean updatedFlag){
+    public ResContentDto(Long contentId,
+                         String mediaUrl,
+                         String description,
+                         PlaceType placeType,
+                         List<ResTagDto> tags){
         this.contentId = contentId;
         this.mediaUrl = mediaUrl;
         this.description = description;
         this.placeType = placeType;
         this.tags = tags;
-        this.imageBase64 = imageBase64;
-        this.updatedFlag = updatedFlag;
     }
 }
