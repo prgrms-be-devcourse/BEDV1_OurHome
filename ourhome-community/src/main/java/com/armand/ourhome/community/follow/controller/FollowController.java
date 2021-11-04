@@ -32,4 +32,10 @@ public class FollowController {
         return ResponseEntity.ok().build();
     }
 
+    // 팔로우 피드
+//    @GetMapping("/feed")
+//    public ResponseEntity<FeedPageResponse> feedPage(){
+//
+//    }
+
 }

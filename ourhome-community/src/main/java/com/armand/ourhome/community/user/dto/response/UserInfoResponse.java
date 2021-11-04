@@ -12,7 +12,7 @@ import java.util.Map;
 @Builder
 @Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class UserPageResponse {
+public class UserInfoResponse {
     private String nickname;
     private String description;
     private String profileImageUrl;

@@ -9,15 +9,15 @@ import lombok.Getter;
 @Getter
 @Builder
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class FollowPageResponse {
+public class FollowInfoResponse {
     private Long userId;
     private String profileImageUrl;
     private String nickname;
     private String description;
     private Boolean isFollowing;    // 현 사용자가 팔로우하고 있는지?
 
-    public static FollowPageResponse of(User user, Boolean isFollowing){
-        return FollowPageResponse.builder()
+    public static FollowInfoResponse of(User user, Boolean isFollowing){
+        return FollowInfoResponse.builder()
                 .userId(user.getId())
                 .profileImageUrl(user.getProfileImageUrl())
                 .nickname(user.getNickname())
