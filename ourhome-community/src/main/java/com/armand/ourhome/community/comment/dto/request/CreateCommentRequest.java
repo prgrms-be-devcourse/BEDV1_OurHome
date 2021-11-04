@@ -10,8 +10,10 @@ import lombok.Getter;
 @Builder
 public class CreateCommentRequest {
 
+    private static final int MAX_LENGTH_OF_COMMENT = 300;
+
     @NotBlank(message = "댓글 내용을 입력해주세요.")
-    @Size(message = "댓글 내용은 300자 이내로 작성해주세요.", max = 300)
+    @Size(message = "댓글 내용은 300자 이내로 작성해주세요.", max = MAX_LENGTH_OF_COMMENT)
     private String comment;
 
     @NotNull(message = "사용자 아이디는 필수 항목입니다.")
