@@ -1,11 +1,12 @@
 package com.armand.ourhome.community.post.service;
 
-import com.armand.ourhome.common.error.exception.BusinessException;
-import com.armand.ourhome.common.error.exception.ErrorCode;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
-import com.armand.ourhome.community.post.dto.ContentDto;
-import com.armand.ourhome.community.post.dto.PostDto;
+import com.armand.ourhome.community.post.dto.request.ReqContentDto;
+import com.armand.ourhome.community.post.dto.request.ReqPostDto;
+import com.armand.ourhome.community.post.dto.response.ResPostDto;
 import com.armand.ourhome.community.post.entity.*;
+import com.armand.ourhome.community.post.exception.PostNotFoundException;
+import com.armand.ourhome.community.post.exception.UserNotFountException;
 import com.armand.ourhome.community.post.mapper.PostMapper;
 import com.armand.ourhome.community.post.repository.ContentRepository;
 import com.armand.ourhome.community.post.repository.PostRepository;
@@ -25,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -46,9 +46,9 @@ public class PostService {
     private final AwsS3Uploader awsS3Uploader;
 
     @Transactional
-    public Long save(final PostDto postDto){
+    public Long save(final ReqPostDto postDto){
 
-        User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new BusinessException("해당 사용자 정보는 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
+        User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
 
         int contentSize = postDto.getContentList().size();
         for (int i = 0; i < contentSize; i++){
@@ -59,21 +59,21 @@ public class PostService {
         return postRepository.save(postMapper.toEntity(postDto, user)).getId();
     }
 
-    public Page<PostDto> getAll(Pageable pageable) {
+    public Page<ResPostDto> getAll(Pageable pageable) {
         Page<Post> postWithPage = postRepository.findAll(pageable);
-        List<PostDto> postDtoList = postMapper.toDtoList(postWithPage.getContent());
+        List<ResPostDto> postDtoList = postMapper.toDtoList(postWithPage.getContent());
         return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
-    public Page<PostDto> getAllByResidentialType(ResidentialType residentialType, Pageable pageable){
+    public Page<ResPostDto> getAllByResidentialType(ResidentialType residentialType, Pageable pageable){
         Page<Post> postWithPage = postRepository.findAllByResidentialType(residentialType, pageable);
-        List<PostDto> postDtoList = postMapper.toDtoList(postWithPage.getContent());
+        List<ResPostDto> postDtoList = postMapper.toDtoList(postWithPage.getContent());
         return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
-    public Page<PostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){ // 중복 post 제거 필요
+    public Page<ResPostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){ // 중복 post 제거 필요
         Page<Content> contentWithPage = contentRepository.findAllByPlaceType(placeType, pageable);
-        List<PostDto> contentDtoList = postMapper.toDtoList(contentWithPage.getContent().stream().map(v -> v.getPost()).toList());
+        List<ResPostDto> contentDtoList = postMapper.toDtoList(contentWithPage.getContent().stream().map(v -> v.getPost()).toList());
         return new PageImpl<>(contentDtoList, pageable, contentWithPage.getTotalElements());
     }
 
@@ -82,29 +82,29 @@ public class PostService {
         return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
-    public Page<PostDto> getAllByTag(String tagName, Pageable pageable){ // 중복 post 제거 필요
+    public Page<ResPostDto> getAllByTag(String tagName, Pageable pageable){ // 중복 post 제거 필요
         Page<Tag> tagWithPage = tagRepository.findAllByName(tagName, pageable);
-        List<PostDto> tagDtoList = postMapper.toDtoList(tagWithPage.getContent().stream().map(v -> v.getContent().getPost()).toList());
+        List<ResPostDto> tagDtoList = postMapper.toDtoList(tagWithPage.getContent().stream().map(v -> v.getContent().getPost()).toList());
         return new PageImpl<>(tagDtoList, pageable, tagWithPage.getTotalElements());
     }
 
     @Transactional
-    public Long update(final PostDto postDto, Long postId){
-        List<ContentDto> contentDtoList = postDto.getContentList();
+    public Long update(final ReqPostDto postDto, Long postId){
+        List<ReqContentDto> contentDtoList = postDto.getContentList();
 
         for (int i = 0; i < contentDtoList.size(); i++){
             if (contentDtoList.get(i).getUpdatedFlag()) {
                 contentDtoList.get(i).setMediaUrl(awsS3Uploader.upload(contentDtoList.get(i).getImageBase64(), "user-posts"));
             }
         }
-        Post postBeforeUpdate = postRepository.findById(postId).orElseThrow(() -> new BusinessException("해당 게시물은 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
+        Post postBeforeUpdate = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId.toString(), "post_id"));
         postMapper.updateFromDto(postDto, postBeforeUpdate);
         return postDto.getId();
     }
 
     @Transactional
-    public PostDto getOne(final Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException("해당 게시물은 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
+    public ResPostDto getOne(final Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(() ->new PostNotFoundException(postId.toString(), "post_id"));
         post.plusViewCount();
         return postMapper.toDto(post);
     }

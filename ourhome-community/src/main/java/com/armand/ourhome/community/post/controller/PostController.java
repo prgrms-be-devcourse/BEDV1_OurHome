@@ -1,6 +1,7 @@
 package com.armand.ourhome.community.post.controller;
 
-import com.armand.ourhome.community.post.dto.PostDto;
+import com.armand.ourhome.community.post.dto.request.ReqPostDto;
+import com.armand.ourhome.community.post.dto.response.ResPostDto;
 import com.armand.ourhome.community.post.entity.ResidentialType;
 import com.armand.ourhome.community.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -24,29 +25,29 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<Long> save(@RequestBody @Valid final PostDto postDto) {
+    public ResponseEntity<Long> save(@RequestBody @Valid final ReqPostDto postDto) {
         return ResponseEntity.ok(postService.save(postDto));
     }
 
     @GetMapping
-    public ResponseEntity<Page<PostDto>> getAll(Pageable pageable) {
+    public ResponseEntity<Page<ResPostDto>> getAll(Pageable pageable) {
         return ResponseEntity.ok(postService.getAll(pageable));
     }
 
     @GetMapping("/residentialType/{residentialType}")
-    public ResponseEntity<Page<PostDto>> getAllByResidentialType(Pageable pageable,
+    public ResponseEntity<Page<ResPostDto>> getAllByResidentialType(Pageable pageable,
                                                                  @Valid @PathVariable final ResidentialType residentialType) {
         return ResponseEntity.ok(postService.getAllByResidentialType(residentialType, pageable));
     }
 
     @PostMapping("/{postId}")
-    public ResponseEntity<Long> update(@RequestBody @Valid final PostDto postDto,
+    public ResponseEntity<Long> update(@RequestBody @Valid final ReqPostDto postDto,
                                        @Valid @PathVariable final Long postId){
         return ResponseEntity.ok(postService.update(postDto, postId));
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDto> getOne(@Valid @PathVariable final Long postId){
+    public ResponseEntity<ResPostDto> getOne(@Valid @PathVariable final Long postId){
      return ResponseEntity.ok(postService.getOne(postId));
     }
 

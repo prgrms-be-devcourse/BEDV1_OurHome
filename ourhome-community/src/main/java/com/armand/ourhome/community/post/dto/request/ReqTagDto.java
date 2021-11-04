@@ -1,4 +1,4 @@
-package com.armand.ourhome.community.post.dto;
+package com.armand.ourhome.community.post.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -15,7 +15,7 @@ import javax.validation.constraints.NotBlank;
 
 @Getter
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class TagDto {
+public class ReqTagDto {
     @JsonProperty("id")
     private Long tagId;
 
@@ -24,7 +24,7 @@ public class TagDto {
     private String name;
 
     @Builder
-    public TagDto(Long tagId, String name){
+    public ReqTagDto(Long tagId, String name){
         this.tagId = tagId;
         this.name = name;
     }
