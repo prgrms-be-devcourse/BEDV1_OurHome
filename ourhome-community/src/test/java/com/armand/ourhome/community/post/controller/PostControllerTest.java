@@ -89,7 +89,7 @@ class PostControllerTest {
                         .placeType(PlaceType.LIVINGROOM)
                         .mediaUrl("/post/postPicture.png")
                         .tags(List.of(Tag.builder()
-                                .name("아파트")
+                                .name("tag1")
                                 .build()))
 
                         .build()))
@@ -125,7 +125,7 @@ class PostControllerTest {
                 .build();
 
         //When, Then
-        mockMvc.perform(post("/api/v1/post")
+        mockMvc.perform(post("/api/posts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(postDto)))
                 .andExpect(status().isOk())
@@ -162,7 +162,7 @@ class PostControllerTest {
     @DisplayName("게시된 모든 정보를 추출할 수 있다.")
     void getAll() throws Exception {
         //When, Then
-       mockMvc.perform(get("/api/v1/post?size=5&page=0")
+       mockMvc.perform(get("/api/posts?size=5&page=0")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -177,7 +177,6 @@ class PostControllerTest {
                                        fieldWithPath("content[].square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"),
                                        fieldWithPath("content[].style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"),
                                        fieldWithPath("content[].title").type(JsonFieldType.STRING).description("게시물의 제목"),
-                                       fieldWithPath("content[].user_id").type(JsonFieldType.NULL).description("사용자 아이디"),
                                        fieldWithPath("content[].view_count").type(JsonFieldType.NUMBER).description("조회수"),
                                        fieldWithPath("content[].updated_at").type(JsonFieldType.STRING).description("게시물 생성일자"),
                                        fieldWithPath("content[].created_at").type(JsonFieldType.STRING).description("게시물 최근 수정일자"),
@@ -222,17 +221,18 @@ class PostControllerTest {
     @DisplayName("저장되어 있는 모든 게시물 중 특정 거주형태 정보만 추출할 수 있다.")
     void getAllByResidentialType() throws Exception {
         //When, Then
-        mockMvc.perform(get("/api/v1/post/residentialType/{residential_type}?size=1&page=0", "APARTMENT")
+        mockMvc.perform(get("/api/posts/filter")
+                        .param("criteria_type", "RESIDENTIAL_TYPE")
+                        .param("criteria", "APARTMENT")
+                        .param("size", "1")
+                        .param("page", "0")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                //.andExpect(jsonPath("content[0].residential_type").value("APARTMENT"))
+                .andExpect(jsonPath("content[0].residential_type").value("APARTMENT"))
                 .andDo(print())
                 .andDo(
-                        document("post/getAllPostByResidentialType", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("residential_type").description("게시물의 거주 형태(검색 기준)")
-                                ),
+                        document("post/getAllByCriteria", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
                                 responseFields(
                                         fieldWithPath("content").type(JsonFieldType.ARRAY).description("모든 게시물들"),
                                         fieldWithPath("content[].id").type(JsonFieldType.NUMBER).description("게시물 아이디"),
@@ -240,7 +240,6 @@ class PostControllerTest {
                                         fieldWithPath("content[].square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"),
                                         fieldWithPath("content[].style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"),
                                         fieldWithPath("content[].title").type(JsonFieldType.STRING).description("게시물의 제목"),
-                                        fieldWithPath("content[].user_id").type(JsonFieldType.NULL).description("사용자 아이디"),
                                         fieldWithPath("content[].view_count").type(JsonFieldType.NUMBER).description("조회수"),
                                         fieldWithPath("content[].updated_at").type(JsonFieldType.STRING).description("게시물 생성일자"),
                                         fieldWithPath("content[].created_at").type(JsonFieldType.STRING).description("게시물 최근 수정일자"),
@@ -281,6 +280,39 @@ class PostControllerTest {
 
     }
 
+    @Test
+    @DisplayName("저장되어 있는 모든 게시물 중 특정 거주형태 정보만 추출할 수 있다.")
+    void getAllByPlaceType() throws Exception {
+        //When, Then
+        mockMvc.perform(get("/api/posts/filter")
+                        .param("criteria_type", "PLACE_TYPE")
+                        .param("criteria", "LIVINGROOM")
+                        .param("size", "1")
+                        .param("page", "0")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("content[0].content_list[0].place_type").value("LIVINGROOM"))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("저장되어 있는 모든 게시물 중 특정 거주형태 정보만 추출할 수 있다.")
+    void getAllByTag() throws Exception {
+        //When, Then
+        mockMvc.perform(get("/api/posts/filter")
+                        .param("criteria_type", "TAG")
+                        .param("criteria", "tag1")
+                        .param("size", "1")
+                        .param("page", "0")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("content[0].content_list[0].tags[0].name").value("tag1"))
+                .andDo(print());
+
+    }
     @Test
     @DisplayName("특정 게시물을 추출할 수 있다.")
     void getOne() throws Exception {
@@ -346,8 +378,6 @@ class PostControllerTest {
         //Given
 
         Post postSavedBeforeUpdate = postRepository.findById(post.getId()).orElseThrow( () -> new RuntimeException("해당 게시물 정보는 존재하지 않습니다."));
-        System.out.println(postSavedBeforeUpdate.getId());
-        System.out.println(postSavedBeforeUpdate.getContentList().size());
         var postDtoUpdated = ReqPost.builder()
                 .id(postSavedBeforeUpdate.getId())
                 .residentialType(postSavedBeforeUpdate.getResidentialType())
@@ -356,11 +386,13 @@ class PostControllerTest {
                 .title(postSavedBeforeUpdate.getTitle())
                 .userId(user.getId())
                 .contentList(List.of(ReqContent.builder()
+                                .contentId(postSavedBeforeUpdate.getContentList().get(0).getContentId())
                                 .updatedFlag(false)
                                 .mediaUrl(postSavedBeforeUpdate.getContentList().get(0).getMediaUrl())
                                 .description("[수정]집 안 내용입니다.")  // 수정한 곳
                                 .placeType(postSavedBeforeUpdate.getContentList().get(0).getPlaceType())
                                 .tags(List.of(ReqTag.builder()
+                                                .tagId(postSavedBeforeUpdate.getContentList().get(0).getTags().get(0).getTagId())
                                                 .name(postSavedBeforeUpdate.getContentList().get(0).getTags().get(0).getName())
                                                 .build()))
 
@@ -368,7 +400,7 @@ class PostControllerTest {
                 .build();
 
         //When, Then
-        mockMvc.perform(post("/api/v1/post/"+post.getId())
+        mockMvc.perform(post("/api/posts/{id}", post.getId())
                         .content(objectMapper.writeValueAsString(postDtoUpdated))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

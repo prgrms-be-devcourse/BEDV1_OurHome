@@ -1,6 +1,6 @@
 package com.armand.ourhome.community.post.entity;
 
-public enum PlaceType {
+public enum PlaceType implements Criteria {
     ONEROOM("원룸"),
     LIVINGROOM("거실"),
     KITCHEN("주방"),

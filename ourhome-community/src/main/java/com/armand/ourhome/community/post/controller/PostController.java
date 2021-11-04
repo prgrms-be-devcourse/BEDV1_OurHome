@@ -1,9 +1,10 @@
 package com.armand.ourhome.community.post.controller;
 
+import com.armand.ourhome.community.post.controller.common.CriteriaType;
 import com.armand.ourhome.community.post.dto.request.ReqPost;
 import com.armand.ourhome.community.post.dto.response.ResPost;
 import com.armand.ourhome.community.post.dto.response.ResReturnId;
-import com.armand.ourhome.community.post.entity.ResidentialType;
+import com.armand.ourhome.community.post.entity.Criteria;
 import com.armand.ourhome.community.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,10 +38,11 @@ public class PostController {
         return ResponseEntity.ok(postService.getAll(pageable));
     }
 
-    @GetMapping("/residentialType/{residential_type}")
-    public ResponseEntity<Page<ResPost>> getAllByResidentialType(Pageable pageable,
-                                                                 @PathVariable(value = "residential_type") final ResidentialType residentialType) {
-        return ResponseEntity.ok(postService.getAllByResidentialType(residentialType, pageable));
+    @GetMapping("/filter")
+    public ResponseEntity<Page<ResPost>> getAllByCriteria(Pageable pageable,
+                                                            @RequestParam(name = "criteria_type") CriteriaType criteriaType,
+                                                            @RequestParam(name = "criteria") String criteria){
+        return ResponseEntity.ok(postService.getAllBYCriteria(criteriaType, criteria, pageable));
     }
 
     @PostMapping("/{id}")

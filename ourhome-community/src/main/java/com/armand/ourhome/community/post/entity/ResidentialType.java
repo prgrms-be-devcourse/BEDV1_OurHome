@@ -1,6 +1,6 @@
 package com.armand.ourhome.community.post.entity;
 
-public enum ResidentialType {
+public enum ResidentialType implements Criteria {
     OFFICETEL("오피스텔&원룸"),
     APARTMENT("아파트"),
     VILLA("빌라"),

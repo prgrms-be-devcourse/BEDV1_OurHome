@@ -295,7 +295,7 @@ class PostServiceTest {
         assertThat(postDtoList.getContent().get(1).getContentList().get(0).getMediaUrl(), is("/post/picture-2DETACHED_HOUCE.jpg"));
         assertThat(postDtoList.getContent().get(1).getTitle(), is("우리 집 입니다."));
         assertThat(postDtoList.getContent().get(1).getContentList().get(0).getPlaceType(), is(PlaceType.BATHROOM));
-        assertThat(postDtoList.getContent().get(1).getContentList().get(0).getTags().get(0).getName(), is("깨끗 DETACHED_HOUCE"));
+        assertThat(postDtoList.getContent().get(1).getContentList().get(0).getTags().get(0).getName(), is("DETACHED_HOUCE 거실"));
         assertThat(postDtoList.getContent().size(), is(2));
     }
     @Test
@@ -420,8 +420,8 @@ class PostServiceTest {
     @Rollback(value = false)
     void getAllByTag(){
         //Given
-        postRepository.save(Post.builder()
-                .title("우리 집")
+        postRepository.saveAndFlush(Post.builder()
+                .title("우리 집1")
                 .squareType(SquareType.SIZE_10_PYEONG)
                 .residentialType(ResidentialType.APARTMENT)
                 .styleType(StyleType.ASIAN_STYPE)
@@ -441,8 +441,8 @@ class PostServiceTest {
                                 .build()))
                 .build());
 
-        postRepository.save(Post.builder()
-                .title("우리 집")
+        postRepository.saveAndFlush(Post.builder()
+                .title("우리 집2")
                 .squareType(SquareType.SIZE_10_PYEONG)
                 .residentialType(ResidentialType.DETACHED_HOUCE)
                 .styleType(StyleType.NORDIC_STYPE)
@@ -477,15 +477,12 @@ class PostServiceTest {
 
 
         //When
-        assertThat(contentRepository.findAll().get(0).getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
-
-        Page<Tag> test = tagRepository.findAllByName("tag1", Pageable.ofSize(5).withPage(0));
-        assertThat(test.getContent().size(), is(3));
-        //assertThat(test.getContent().get(0).getContent().getMediaUrl(), is("/post/picture-APARTMENT.jpg"));
-        //Page<ResPostDto> postDtoList = postService.getAllByTag("tag1", Pageable.ofSize(5).withPage(0));
+        Page<ResPost> postDtoList = postService.getAllByTag("tag1", Pageable.ofSize(5).withPage(0));
 
         //Then
-        //assertThat(postDtoList.getContent().size(), is(2));
+        assertThat(postDtoList.getContent().size(), is(2));
+        assertThat(postDtoList.getContent().get(0).getTitle(), is("우리 집1"));
+        assertThat(postDtoList.getContent().get(1).getTitle(), is("우리 집2"));
     }
 
 

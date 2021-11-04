@@ -43,7 +43,7 @@ public class Post extends BaseEntity {
     @ColumnDefault("0")
     private int viewCount;
 
-    @ManyToOne(fetch=FetchType.EAGER)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
@@ -86,23 +86,7 @@ public class Post extends BaseEntity {
         this.styleType = styleType;
         this.viewCount = viewCount;
         this.user = user;
-        contentList.stream().forEach( content -> addContent(content));
+        contentList.forEach( content -> addContent(content)); // 동적팩토리매서드 사용해서 적요해 볼 것. // 생성자 책임의 범위를 넘었음.
     }
-
-
-//    @Override
-//    public boolean equals(Object other){
-//        if (this.getClass().isInstance(other)){
-//            return this.postId == ((Post)other).postId;
-//        } else {
-//            return false;
-//        }
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return postId.intValue();
-//    }
-
 
 }
