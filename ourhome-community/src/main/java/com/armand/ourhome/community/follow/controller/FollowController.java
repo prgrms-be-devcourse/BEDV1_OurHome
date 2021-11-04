@@ -1,9 +1,14 @@
 package com.armand.ourhome.community.follow.controller;
 
+import com.armand.ourhome.community.follow.dto.FeedResponse;
 import com.armand.ourhome.community.follow.service.FollowService;
+import com.armand.ourhome.community.user.dto.response.PageableResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/follow")
@@ -33,9 +38,14 @@ public class FollowController {
     }
 
     // 팔로우 피드
-//    @GetMapping("/feed")
-//    public ResponseEntity<FeedPageResponse> feedPage(){
-//
-//    }
+    @GetMapping("/feed")
+//    public ResponseEntity<PageableResponse<List<FeedResponse>>> feedPage(
+    public ResponseEntity<Void> feedPage(
+            @RequestParam(value = "token") Long token,
+            Pageable pageable
+    ) {
+        followService.feedPage(token, pageable);
+        return ResponseEntity.ok().build();
+    }
 
 }
