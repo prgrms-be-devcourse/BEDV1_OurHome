@@ -18,7 +18,7 @@ public class UserPageResponse {
     private String profileImageUrl;
     private Long followerCount;
     private Long followingCount;
-    private Boolean isFollow;
+    private Boolean isFollowing;
     private Long bookmarkCount;
     private Long likeCount;
     private Long postCount;

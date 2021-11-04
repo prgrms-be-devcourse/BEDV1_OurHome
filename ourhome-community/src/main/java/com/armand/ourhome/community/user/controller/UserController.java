@@ -1,6 +1,7 @@
 package com.armand.ourhome.community.user.controller;
 
 
+import com.armand.ourhome.community.user.dto.response.FollowPageResponse;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
 import com.armand.ourhome.community.user.dto.request.UpdateInfoRequest;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -43,22 +46,22 @@ public class UserController {
     }
 
     // 회원정보 수정
-    @PatchMapping("/{id}")
+    @PatchMapping
     public ResponseEntity<UpdateResponse> updateInfo(
-            @PathVariable(value = "id") Long id,
+            @RequestParam(value = "token") Long token,
             @Validated(UserValidationSequence.class) @RequestBody UpdateInfoRequest request
     ) {
-        UpdateResponse response = userService.updateInfo(id, request);
+        UpdateResponse response = userService.updateInfo(token, request);
         return ResponseEntity.ok(response);
     }
 
     // 비밀번호 변경
-    @PatchMapping("/{id}/password")
+    @PatchMapping("/password")
     public ResponseEntity<UpdateResponse> updatePassword(
-            @PathVariable(value = "id") Long id,
+            @RequestParam(value = "token") Long token,
             @Validated(UserValidationSequence.class) @RequestBody UpdatePasswordRequest request
     ) {
-        UpdateResponse response = userService.updatePassword(id, request);
+        UpdateResponse response = userService.updatePassword(token, request);
         return ResponseEntity.ok(response);
     }
 
@@ -72,5 +75,26 @@ public class UserController {
         UserPageResponse response = userService.userPage(id, token, pageable);
         return ResponseEntity.ok(response);
     }
+
+    // 팔로잉 페이지
+    @GetMapping("/{id}/followings")
+    public ResponseEntity<List<FollowPageResponse>> followingPage(
+            @PathVariable(value = "id") Long id,
+            @RequestParam(value = "token") Long token
+    ) {
+        List<FollowPageResponse> response = userService.followingPage(id, token);
+        return ResponseEntity.ok(response);
+    }
+
+    // 팔로워 페이지
+    @GetMapping("/{id}/followers")
+    public ResponseEntity<List<FollowPageResponse>> followerPage(
+            @PathVariable(value = "id") Long id,
+            @RequestParam(value = "token") Long token
+    ){
+        List<FollowPageResponse> response = userService.followerPage(id, token);
+        return ResponseEntity.ok(response);
+    }
+
 
 }

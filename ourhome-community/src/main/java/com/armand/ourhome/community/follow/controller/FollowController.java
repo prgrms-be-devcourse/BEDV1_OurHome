@@ -6,12 +6,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/follows")
+@RequestMapping("/api/follow")
 @RestController
 public class FollowController {
 
     private final FollowService followService;
 
+    // 팔로우하기
     @PostMapping("/{id}")
     public ResponseEntity<Void> follow(
             @PathVariable(value = "id") Long followingId,
@@ -21,6 +22,7 @@ public class FollowController {
         return ResponseEntity.ok().build();
     }
 
+    // 언팔로우하기
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> unfollow(
             @PathVariable(value = "id") Long followingId,
@@ -29,7 +31,5 @@ public class FollowController {
         followService.unfollow(followingId, token);
         return ResponseEntity.ok().build();
     }
-
-
 
 }

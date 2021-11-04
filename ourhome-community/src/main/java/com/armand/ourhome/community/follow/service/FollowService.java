@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.text.MessageFormat;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -21,11 +21,12 @@ public class FollowService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void follow(Long followingId, Long token) {
-        User follower = userRepository.findById(token).orElseThrow(() -> new UserNotFoundException(token));
+    public void follow(Long followingId, Long myId) {
+        User follower = userRepository.findById(myId).get();
         User following = userRepository.findById(followingId).orElseThrow(() -> new UserNotFoundException(followingId));
-        if(followRepository.existsByFollowerAndFollowing(follower, following))
-            throw new InvalidValueException("이미 팔로우하고 있는 사용자입니다.");
+        if (followRepository.existsByFollowerAndFollowing(follower, following))
+            // 이렇게 사용자 id를 알려주는게 맞을까? 로깅할때만 써주면 될지도?
+            throw new InvalidValueException(MessageFormat.format("이미 팔로우하고 있는 사용자입니다. (id : {})", followingId));
         followRepository.save(
                 Follow.builder()
                         .follower(follower)
@@ -35,14 +36,12 @@ public class FollowService {
     }
 
     @Transactional
-    public void unfollow(Long followingId, Long token) {
-        User follower = userRepository.findById(token).orElseThrow(() -> new UserNotFoundException(token));
+    public void unfollow(Long followingId, Long myId) {
+        User follower = userRepository.findById(myId).get();
         User following = userRepository.findById(followingId).orElseThrow(() -> new UserNotFoundException(followingId));
-        if(!followRepository.existsByFollowerAndFollowing(follower, following))
-            throw new InvalidValueException("이미 팔로우 해제된 사용자입니다.");
+        if (!followRepository.existsByFollowerAndFollowing(follower, following))
+            throw new InvalidValueException(MessageFormat.format("이미 언팔로우한 사용자입니다. (id : {})", followingId));
         followRepository.deleteByFollowerAndFollowing(follower, following);
     }
-
-
 
 }

@@ -92,13 +92,13 @@ class UserControllerTest {
                         document(
                                 "user/sign-up", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
                                 requestFields(
-                                        fieldWithPath("email").type(JsonFieldType.STRING).description("email"),
-                                        fieldWithPath("password").type(JsonFieldType.STRING).description("password"),
-                                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("nickname")
+                                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
+                                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임")
                                 ),
                                 responseFields(
-                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("id"),
-                                        fieldWithPath("created_at").type(JsonFieldType.STRING).description("created_at")
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("사용자 아이디"),
+                                        fieldWithPath("created_at").type(JsonFieldType.STRING).description("생성시간")
                                 )
                         )
                 );
@@ -128,11 +128,11 @@ class UserControllerTest {
                         document(
                                 "user/login", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
                                 requestFields(
-                                        fieldWithPath("email").type(JsonFieldType.STRING).description("email"),
-                                        fieldWithPath("password").type(JsonFieldType.STRING).description("password")
+                                        fieldWithPath("email").type(JsonFieldType.STRING).description("이메일"),
+                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
                                 ),
                                 responseFields(
-                                        fieldWithPath("token").type(JsonFieldType.NUMBER).description("token")
+                                        fieldWithPath("token").type(JsonFieldType.NUMBER).description("토큰(id)")
                                 )
                         )
                 );
@@ -150,8 +150,9 @@ class UserControllerTest {
 
         // When
         ResultActions resultActions = mockMvc.perform(
-                patch("/api/users/{id}", user.getId())
+                patch("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("token", String.valueOf(user.getId()))
                         .content(request)
         );
 
@@ -162,16 +163,16 @@ class UserControllerTest {
                 .andDo(
                         document(
                                 "user/update-info", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("id").description("user_id")
+                                requestParameters(
+                                        parameterWithName("token").description("토큰(id)")
                                 ),
                                 requestFields(
-                                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("nickname"),
-                                        fieldWithPath("description").type(JsonFieldType.STRING).description("description"),
-                                        fieldWithPath("profile_image_base64").type(JsonFieldType.NULL).description("profile_image_base64")
+                                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
+                                        fieldWithPath("description").type(JsonFieldType.STRING).description("한줄설명"),
+                                        fieldWithPath("profile_image_base64").type(JsonFieldType.NULL).description("프로필 사진 base64")
                                 ),
                                 responseFields(
-                                        fieldWithPath("updated_at").type(JsonFieldType.STRING).description("updated_at")
+                                        fieldWithPath("updated_at").type(JsonFieldType.STRING).description("수정시간")
                                 )
                         )
                 );
@@ -188,8 +189,9 @@ class UserControllerTest {
 
         // When
         ResultActions resultActions = mockMvc.perform(
-                patch("/api/users/{id}/password", user.getId())
+                patch("/api/users/password")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("token", String.valueOf(user.getId()))
                         .content(request)
         );
 
@@ -200,14 +202,14 @@ class UserControllerTest {
                 .andDo(
                         document(
                                 "user/update-password", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
-                                pathParameters(
-                                        parameterWithName("id").description("user_id")
+                                requestParameters(
+                                        parameterWithName("token").description("token")
                                 ),
                                 requestFields(
-                                        fieldWithPath("password").type(JsonFieldType.STRING).description("password")
+                                        fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
                                 ),
                                 responseFields(
-                                        fieldWithPath("updated_at").type(JsonFieldType.STRING).description("updated_at")
+                                        fieldWithPath("updated_at").type(JsonFieldType.STRING).description("수정시간")
                                 )
                         )
                 );
@@ -262,28 +264,28 @@ class UserControllerTest {
                         document(
                                 "user/page", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
                                 pathParameters(
-                                        parameterWithName("id").description("user_id")
+                                        parameterWithName("id").description("사용자 아이디")
                                 ),
                                 requestParameters(
-                                        parameterWithName("token").description("token"),
-                                        parameterWithName("page").description("page"),
-                                        parameterWithName("size").description("size"),
-                                        parameterWithName("sort").description("sort")
+                                        parameterWithName("token").description("토큰(id)"),
+                                        parameterWithName("page").description("페이지 넘버"),
+                                        parameterWithName("size").description("페이지 개수"),
+                                        parameterWithName("sort").description("정렬 기준")
                                 ),
                                 responseFields(
-                                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("nickname"),
-                                        fieldWithPath("description").type(JsonFieldType.STRING).description("description"),
-                                        fieldWithPath("profile_image_url").type(JsonFieldType.STRING).description("profile_image_url"),
-                                        fieldWithPath("follower_count").type(JsonFieldType.NUMBER).description("follower_count"),
-                                        fieldWithPath("following_count").type(JsonFieldType.NUMBER).description("following_count"),
-                                        fieldWithPath("is_follow").type(JsonFieldType.NULL).description("following_count"),
-                                        fieldWithPath("bookmark_count").type(JsonFieldType.NUMBER).description("bookmark_count"),
-                                        fieldWithPath("like_count").type(JsonFieldType.NUMBER).description("like_count"),
-                                        fieldWithPath("post_count").type(JsonFieldType.NUMBER).description("post_count"),
+                                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("닉네임"),
+                                        fieldWithPath("description").type(JsonFieldType.STRING).description("한줄설명"),
+                                        fieldWithPath("profile_image_url").type(JsonFieldType.STRING).description("프로필 사진 url"),
+                                        fieldWithPath("follower_count").type(JsonFieldType.NUMBER).description("팔로워 수"),
+                                        fieldWithPath("following_count").type(JsonFieldType.NUMBER).description("팔로잉 수"),
+                                        fieldWithPath("is_following").type(JsonFieldType.NULL).description("해당 유저 팔로우 여부"),
+                                        fieldWithPath("bookmark_count").type(JsonFieldType.NUMBER).description("북마크 수"),
+                                        fieldWithPath("like_count").type(JsonFieldType.NUMBER).description("좋아요 수"),
+                                        fieldWithPath("post_count").type(JsonFieldType.NUMBER).description("사진 게시글 수"),
 
-                                        fieldWithPath("thumbnail_list[]").type(JsonFieldType.ARRAY).description("thumbnail_list"),
-                                        fieldWithPath("thumbnail_list[].media_url").type(JsonFieldType.STRING).description("media_url"),
-                                        fieldWithPath("thumbnail_list[].is_only").type(JsonFieldType.BOOLEAN).description("is_only")
+                                        fieldWithPath("thumbnail_list[]").type(JsonFieldType.ARRAY).description("썸네일 리스트"),
+                                        fieldWithPath("thumbnail_list[].media_url").type(JsonFieldType.STRING).description("썸네일 이미지 url"),
+                                        fieldWithPath("thumbnail_list[].is_only").type(JsonFieldType.BOOLEAN).description("다중 이미지 여부")
                                 )
                         )
                 );
