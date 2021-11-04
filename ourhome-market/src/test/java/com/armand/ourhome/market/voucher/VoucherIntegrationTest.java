@@ -2,10 +2,17 @@ package com.armand.ourhome.market.voucher;
 
 import static com.armand.ourhome.market.voucher.dto.VoucherType.FIXED;
 import static com.armand.ourhome.market.voucher.dto.VoucherType.PERCENT;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,13 +33,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+@AutoConfigureRestDocs
 @ActiveProfiles("test")
 @TestInstance(Lifecycle.PER_CLASS)
 @SpringBootTest
@@ -57,6 +67,7 @@ public class VoucherIntegrationTest {
   private User user;
 
   @BeforeAll
+  @Test
   void setUp() throws Exception {
     // 유저 등록
     user = userRepository.save(User.builder()
@@ -71,7 +82,7 @@ public class VoucherIntegrationTest {
 
     // 저장 테스트
     // given
-    RequestVoucher reqeustVoucher = RequestVoucher.builder()
+    RequestVoucher requestVoucher = RequestVoucher.builder()
         .value(4000)
         .minLimit(20000)
         .voucherType(FIXED)
@@ -79,7 +90,7 @@ public class VoucherIntegrationTest {
 
     // when
     ResultActions resultActions = mockMvc.perform(post("/api/vouchers")
-            .content(objectMapper.writeValueAsString(reqeustVoucher))
+            .content(objectMapper.writeValueAsString(requestVoucher))
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print());
 
@@ -88,7 +99,23 @@ public class VoucherIntegrationTest {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("value").value(4000))
         .andExpect(jsonPath("min_limit").value(20000))
-        .andExpect(jsonPath("voucher_type").value("FIXED"));
+        .andExpect(jsonPath("voucher_type").value("FIXED"))
+        .andDo(document("voucher/voucher-save", preprocessRequest(prettyPrint()),
+            preprocessResponse(prettyPrint()),
+            requestFields(
+                fieldWithPath("value").type(JsonFieldType.NUMBER).description("할인 비율 또는 할인 금액"),
+                fieldWithPath("minLimit").type(JsonFieldType.NUMBER).description("바우처 사용 최소금액"),
+                fieldWithPath("voucherType").type(JsonFieldType.STRING).description("바우처 타입")
+            ),
+            responseFields(
+                fieldWithPath("voucher_id").type(JsonFieldType.NUMBER).description("바우처 아이디"),
+                fieldWithPath("value").type(JsonFieldType.NUMBER).description("할인 비율 또는 할인 금액"),
+                fieldWithPath("minLimit").type(JsonFieldType.NUMBER).description("바우처 사용 최소금액"),
+                fieldWithPath("voucherType").type(JsonFieldType.STRING).description("바우처 타입"),
+                fieldWithPath("created_at").type(JsonFieldType.STRING).description("바우처 최초 생성시간"),
+                fieldWithPath("updated_at").type(JsonFieldType.STRING).description("바우처 최신 수정시간")
+            )
+        ));
   }
 
   @Test
@@ -157,7 +184,7 @@ public class VoucherIntegrationTest {
   @Test
   @DisplayName("바우처를 유저에게 할당할 수 있다")
   void testAssignToUser() throws Exception {
-  // given
+    // given
     RequestVoucher reqeustVoucher = RequestVoucher.builder()
         .value(10)
         .minLimit(20000)
@@ -167,8 +194,9 @@ public class VoucherIntegrationTest {
     VoucherDto voucherDto = voucherService.save(reqeustVoucher);
 
     // when
-    ResultActions resultActions = mockMvc.perform(post("/api/vouchers/{id}/assign-to-user", voucherDto.getId())
-            .param("userId", String.valueOf(user.getId())))
+    ResultActions resultActions = mockMvc.perform(
+            post("/api/vouchers/{id}/assign-to-user", voucherDto.getId())
+                .param("userId", String.valueOf(user.getId())))
         .andDo(print());
 
     // then
@@ -181,3 +209,4 @@ public class VoucherIntegrationTest {
   }
 
 }
+

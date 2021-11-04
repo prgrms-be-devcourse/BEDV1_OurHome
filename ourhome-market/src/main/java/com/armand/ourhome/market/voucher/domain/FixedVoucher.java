@@ -40,7 +40,7 @@ public class FixedVoucher extends Voucher {
   }
 
   @Override
-  public int getDiscountPrice(int currentPrice) {
+  public long getDiscountPrice(long currentPrice) {
     return this.amount;
   }
 

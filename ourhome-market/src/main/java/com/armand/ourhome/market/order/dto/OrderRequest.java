@@ -31,12 +31,15 @@ public class OrderRequest {
     @NotNull
     private List<OrderItemRequest> orderItemRequests;
 
-    @Builder
-    public OrderRequest(PaymentType paymentType, Long userId, String address, List<OrderItemRequest> orderItemRequests) {
+    private Long voucherId;
 
+    @Builder
+    public OrderRequest(PaymentType paymentType, Long userId, String address, List<OrderItemRequest> orderItemRequests, Long voucherId) {
         this.paymentType = paymentType;
         this.userId = userId;
         this.address = address;
         this.orderItemRequests = orderItemRequests;
+        this.voucherId = voucherId;
     }
+
 }

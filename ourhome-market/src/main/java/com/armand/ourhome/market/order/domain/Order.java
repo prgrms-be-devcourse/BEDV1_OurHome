@@ -2,6 +2,7 @@ package com.armand.ourhome.market.order.domain;
 
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.market.order.exception.DeliveryAlreadyStartedException;
+import com.armand.ourhome.market.voucher.domain.Voucher;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,13 +47,18 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "voucher_id")
+    private Voucher voucher;
+
     @Builder
-    public Order(PaymentType paymentType, String address, User user, Delivery delivery, List<OrderItem> orderItems) {
+    public Order(PaymentType paymentType, String address, User user, Delivery delivery, List<OrderItem> orderItems, Voucher voucher) {
         this.paymentType = paymentType;
         this.address = address;
         this.user = user;
         this.delivery = delivery;
         this.orderItems = orderItems == null ? new ArrayList<>() : orderItems;
+        this.voucher = voucher;
     }
 
     public static Order createOrder(PaymentType paymentType, String address, User user, Delivery delivery, List<OrderItem> orderItems) {
@@ -113,6 +119,11 @@ public class Order {
         for (OrderItem orderItem: getOrderItems()) {
             totalPrice += orderItem.getPriceOfItems();
         }
+
+        if(voucher != null){
+            totalPrice -= voucher.getDiscountPrice(totalPrice);
+        }
+
         return totalPrice;
     }
 

@@ -40,7 +40,7 @@ public class PercentVoucher extends Voucher {
   }
 
   @Override
-  public int getDiscountPrice(int currentPrice) {
+  public long getDiscountPrice(long currentPrice) {
     return currentPrice * (percent / 100);
   }
 
