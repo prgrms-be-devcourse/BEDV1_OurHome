@@ -1,5 +1,6 @@
 package com.armand.ourhome.market.voucher.domain;
 
+import com.armand.ourhome.domain.base.BaseEntity;
 import com.armand.ourhome.domain.user.User;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(name = "wallet")
-public class Wallet {
+public class Wallet extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

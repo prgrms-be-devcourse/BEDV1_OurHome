@@ -51,9 +51,10 @@ public class OrderService {
         .orElseThrow(() -> new UserNotFoundException(userId.toString()));
 
     // 바우처 사용
+    Voucher voucher = null;
     if (orderRequest.getVoucherId() != null) {
       Long voucherId = orderRequest.getVoucherId();
-      voucherRepository.findById(voucherId)
+      voucher = voucherRepository.findById(voucherId)
           .orElseThrow(() -> new VoucherNotFoundException(
               MessageFormat.format("등록된 바우처가 아닙니다. voucherId : {0}", voucherId)));
       Wallet wallet = walletRepository.findByUserIdAndVoucherId(userId, voucherId)
@@ -74,7 +75,7 @@ public class OrderService {
 
     // 주문 생성
     Order order = Order.createOrder(orderRequest.getPaymentType(), orderRequest.getAddress(), user,
-        delivery, orderItems);
+        delivery, orderItems, voucher);
     Order savedOrder = orderRepository.save(order);
 
     return orderMapper.entityToResponse(savedOrder);

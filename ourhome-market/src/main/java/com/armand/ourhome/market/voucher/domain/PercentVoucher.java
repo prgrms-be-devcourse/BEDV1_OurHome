@@ -41,7 +41,7 @@ public class PercentVoucher extends Voucher {
 
   @Override
   public long getDiscountPrice(long currentPrice) {
-    return currentPrice * (percent / 100);
+    return (long) (currentPrice * (percent * 0.01));
   }
 
   //== Validation Method ==//
