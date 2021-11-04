@@ -72,17 +72,17 @@ class ReviewControllerTest {
                 .andDo(print())
                 .andDo(document("review/review-add",
                             requestFields(
-                                    fieldWithPath("user_id").type(NUMBER).description("user_id"),
-                                    fieldWithPath("item_id").type(NUMBER).description("item_id"),
-                                    fieldWithPath("comment").type(STRING).description("comment"),
-                                    fieldWithPath("rating").type(NUMBER).description("rating"),
-                                    fieldWithPath("review_image_base64").type(STRING).description("review_image_base64")
+                                    fieldWithPath("user_id").type(NUMBER).description("작성자 아이디"),
+                                    fieldWithPath("item_id").type(NUMBER).description("상품 아이디"),
+                                    fieldWithPath("comment").type(STRING).description("리뷰 코멘트"),
+                                    fieldWithPath("rating").type(NUMBER).description("리뷰 평점"),
+                                    fieldWithPath("review_image_base64").type(STRING).description("리뷰 이미지 Base64 인코딩")
                             ),
                             responseFields(
-                                    fieldWithPath("review_id").type(NUMBER).description("review_id"),
-                                    fieldWithPath("review_image").type(OBJECT).description("review_image"),
-                                    fieldWithPath("review_image.id").type(NUMBER).description("review_image.id"),
-                                    fieldWithPath("review_image.image_url").type(STRING).description("review_image.image_url")
+                                    fieldWithPath("review_id").type(NUMBER).description("리뷰 아이디"),
+                                    fieldWithPath("review_image").type(OBJECT).description("리뷰 이미지 정보"),
+                                    fieldWithPath("review_image.id").type(NUMBER).description("리뷰 이미지 아이디"),
+                                    fieldWithPath("review_image.image_url").type(STRING).description("리뷰 이미지 URL")
                             )
                         ));
     }
@@ -115,16 +115,16 @@ class ReviewControllerTest {
                                 parameterWithName("reviewId").description("reviewId")
                         ),
                         requestFields(
-                                fieldWithPath("user_id").type(NUMBER).description("user_id"),
-                                fieldWithPath("rating").type(NUMBER).description("rating"),
-                                fieldWithPath("comment").type(STRING).description("comment"),
-                                fieldWithPath("review_image_base64").type(STRING).description("review_image_base64")
+                                fieldWithPath("user_id").type(NUMBER).description("작성자 아이디"),
+                                fieldWithPath("rating").type(NUMBER).description("리뷰 평점"),
+                                fieldWithPath("comment").type(STRING).description("리뷰 평점"),
+                                fieldWithPath("review_image_base64").type(STRING).description("리뷰 이미지 Base64 인코딩")
                         ),
                         responseFields(
-                                fieldWithPath("review_id").type(NUMBER).description("review_id"),
-                                fieldWithPath("review_image").type(OBJECT).description("review_image"),
-                                fieldWithPath("review_image.id").type(NUMBER).description("review_image.id"),
-                                fieldWithPath("review_image.image_url").type(STRING).description("review_image.image_url")
+                                fieldWithPath("review_id").type(NUMBER).description("리뷰 아이디"),
+                                fieldWithPath("review_image").type(OBJECT).description("리뷰 이미지 정보"),
+                                fieldWithPath("review_image.id").type(NUMBER).description("리뷰 이미지 아이디"),
+                                fieldWithPath("review_image.image_url").type(STRING).description("리뷰 이미지 URL")
                         )
                     ));
     }
@@ -149,11 +149,11 @@ class ReviewControllerTest {
                 .andDo(print())
                 .andDo(document("review/review-delete",
                         pathParameters(
-                                parameterWithName("reviewId").description("reviewId")
+                                parameterWithName("reviewId").description("리뷰 아이디")
                         ),
                         requestFields(
-                                fieldWithPath("user_id").type(NUMBER).description("user_id"),
-                                fieldWithPath("review_image_id").type(NUMBER).description("review_image_id")
+                                fieldWithPath("user_id").type(NUMBER).description("리뷰 작성자 아이다"),
+                                fieldWithPath("review_image_id").type(NUMBER).description("리뷰 이미지 아이디")
                         )
                 ));
     }
@@ -177,10 +177,10 @@ class ReviewControllerTest {
                 .andDo(print())
                 .andDo(document("review/praise",
                         pathParameters(
-                                parameterWithName("reviewId").description("reviewId")
+                                parameterWithName("reviewId").description("리뷰 아이디")
                         ),
                         requestFields(
-                                fieldWithPath("user_id").type(NUMBER).description("user_id")
+                                fieldWithPath("user_id").type(NUMBER).description("사용자 아이디")
                         )
                 ));
     }
@@ -203,11 +203,11 @@ class ReviewControllerTest {
                 .andDo(print())
                 .andDo(document("review/praise-remove",
                         pathParameters(
-                                parameterWithName("reviewId").description("reviewId"),
-                                parameterWithName("praiseId").description("praiseId")
+                                parameterWithName("reviewId").description("리뷰 아이디"),
+                                parameterWithName("praiseId").description("'도움이 돼요' 아이디")
                         ),
                         requestFields(
-                                fieldWithPath("user_id").type(NUMBER).description("user_id")
+                                fieldWithPath("user_id").type(NUMBER).description("사용자 아이디")
                         )
                 ));
     }
