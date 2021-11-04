@@ -1,6 +1,7 @@
 package com.armand.ourhome.community.user.controller;
 
 
+import com.armand.ourhome.community.user.dto.response.FollowPageResponse;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
 import com.armand.ourhome.community.user.dto.request.UpdateInfoRequest;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -72,5 +75,26 @@ public class UserController {
         UserPageResponse response = userService.userPage(id, token, pageable);
         return ResponseEntity.ok(response);
     }
+
+    // 팔로잉 페이지
+    @GetMapping("/{id}/followings")
+    public ResponseEntity<List<FollowPageResponse>> followingPage(
+            @PathVariable(value = "id") Long id,
+            @RequestParam(value = "token") Long token
+    ) {
+        List<FollowPageResponse> response = userService.followingPage(id, token);
+        return ResponseEntity.ok(response);
+    }
+
+    // 팔로워 페이지
+    @GetMapping("/{id}/followers")
+    public ResponseEntity<List<FollowPageResponse>> followerPage(
+            @PathVariable(value = "id") Long id,
+            @RequestParam(value = "token") Long token
+    ){
+        List<FollowPageResponse> response = userService.followerPage(id, token);
+        return ResponseEntity.ok(response);
+    }
+
 
 }

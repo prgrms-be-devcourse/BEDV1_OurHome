@@ -6,6 +6,7 @@ import com.armand.ourhome.common.error.exception.InvalidValueException;
 import com.armand.ourhome.common.error.exception.user.UserNotFoundException;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.community.bookmark.repository.BookmarkRepository;
+import com.armand.ourhome.community.user.dto.response.FollowPageResponse;
 import com.armand.ourhome.community.follow.repository.FollowRepository;
 import com.armand.ourhome.community.like.repository.LikeRepository;
 import com.armand.ourhome.community.post.entity.Content;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -47,9 +49,9 @@ public class UserService {
     @Transactional
     public SignUpResponse signUp(SignUpRequest signUpRequest) {
         String email = signUpRequest.getEmail();
-        isDuplicateEmail(email);
+        validDuplicateEmail(email);
         String nickname = signUpRequest.getNickname();
-        isDuplicateNickname(nickname);
+        validDuplicateNickname(nickname);
         // request -> entity -> response
         User user = signUpMapper.requestToEntity(signUpRequest);
         User save = userRepository.save(user);
@@ -71,31 +73,31 @@ public class UserService {
     }
 
     @Transactional
-    public UpdateResponse updateInfo(Long token, UpdateInfoRequest updateInfoRequest) {
+    public UpdateResponse updateInfo(Long myId, UpdateInfoRequest updateInfoRequest) {
         String nickname = updateInfoRequest.getNickname();
-        isDuplicateNickname(nickname);
+        validDuplicateNickname(nickname);
         String description = updateInfoRequest.getDescription();
         String profileImageBase64 = updateInfoRequest.getProfileImageBase64();
         String profileImageUrl = awsS3Uploader.upload(profileImageBase64, "profile");
 
-        User user = userRepository.findById(token).orElseThrow(() -> new UserNotFoundException(token));
-        user.updateInfo(nickname, description, profileImageUrl);
+        User me = userRepository.findById(myId).get();
+        me.updateInfo(nickname, description, profileImageUrl);
 
         // update된 시간을 받아오기 위해 flush
         userRepository.flush();
-        return UpdateResponse.of(user);
+        return UpdateResponse.of(me);
     }
 
     @Transactional
-    public UpdateResponse updatePassword(Long token, UpdatePasswordRequest updatePasswordRequest) {
+    public UpdateResponse updatePassword(Long myId, UpdatePasswordRequest updatePasswordRequest) {
         String password = updatePasswordRequest.getPassword();
-        User user = userRepository.findById(token).orElseThrow(() -> new UserNotFoundException(token));
-        user.updatePassword(password);
+        User me = userRepository.findById(myId).get();
+        me.updatePassword(password);
         userRepository.flush();
-        return UpdateResponse.of(user);
+        return UpdateResponse.of(me);
     }
 
-    public UserPageResponse userPage(Long id, Long token, Pageable pageable) {
+    public UserPageResponse userPage(Long id, Long myId, Pageable pageable) {
         Optional<User> byId = userRepository.findById(id);
         if (byId.isEmpty())
             throw new UserNotFoundException(id);
@@ -123,28 +125,54 @@ public class UserService {
                 .postCount(postRepository.countAllByUser(user))
                 .thumbnailList(thumbnailList);
         // 마이페이지일 경우 북마크, 좋아요 수를 추가해준다
-        if (Objects.equals(id, token)) {
+        if (Objects.equals(id, myId)) {
             responseBuilder
                     .bookmarkCount(bookmarkRepository.countByUser(user))
                     .likeCount(likeRepository.countByUser(user));
         }
         // 타유저페이지일 경우 팔로우 여부를 추가
-        else{
-            User curUser = userRepository.findById(token).get();   // 현재 사용자
+        else {
+            User me = userRepository.findById(myId).get();   // 현재 사용자
             responseBuilder
-                    .isFollowing(followRepository.existsByFollowerAndFollowing(curUser, user));
+                    .isFollowing(followRepository.existsByFollowerAndFollowing(me, user));
         }
         return responseBuilder.build();
     }
 
+    public List<FollowPageResponse> followingPage(Long id, Long myId) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        User me = userRepository.findById(myId).get();
+        return followRepository.findByFollower(user).stream()   // 다 들고오기 vs following 컬럼만 들고오기 ???
+                .map(follow ->
+                        FollowPageResponse.of(
+                                follow.getFollowing(),
+                                followRepository.existsByFollowerAndFollowing(me, follow.getFollowing())
+                        )
+                )
+                .collect(Collectors.toList());
+    }
+
+    public List<FollowPageResponse> followerPage(Long id, Long myId) {
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+        User me = userRepository.findById(myId).get();
+        return followRepository.findByFollowing(user).stream()
+                .map(follow ->
+                        FollowPageResponse.of(
+                                follow.getFollower(),
+                                followRepository.existsByFollowerAndFollowing(me, follow.getFollower())
+                        )
+                )
+                .collect(Collectors.toList());
+    }
+
     // ------------------------------------------------------------------------
 
-    private void isDuplicateEmail(String email) {
+    private void validDuplicateEmail(String email) {
         if (userRepository.existsByEmail(email))
             throw new InvalidValueException("이미 중복되는 이메일이 있습니다");
     }
 
-    private void isDuplicateNickname(String nickname) {
+    private void validDuplicateNickname(String nickname) {
         if (userRepository.existsByNickname(nickname))
             throw new InvalidValueException("이미 중복되는 닉네임이 있습니다");
     }
