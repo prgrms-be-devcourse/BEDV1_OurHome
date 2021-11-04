@@ -6,6 +6,8 @@ import com.armand.ourhome.community.comment.service.CommentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,5 +25,11 @@ public class CommentController {
         @Valid @RequestBody final CreateCommentRequest createCommentRequest) {
         final CreateCommentResponse createCommentResponse = commentService.createComment(createCommentRequest);
         return ResponseEntity.ok(createCommentResponse);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Long> removeComment(@PathVariable("id") final Long commentId) {
+        Long removeCommentId = commentService.removeComment(commentId);
+        return ResponseEntity.ok(removeCommentId);
     }
 }
