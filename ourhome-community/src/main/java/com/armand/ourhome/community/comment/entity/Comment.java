@@ -24,14 +24,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Comment extends BaseEntity {
 
-    private static final int MAX_LENGTH_OF_NAME = 300;
+    private static final int MAX_LENGTH_OF_COMMENT = 300;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "comment", length = MAX_LENGTH_OF_NAME, nullable = false)
+    @Column(name = "comment", length = MAX_LENGTH_OF_COMMENT, nullable = false)
     private String comment;
 
     @ManyToOne(fetch = FetchType.LAZY)
