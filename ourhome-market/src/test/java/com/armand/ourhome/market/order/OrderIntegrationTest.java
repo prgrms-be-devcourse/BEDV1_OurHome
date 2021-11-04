@@ -11,11 +11,16 @@ import com.armand.ourhome.market.order.dto.OrderRequest;
 import com.armand.ourhome.market.order.dto.OrderResponse;
 import com.armand.ourhome.market.order.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -25,14 +30,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
+@AutoConfigureRestDocs
 @AutoConfigureMockMvc
 @Transactional
 @SpringBootTest
@@ -96,8 +107,31 @@ public class OrderIntegrationTest {
 
         // Then
         resultActions.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("status").value("ACCEPTED"));
+                .andDo(
+                        document(
+                                "orders/create", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                                requestFields(
+                                        fieldWithPath("payment_type").type(JsonFieldType.STRING).description("결제 수단"),
+                                        fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("유저 아이디"),
+                                        fieldWithPath("address").type(JsonFieldType.STRING).description("주소"),
+                                        fieldWithPath("order_item_requests").type(JsonFieldType.ARRAY).description("주문 아이템"),
+                                        fieldWithPath("order_item_requests[].order_count").type(JsonFieldType.NUMBER).description("주문 수량"),
+                                        fieldWithPath("order_item_requests[].item_id").type(JsonFieldType.NUMBER).description("아이템 아이디")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("주문 아이디"),
+                                        fieldWithPath("status").type(JsonFieldType.STRING).description("주문 상태"),
+                                        fieldWithPath("payment_type").type(JsonFieldType.STRING).description("결제 수단"),
+                                        fieldWithPath("address").type(JsonFieldType.STRING).description("주소"),
+                                        fieldWithPath("total_price").type(JsonFieldType.NUMBER).description("주문 금액"),
+                                        fieldWithPath("delivery_response").type(JsonFieldType.OBJECT).description("배달 정보"),
+                                        fieldWithPath("delivery_response.status").type(JsonFieldType.STRING).description("배달 상태"),
+                                        fieldWithPath("delivery_response.code").type(JsonFieldType.STRING).description("배달 코드")
+                                )
+                        ))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+
     }
 
     @Test
@@ -119,7 +153,8 @@ public class OrderIntegrationTest {
                 .paymentType(PaymentType.FUND_TRANSFER)
                 .userId(userWithAddress.getId())
                 .orderItemRequests(orderItemRequests)
-                .build();;
+                .build();
+        ;
 
         // When
         final ResultActions resultActions = mockMvc.perform(post("/orders")
@@ -170,11 +205,24 @@ public class OrderIntegrationTest {
 
         // Then
         resultActions.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("id").value(order.getId()))
-                .andExpect(jsonPath("status").value("ACCEPTED"))
-                .andExpect(jsonPath("paymentType").value("FUND_TRANSFER"))
-                .andExpect(jsonPath("totalPrice").value(total));
+                .andDo(
+                        document(
+                                "orders/get", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                                pathParameters(
+                                        parameterWithName("order_id").description("주문 아이디")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("주문 아이디"),
+                                        fieldWithPath("status").type(JsonFieldType.STRING).description("주문 상태"),
+                                        fieldWithPath("payment_type").type(JsonFieldType.STRING).description("결제 수단"),
+                                        fieldWithPath("address").type(JsonFieldType.STRING).description("주소"),
+                                        fieldWithPath("total_price").type(JsonFieldType.NUMBER).description("주문 금액"),
+                                        fieldWithPath("delivery_response").type(JsonFieldType.OBJECT).description("배달 정보"),
+                                        fieldWithPath("delivery_response.status").type(JsonFieldType.STRING).description("배달 상태"),
+                                        fieldWithPath("delivery_response.code").type(JsonFieldType.STRING).description("배달 코드")
+                                )
+                        ))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -209,10 +257,30 @@ public class OrderIntegrationTest {
 
         // Then
         resultActions.andExpect(status().isOk())
+                .andDo(
+                        document(
+                                "orders/delete", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                                pathParameters(
+                                        parameterWithName("order_id").description("주문 아이디")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("주문 아이디"),
+                                        fieldWithPath("status").type(JsonFieldType.STRING).description("주문 상태"),
+                                        fieldWithPath("payment_type").type(JsonFieldType.STRING).description("결제 수단"),
+                                        fieldWithPath("address").type(JsonFieldType.STRING).description("주소"),
+                                        fieldWithPath("total_price").type(JsonFieldType.NUMBER).description("주문 금액"),
+                                        fieldWithPath("delivery_response").type(JsonFieldType.OBJECT).description("배달 정보"),
+                                        fieldWithPath("delivery_response.status").type(JsonFieldType.STRING).description("배달 상태"),
+                                        fieldWithPath("delivery_response.code").type(JsonFieldType.STRING).description("배달 코드")
+                                )
+                        ))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+        resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("id").value(order.getId()))
                 .andExpect(jsonPath("status").value("CANCELLED"))
-                .andExpect(jsonPath("deliveryResponse.status").value("CANCELLED"));
+                .andExpect(jsonPath("delivery_response.status").value("CANCELLED"));
 
     }
 }

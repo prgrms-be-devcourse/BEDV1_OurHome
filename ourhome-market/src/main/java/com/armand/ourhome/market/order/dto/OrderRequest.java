@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -17,12 +19,16 @@ import java.util.List;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderRequest {
 
+    @NotNull
     private PaymentType paymentType;
 
+    @NotNull
     private Long userId;
 
+    // null이면 사용자 주소로 생성
     private String address;
 
+    @NotNull
     private List<OrderItemRequest> orderItemRequests;
 
     @Builder

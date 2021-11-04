@@ -9,9 +9,6 @@ import org.mapstruct.Mapping;
 @Mapper
 public interface OrderMapper {
 
-    @Mapping(target = "user", ignore = true)
-    Order requestToEntity(OrderRequest orderRequest);
-
     @Mapping(source = "delivery", target = "deliveryResponse")
     @Mapping(target = "totalPrice", expression = "java(order.getTotalPrice())")
     OrderResponse entityToResponse(Order order);

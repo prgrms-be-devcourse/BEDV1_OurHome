@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Getter
@@ -17,7 +19,9 @@ import java.util.UUID;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class DeliveryResponse {
 
+    @NotNull
     private DeliveryStatus status;
 
+    @NotNull
     private UUID code;
 }
