@@ -2,6 +2,7 @@ package com.armand.ourhome.community.post.controller;
 
 import com.armand.ourhome.community.post.dto.request.ReqPostDto;
 import com.armand.ourhome.community.post.dto.response.ResPostDto;
+import com.armand.ourhome.community.post.dto.response.ResReturnIdDto;
 import com.armand.ourhome.community.post.entity.ResidentialType;
 import com.armand.ourhome.community.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,10 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<Long> save(@RequestBody @Valid final ReqPostDto postDto) {
-        return ResponseEntity.ok(postService.save(postDto));
+    public ResponseEntity<ResReturnIdDto> save(@RequestBody @Valid final ReqPostDto postDto) {
+        return ResponseEntity.ok(ResReturnIdDto.builder()
+                .id(postService.save(postDto))
+                .build());
     }
 
     @GetMapping
@@ -41,9 +44,11 @@ public class PostController {
     }
 
     @PostMapping("/{postId}")
-    public ResponseEntity<Long> update(@RequestBody @Valid final ReqPostDto postDto,
+    public ResponseEntity<ResReturnIdDto> update(@RequestBody @Valid final ReqPostDto postDto,
                                        @Valid @PathVariable final Long postId){
-        return ResponseEntity.ok(postService.update(postDto, postId));
+        return ResponseEntity.ok(ResReturnIdDto.builder()
+                .id(postService.update(postDto, postId))
+                .build());
     }
 
     @GetMapping("/{postId}")
@@ -52,9 +57,11 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Long> delete(@Valid @PathVariable final Long postId){
+    public ResponseEntity<ResReturnIdDto> delete(@Valid @PathVariable final Long postId){
         postService.delete(postId);
-        return ResponseEntity.ok(postId);
+        return ResponseEntity.ok(ResReturnIdDto.builder()
+                .id(postId)
+                .build());
     }
 
 }
