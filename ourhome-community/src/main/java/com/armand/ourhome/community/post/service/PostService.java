@@ -48,12 +48,14 @@ public class PostService {
     @Transactional
     public Long save(final ReqPost postDto){
 
+        User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
+
         int contentSize = postDto.getContentList().size();
         for (int i = 0; i < contentSize; i++){
             String mediaUrl = awsS3Uploader.upload(postDto.getContentList().get(i).getImageBase64(), "post");
             postDto.getContentList().get(i).setMediaUrl(mediaUrl);
         }
-        User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new BusinessException("해당 사용자 정보는 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
+
         return postRepository.save(postMapper.toEntity(postDto, user)).getId();
     }
 
@@ -86,7 +88,6 @@ public class PostService {
         return new PageImpl<>(tagDtoList, pageable, tagWithPage.getTotalElements());
     }
 
-
     @Transactional
     public Long update(final ReqPost postDto, Long postId){
         List<ReqContent> contentDtoList = postDto.getContentList();
@@ -101,8 +102,6 @@ public class PostService {
         //postMapper.updateFromDto(postDto, postBeforeUpdate);
         return postDto.getId();
     }
-
-
 
     @Transactional
     public ResPost getOne(final Long postId){
