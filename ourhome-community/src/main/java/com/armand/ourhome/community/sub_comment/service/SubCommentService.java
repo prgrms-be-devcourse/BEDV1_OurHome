@@ -3,14 +3,18 @@ package com.armand.ourhome.community.sub_comment.service;
 import com.armand.ourhome.community.comment.entity.Comment;
 import com.armand.ourhome.community.comment.repository.CommentRepository;
 import com.armand.ourhome.community.exception.CommentNotFountException;
+import com.armand.ourhome.community.exception.SubCommentNotFountException;
 import com.armand.ourhome.community.exception.UserNotFountException;
 import com.armand.ourhome.community.sub_comment.dto.mapper.CreateSubCommentMapper;
+import com.armand.ourhome.community.sub_comment.dto.mapper.DestroySubCommentMapper;
 import com.armand.ourhome.community.sub_comment.dto.request.CreateSubCommentRequest;
 import com.armand.ourhome.community.sub_comment.dto.response.CreateSubCommentResponse;
+import com.armand.ourhome.community.sub_comment.dto.response.DestroySubCommentResponse;
 import com.armand.ourhome.community.sub_comment.entity.SubComment;
 import com.armand.ourhome.community.sub_comment.repository.SubCommentRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,5 +42,21 @@ public class SubCommentService {
         SubComment saveSubComment = subCommentRepository.save(subComment);
 
         return CreateSubCommentMapper.INSTANCE.subCommentToCreateSubCommentResponse(saveSubComment);
+    }
+
+    @Transactional
+    public DestroySubCommentResponse destroySubComment(Long subCommentId) {
+        SubComment subComment = subCommentRepository.findById(subCommentId)
+            .orElseThrow(() -> new SubCommentNotFountException(subCommentId));
+        subCommentRepository.delete(subComment);
+
+        Comment comment = subComment.getComment();
+        if (comment != null && comment.isRemoved()) {
+            List<SubComment> subCommentList = subCommentRepository.findByComment(comment);
+            if (subCommentList.isEmpty()) {
+                commentRepository.delete(comment);
+            }
+        }
+        return DestroySubCommentMapper.INSTANCE.subCommentToDestroySubCommentResponse(subCommentId);
     }
 }

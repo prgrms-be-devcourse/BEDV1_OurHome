@@ -2,10 +2,13 @@ package com.armand.ourhome.community.sub_comment.controller;
 
 import com.armand.ourhome.community.sub_comment.dto.request.CreateSubCommentRequest;
 import com.armand.ourhome.community.sub_comment.dto.response.CreateSubCommentResponse;
+import com.armand.ourhome.community.sub_comment.dto.response.DestroySubCommentResponse;
 import com.armand.ourhome.community.sub_comment.service.SubCommentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,5 +27,11 @@ public class SubCommentController {
         final CreateSubCommentResponse createSubCommentResponse = subCommentService.createSubComment(
             createSubCommentRequest);
         return ResponseEntity.ok(createSubCommentResponse);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DestroySubCommentResponse> destroySubComment(@PathVariable("id") final Long subCommentId) {
+        DestroySubCommentResponse destroySubCommentResponse = subCommentService.destroySubComment(subCommentId);
+        return ResponseEntity.ok(destroySubCommentResponse);
     }
 }
