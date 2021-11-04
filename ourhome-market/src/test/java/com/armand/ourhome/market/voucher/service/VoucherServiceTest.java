@@ -7,6 +7,7 @@ import com.armand.ourhome.common.error.exception.BusinessException;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import com.armand.ourhome.market.voucher.domain.Voucher;
+import com.armand.ourhome.market.voucher.dto.PageResponse;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.VoucherType;
 import com.armand.ourhome.market.voucher.dto.WalletDto;
@@ -17,6 +18,7 @@ import com.armand.ourhome.market.voucher.exception.VoucherNotFoundException;
 import com.armand.ourhome.market.voucher.repository.VoucherRepository;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -73,7 +75,7 @@ class VoucherServiceTest {
 
     // when
     PageRequest page = PageRequest.of(0, 10);
-    Page<VoucherDto> voucherPage = voucherService.lookUp(page);
+    PageResponse<List<VoucherDto>> voucherPage = voucherService.lookUp(page);
 
     // then
     assertThat(voucherPage.getTotalElements()).isEqualTo(voucherRepository.count());
