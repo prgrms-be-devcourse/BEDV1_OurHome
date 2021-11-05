@@ -31,9 +31,15 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // 다수의 user id에 맞는 게시글을 페이징으로 찾는다
     @Query("SELECT p FROM Post p WHERE p.user.id IN(:userIdList) and p.id < :lastId order by p.id desc")
-    Page<Post> findByUserIdListOrderByIdDesc(
+    List<Post> findByUserIdListAndIdLessThanOrderByIdDesc(
             @Param("userIdList") List<Long> userIdList,
             @Param("lastId") Long lastId,
+            Pageable pageable
+    );
+    // 최초 요청시
+    @Query("SELECT p FROM Post p WHERE p.user.id IN(:userIdList) order by p.id desc")
+    List<Post> findByUserIdListOrderByIdDesc(
+            @Param("userIdList") List<Long> userIdList,
             Pageable pageable
     );
 

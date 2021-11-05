@@ -1,5 +1,7 @@
 package com.armand.ourhome.community.follow.service;
 
+import com.armand.ourhome.common.api.CursorPageResponse;
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.common.error.exception.InvalidValueException;
 import com.armand.ourhome.common.error.exception.user.UserNotFoundException;
 import com.armand.ourhome.community.bookmark.repository.BookmarkRepository;
@@ -17,7 +19,6 @@ import com.armand.ourhome.community.sub_comment.repository.SubCommentRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,28 +65,22 @@ public class FollowService {
         followRepository.deleteByFollowerAndFollowing(follower, following);
     }
 
-
-
-    //    public PageableResponse<List<FeedResponse>> feedPage(Long myId, Pageable pageable) {
-    public void feedPage(Long myId, CursorPageRequest pageRequest) {
+    public CursorPageResponse<List<FeedResponse>> feedPage(Long myId, CursorPageRequest pageRequest) {
         User me = userRepository.findById(myId).get();
-        List<FeedResponse> pageContent = new ArrayList<>();
-
-        // 내가 팔로잉하는 유저 아이디 리스트
         List<Long> userIdList = followRepository.findByFollowing(me).stream()
                 .map(follow -> follow.getFollower().getId())
                 .collect(Collectors.toList());
 
-        Page<Post> postPage = postRepository.findByUserIdListOrderByIdDesc(
-                userIdList,
-                pageRequest.getLastId(),
-                PageRequest.of(0, pageRequest.getSize())
-        );
+        PageRequest pageable = PageRequest.of(0, pageRequest.getSize());
+        List<Post> postList = pageRequest.getIsFirst() ?
+                postRepository.findByUserIdListOrderByIdDesc(userIdList, pageable) :
+                postRepository.findByUserIdListAndIdLessThanOrderByIdDesc(userIdList, pageRequest.getLastId(), pageable);
 
-        for (Post post : postPage) {
+        List<FeedResponse> pageContent = new ArrayList<>();
+        for (Post post : postList) {
             User user = post.getUser();
-            List<Content> contentList = post.getContentList();
 
+            List<Content> contentList = post.getContentList();
             List<String> mediaUrlList = contentList.stream()
                     .map(content -> content.getMediaUrl())
                     .collect(Collectors.toList());
@@ -97,30 +92,27 @@ public class FollowService {
                     .collect(Collectors.toList());
 
             List<Comment> commentList = commentRepository.findAllByPost(post);
-            Long aLong = subCommentRepository.countByCommentList(commentList);
+            Long allCommentCount = commentList.size() + subCommentRepository.countByCommentList(commentList);
 
-            System.out.println(commentList.size());
-            System.out.println(aLong);
-
-
-
-
-//            FeedResponse response = FeedResponse.builder()
-//                    .profileImageUrl(user.getProfileImageUrl())
-//                    .nickname(user.getNickname())
-//                    .mediaUrlList(mediaUrlList)
-//                    .description(contentList.get(0).getDescription())
-//                    .tagList(tagList)
-//                    .likeCount(likeRepository.countByPost(post))
-//                    .isLike(likeRepository.existsByPostAndUser(post, me))
-//                    .bookmarkCount(bookmarkRepository.countByPost(post))
-//                    .isBookmark(bookmarkRepository.existsByPostAndUser(post, me))
-//                    .commentCount()
-//                    .build();
-
-
+            pageContent.add(
+                    FeedResponse.builder()
+                            .id(post.getId())
+                            .profileImageUrl(user.getProfileImageUrl())
+                            .nickname(user.getNickname())
+                            .mediaUrlList(mediaUrlList)
+                            .description(contentList.get(0).getDescription())
+                            .tagList(tagList)
+                            .likeCount(likeRepository.countByPost(post))
+                            .isLike(likeRepository.existsByPostAndUser(post, me))
+                            .bookmarkCount(bookmarkRepository.countByPost(post))
+                            .isBookmark(bookmarkRepository.existsByPostAndUser(post, me))
+                            .allCommentCount(allCommentCount)
+                            .build()
+            );
         }
 
+        Long lastId = postList.isEmpty() ? null : postList.get(postList.size() - 1).getId();
+        return new CursorPageResponse<>(pageContent, lastId);
     }
 
 }

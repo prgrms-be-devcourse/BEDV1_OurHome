@@ -1,5 +1,6 @@
 package com.armand.ourhome.community.follow.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
@@ -9,8 +10,9 @@ import java.util.List;
 
 @Getter
 @Builder
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class FeedResponse {
+    @JsonProperty("post_id")
+    private Long id;
     private String profileImageUrl;
     private String nickname;
     private List<String> mediaUrlList;
@@ -20,5 +22,5 @@ public class FeedResponse {
     private Boolean isLike;
     private Long bookmarkCount;
     private Boolean isBookmark;
-    private Long commentCount;
+    private Long allCommentCount;
 }

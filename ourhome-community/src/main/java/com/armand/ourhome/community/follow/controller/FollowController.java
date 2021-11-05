@@ -1,10 +1,14 @@
 package com.armand.ourhome.community.follow.controller;
 
 import com.armand.ourhome.common.api.CursorPageRequest;
+import com.armand.ourhome.common.api.CursorPageResponse;
+import com.armand.ourhome.community.follow.dto.FeedResponse;
 import com.armand.ourhome.community.follow.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/follow")
@@ -34,15 +38,13 @@ public class FollowController {
     }
 
     // 팔로우 피드
-    // api/follow/feed?token={}&size={}&lastId={}
     @GetMapping("/feed")
-//    public ResponseEntity<PageableResponse<List<FeedResponse>>> feedPage(
-    public ResponseEntity<Void> feedPage(
+    public ResponseEntity<CursorPageResponse<List<FeedResponse>>> feedPage(
             @RequestParam(value = "token") Long token,
             CursorPageRequest pageRequest
     ) {
-        followService.feedPage(token, pageRequest);
-        return ResponseEntity.ok().build();
+        CursorPageResponse<List<FeedResponse>> response = followService.feedPage(token, pageRequest);
+        return ResponseEntity.ok(response);
     }
 
 }
