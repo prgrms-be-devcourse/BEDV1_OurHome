@@ -1,19 +1,18 @@
 package com.armand.ourhome.community.post.controller;
 
-import com.armand.ourhome.community.post.controller.common.CriteriaType;
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.community.post.dto.request.ReqPost;
 import com.armand.ourhome.community.post.dto.request.ReqUserId;
 import com.armand.ourhome.community.post.dto.response.ResPost;
 import com.armand.ourhome.community.post.dto.response.ResReturnId;
-import com.armand.ourhome.community.post.entity.Criteria;
 import com.armand.ourhome.community.post.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 /**
@@ -35,13 +34,14 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ResPost>> getAll(Pageable pageable,
-                                                @Valid @RequestBody final ReqUserId reqUserId) {
+    public ResponseEntity<PageResponse<List<ResPost>>> getAll(Pageable pageable,
+                                                              @Valid @RequestBody final ReqUserId reqUserId) {
+
         return ResponseEntity.ok(postService.getAll(pageable, reqUserId.getUserId()));
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<Page<ResPost>> getAllByCriteria(Pageable pageable,
+    public ResponseEntity<PageResponse<List<ResPost>>> getAllByCriteria(Pageable pageable,
                                                             @RequestParam(name = "criteria_type") String criteriaType,
                                                             @RequestParam(name = "criteria") String criteria,
                                                             @Valid @RequestBody final ReqUserId reqUserId){
