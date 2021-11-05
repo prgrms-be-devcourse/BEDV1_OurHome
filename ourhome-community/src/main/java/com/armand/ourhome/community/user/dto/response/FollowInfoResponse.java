@@ -1,14 +1,11 @@
 package com.armand.ourhome.community.user.dto.response;
 
 import com.armand.ourhome.domain.user.User;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class FollowInfoResponse {
     private Long userId;
     private String profileImageUrl;
