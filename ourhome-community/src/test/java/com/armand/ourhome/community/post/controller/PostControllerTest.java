@@ -213,28 +213,11 @@ class PostControllerTest {
                                        fieldWithPath("content[].content_list[].tags[].id").type(JsonFieldType.NUMBER).description("태그 아이디"),
                                        fieldWithPath("content[].content_list[].tags[].name").type(JsonFieldType.STRING).description("태그 이름"),
 
-                                       fieldWithPath("pageable").type(JsonFieldType.OBJECT).description(""),
-                                       fieldWithPath("pageable.sort").type(JsonFieldType.OBJECT).description("정렬상태"),
-                                       fieldWithPath("pageable.sort.empty").type(JsonFieldType.BOOLEAN).description(""),
-                                       fieldWithPath("pageable.sort.sorted").type(JsonFieldType.BOOLEAN).description(""),
-                                       fieldWithPath("pageable.sort.unsorted").type(JsonFieldType.BOOLEAN).description(""),
-                                       fieldWithPath("pageable.offset").type(JsonFieldType.NUMBER).description(""),
-                                       fieldWithPath("pageable.pageNumber").type(JsonFieldType.NUMBER).description(""),
-                                       fieldWithPath("pageable.pageSize").type(JsonFieldType.NUMBER).description("한 페이지에서 나타내는 게시글의 수"),
-                                       fieldWithPath("pageable.paged").type(JsonFieldType.BOOLEAN).description(""),
-                                       fieldWithPath("pageable.unpaged").type(JsonFieldType.BOOLEAN).description(""),
-                                       fieldWithPath("totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
-                                       fieldWithPath("totalElements").type(JsonFieldType.NUMBER).description("전체 게시물의 수"),
-                                       fieldWithPath("last").type(JsonFieldType.BOOLEAN).description(""),
-                                       fieldWithPath("size").type(JsonFieldType.NUMBER).description(""),
-                                       fieldWithPath("number").type(JsonFieldType.NUMBER).description(""),
-                                       fieldWithPath("sort").type(JsonFieldType.OBJECT).description(""),
-                                       fieldWithPath("sort.empty").type(JsonFieldType.BOOLEAN).description(""),
-                                       fieldWithPath("sort.sorted").type(JsonFieldType.BOOLEAN).description(""),
-                                       fieldWithPath("sort.unsorted").type(JsonFieldType.BOOLEAN).description(""),
-                                       fieldWithPath("first").type(JsonFieldType.BOOLEAN).description(""),
-                                       fieldWithPath("numberOfElements").type(JsonFieldType.NUMBER).description(""),
-                                       fieldWithPath("empty").type(JsonFieldType.BOOLEAN).description("")
+                                       fieldWithPath("total_pages").type(JsonFieldType.NUMBER).description("총 페이지 숫자"),
+                                       fieldWithPath("number_of_elements").type(JsonFieldType.NUMBER).description("row 몇개 들어갔는지"),
+                                       fieldWithPath("total_elements").type(JsonFieldType.NUMBER).description("총 row 숫자"),
+                                       fieldWithPath("number").type(JsonFieldType.NUMBER).description("요청받은 페이지 넘버")
+
                                )
                        )
                );
@@ -280,28 +263,11 @@ class PostControllerTest {
                                         fieldWithPath("content[].content_list[].tags[].id").type(JsonFieldType.NUMBER).description("태그 아이디"),
                                         fieldWithPath("content[].content_list[].tags[].name").type(JsonFieldType.STRING).description("태그 이름"),
 
-                                        fieldWithPath("pageable").type(JsonFieldType.OBJECT).description(""),
-                                        fieldWithPath("pageable.sort").type(JsonFieldType.OBJECT).description("정렬상태"),
-                                        fieldWithPath("pageable.sort.empty").type(JsonFieldType.BOOLEAN).description(""),
-                                        fieldWithPath("pageable.sort.sorted").type(JsonFieldType.BOOLEAN).description(""),
-                                        fieldWithPath("pageable.sort.unsorted").type(JsonFieldType.BOOLEAN).description(""),
-                                        fieldWithPath("pageable.offset").type(JsonFieldType.NUMBER).description(""),
-                                        fieldWithPath("pageable.pageNumber").type(JsonFieldType.NUMBER).description(""),
-                                        fieldWithPath("pageable.pageSize").type(JsonFieldType.NUMBER).description("한 페이지에서 나타내는 게시글의 수"),
-                                        fieldWithPath("pageable.paged").type(JsonFieldType.BOOLEAN).description(""),
-                                        fieldWithPath("pageable.unpaged").type(JsonFieldType.BOOLEAN).description(""),
-                                        fieldWithPath("totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
-                                        fieldWithPath("totalElements").type(JsonFieldType.NUMBER).description("전체 게시물의 수"),
-                                        fieldWithPath("last").type(JsonFieldType.BOOLEAN).description(""),
-                                        fieldWithPath("size").type(JsonFieldType.NUMBER).description(""),
-                                        fieldWithPath("number").type(JsonFieldType.NUMBER).description(""),
-                                        fieldWithPath("sort").type(JsonFieldType.OBJECT).description(""),
-                                        fieldWithPath("sort.empty").type(JsonFieldType.BOOLEAN).description(""),
-                                        fieldWithPath("sort.sorted").type(JsonFieldType.BOOLEAN).description(""),
-                                        fieldWithPath("sort.unsorted").type(JsonFieldType.BOOLEAN).description(""),
-                                        fieldWithPath("first").type(JsonFieldType.BOOLEAN).description(""),
-                                        fieldWithPath("numberOfElements").type(JsonFieldType.NUMBER).description(""),
-                                        fieldWithPath("empty").type(JsonFieldType.BOOLEAN).description("")
+                                        fieldWithPath("total_pages").type(JsonFieldType.NUMBER).description("총 페이지 숫자"),
+                                        fieldWithPath("number_of_elements").type(JsonFieldType.NUMBER).description("row 몇개 들어갔는지"),
+                                        fieldWithPath("total_elements").type(JsonFieldType.NUMBER).description("총 row 숫자"),
+                                        fieldWithPath("number").type(JsonFieldType.NUMBER).description("요청받은 페이지 넘버")
+
                                 )
                         )
                 );

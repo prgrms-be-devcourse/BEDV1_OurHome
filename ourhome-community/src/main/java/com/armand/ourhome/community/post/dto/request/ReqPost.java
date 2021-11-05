@@ -17,7 +17,6 @@ import java.util.List;
  */
 
 @Getter
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ReqPost {
 
     private Long id;

@@ -1,5 +1,6 @@
 package com.armand.ourhome.community.post.service;
 
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.community.follow.entity.Follow;
 import com.armand.ourhome.community.follow.repository.FollowRepository;
 import com.armand.ourhome.community.post.dto.request.ReqContent;
@@ -48,7 +49,6 @@ class PostServiceTest {
 
     @Autowired
     private PostService postService;
-
 
     @Autowired
     private FollowRepository followRepository;
@@ -183,7 +183,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        Page<ResPost> postDtoList = postService.getAll(Pageable.ofSize(5).withPage(0), userId);
+        PageResponse<List<ResPost>> postDtoList = postService.getAll(Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().size(), is(2));
@@ -237,7 +237,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        Page<ResPost> postDtoList = postService.getAllByResidentialType(ResidentialType.APARTMENT, Pageable.ofSize(5).withPage(0), userId);
+        PageResponse<List<ResPost>> postDtoList = postService.getAllByResidentialType(ResidentialType.APARTMENT, Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().size(), is(1));
@@ -301,7 +301,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        Page<ResPost> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0), userId);
+        PageResponse<List<ResPost>> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().get(1).getContentList().get(0).getMediaUrl(), is("/post/picture-2DETACHED_HOUCE.jpg"));
@@ -356,7 +356,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        Page<ResPost> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0), userId);
+        PageResponse<List<ResPost>> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().size(), is(1));
@@ -419,7 +419,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        Page<ResPost> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0), userId);
+        PageResponse<List<ResPost>> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().size(), is(1));
@@ -489,7 +489,7 @@ class PostServiceTest {
 
 
         //When
-        Page<ResPost> postDtoList = postService.getAllByTag("tag1", Pageable.ofSize(5).withPage(0), userId);
+        PageResponse<List<ResPost>> postDtoList = postService.getAllByTag("tag1", Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().size(), is(2));

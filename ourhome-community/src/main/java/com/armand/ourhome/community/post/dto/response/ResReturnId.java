@@ -12,7 +12,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResReturnId {
     private Long id;

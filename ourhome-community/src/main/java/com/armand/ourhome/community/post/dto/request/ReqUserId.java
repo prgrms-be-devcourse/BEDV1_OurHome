@@ -14,7 +14,6 @@ import javax.validation.constraints.NotNull;
  */
 
 @Getter
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ReqUserId {
 
     @NotNull
