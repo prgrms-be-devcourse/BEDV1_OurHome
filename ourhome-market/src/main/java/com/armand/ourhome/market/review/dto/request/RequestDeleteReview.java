@@ -18,4 +18,6 @@ public class RequestDeleteReview {
 
     @NotNull
     private Long userId;
+
+    private Long reviewImageId;
 }

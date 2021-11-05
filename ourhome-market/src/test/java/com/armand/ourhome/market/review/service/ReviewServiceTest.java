@@ -16,7 +16,6 @@ import com.armand.ourhome.market.review.exception.PraiseDuplicationException;
 import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
 import com.armand.ourhome.market.review.repository.PraiseRepository;
 import com.armand.ourhome.market.review.repository.ReviewRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -53,6 +51,9 @@ class ReviewServiceTest {
 
     @Mock
     private PraiseRepository praiseRepository;
+
+    @Mock
+    private ReviewImageService reviewImageService;
 
     private User user = User.builder()
             .description("Hello i'm user")
@@ -201,7 +202,7 @@ class ReviewServiceTest {
         given(reviewRepository.findById(any())).willReturn(Optional.of(review));
 
         //when 
-        reviewService.delete(1L, new RequestDeleteReview(user.getId()));
+        reviewService.delete(1L, new RequestDeleteReview(user.getId(), 1L));
 
         //then 
         assertThat(review.getStatus()).isEqualTo(ReviewStatus.DELETED);
@@ -212,12 +213,13 @@ class ReviewServiceTest {
     public void testDeleteReviewNotWriter() throws Exception {
         //given
         Review review = Review.of(user, item, 5, "너무나도 좋은 제품이네요. 다음에 또 구매하고 싶습니다!");
+
         given(reviewRepository.findById(any())).willReturn(Optional.of(review));
 
         //then
         assertThrows(UserAccessDeniedException.class, () -> {
             //when
-            reviewService.delete(1L, new RequestDeleteReview(user.getId() + 1));
+            reviewService.delete(1L, new RequestDeleteReview(user.getId() + 1, null));
         });
     }
 
@@ -225,7 +227,6 @@ class ReviewServiceTest {
     @DisplayName("리뷰에 '도움이 돼요'를 생성할 수 있다.")
     public void testPraiseReview() throws Exception {
         //given
-
         RequestPraiseReview request = new RequestPraiseReview(user.getId() + 1);
 
         Review review = Review.of(user, item, 5, "너무나도 좋은 제품이네요. 다음에 다시 구매하고 싶습니다.");
@@ -295,7 +296,7 @@ class ReviewServiceTest {
         given(praiseRepository.findByIdAndUserIdAndReviewId(any(), any(), any())).willReturn(Optional.of(praise));
 
         //when
-        reviewService.removePraise(1L, 1L, request);
+        reviewService.deletePraise(1L, 1L, request);
 
         //then
         assertThat(review.getHelp()).isEqualTo(0);

@@ -19,5 +19,7 @@ public interface ItemMapper {
     @Mapping(target = "itemId", source = "item.id")
     ItemDto toItemDto(Item item, Aggregate aggregate);
 
-    ResponseItemDetail toResponseItemDetail(ItemDto itemDto, PageResponse<List<ResponseReview>> reviews);
+    @Mapping(target = "count", source = "aggregate.count")
+    @Mapping(target = "average", source = "aggregate.average")
+    ResponseItemDetail toResponseItemDetail(Item item, PageResponse<List<ResponseReview>> reviews, Aggregate aggregate);
 }

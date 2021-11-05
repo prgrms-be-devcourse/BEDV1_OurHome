@@ -16,8 +16,12 @@ public class RequestUpdateReview {
 
     @NotNull
     private Long userId;
+
     @NotNull
     private int rating;
+
     @NotBlank
     private String comment;
+
+    private String reviewImageBase64;
 }

@@ -12,6 +12,7 @@ import com.armand.ourhome.market.review.domain.Aggregate;
 import com.armand.ourhome.market.review.domain.Praise;
 import com.armand.ourhome.market.review.domain.Review;
 import com.armand.ourhome.market.review.dto.request.*;
+import com.armand.ourhome.market.review.dto.response.*;
 import com.armand.ourhome.market.review.exception.PraiseDuplicationException;
 import com.armand.ourhome.market.review.exception.PraiseNotFoundException;
 import com.armand.ourhome.market.review.exception.ReviewNotFoundException;
@@ -19,8 +20,6 @@ import com.armand.ourhome.market.review.exception.UserAccessDeniedException;
 import com.armand.ourhome.market.review.mapper.ReviewMapper;
 import com.armand.ourhome.market.review.repository.PraiseRepository;
 import com.armand.ourhome.market.review.repository.ReviewRepository;
-import com.armand.ourhome.market.review.dto.response.PageResponse;
-import com.armand.ourhome.market.review.dto.response.ResponseReview;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
@@ -36,6 +35,8 @@ import java.util.stream.Collectors;
 @Service
 public class ReviewService {
 
+    private final ReviewImageService reviewImageService;
+
     private final ReviewMapper reviewMapper = Mappers.getMapper(ReviewMapper.class);
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
@@ -45,16 +46,22 @@ public class ReviewService {
 
 
     @Transactional
-    public Long save(RequestAddReview request) {
+    public ResponseAddReview save(RequestAddReview request) {
         Review review = createReview(request);
         reviewRepository.save(review);
-        return review.getId();
+
+        ResponseReviewImage responseReviewImage = saveReviewImage(request, review);
+
+        return new ResponseAddReview(review.getId(), responseReviewImage);
+    }
+
+    private ResponseReviewImage saveReviewImage(RequestAddReview request, Review review) {
+        return reviewImageService.saveReviewImage(review.getId(), request.getUserId(), request.getReviewImageBase64());
     }
 
     @Transactional
-    public Long update(Long reviewId, RequestUpdateReview request) {
+    public ResponseUpdateReview update(Long reviewId, RequestUpdateReview request) {
         Review review = getReview(reviewId);
-
 
         if (!review.isWrittenBy(request.getUserId())) {
             throw new UserAccessDeniedException(MessageFormat.format("리뷰 작성자가 아닙니다. userId = {0}", request.getUserId()));
@@ -62,7 +69,14 @@ public class ReviewService {
 
         review.update(request.getComment(), request.getRating());
 
-        return reviewId;
+        ResponseReviewImage responseReviewImage = updateReviewImage(request, review);
+
+        return new ResponseUpdateReview(reviewId, responseReviewImage);
+    }
+
+    private ResponseReviewImage updateReviewImage(RequestUpdateReview request, Review review) {
+
+        return reviewImageService.updateReviewImage(review.getId(), request.getUserId(), request.getReviewImageBase64());
     }
 
     @Transactional
@@ -74,6 +88,12 @@ public class ReviewService {
         }
 
         review.delete();
+
+        deleteReviewImage(reviewId);
+    }
+
+    private void deleteReviewImage(Long reviewId) {
+        reviewImageService.deleteReviewImage(reviewId);
     }
 
     @Transactional
@@ -94,7 +114,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public void removePraise(Long praiseId, Long reviewId, RequestRemovePraiseReview request) {
+    public void deletePraise(Long praiseId, Long reviewId, RequestRemovePraiseReview request) {
 
         Praise praise = praiseRepository.findByIdAndUserIdAndReviewId(praiseId, request.getUserId(), reviewId)
                 .orElseThrow(() -> new PraiseNotFoundException(
@@ -107,16 +127,25 @@ public class ReviewService {
         praiseRepository.delete(praise);
     }
 
+    @Transactional
+    public void deleteReviewImageBy(Long reviewId) {
+        reviewImageService.deleteReviewImage(reviewId);
+    }
+
     public PageResponse<List<ResponseReview>> fetchReviewPagesBy(Long itemId, RequestReviewPages request) {
         Page<Review> pages = reviewRepository.findByItemId(itemId, request.of());
 
         List<ResponseReview> reviews = pages
                 .getContent()
                 .stream()
-                .map(reviewMapper::toResponseDto)
+                .map(review -> reviewMapper.toResponseDto(review, checkReviewPraised(request.getUserId(), review.getId())))
                 .collect(Collectors.toList());
 
         return new PageResponse<>(pages.getTotalElements(), pages.getTotalPages(), reviews, pages.getSize());
+    }
+
+    public boolean checkReviewPraised(Long userId, Long reviewId) {
+        return praiseRepository.existsByUserIdAndReviewId(userId, reviewId);
     }
 
     public Aggregate getReviewAggregateBy(Item item) {

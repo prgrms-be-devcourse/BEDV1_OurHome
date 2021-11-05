@@ -19,5 +19,7 @@ public class ResponseReview {
     private int rating;
     private String comment;
     private int help;
+    @JsonProperty("is_praise")
+    private boolean praise;
     private LocalDateTime createdAt;
 }

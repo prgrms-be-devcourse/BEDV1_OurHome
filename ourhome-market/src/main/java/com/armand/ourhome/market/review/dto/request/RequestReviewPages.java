@@ -17,6 +17,7 @@ public class RequestReviewPages {
     private int page;
     private OrderType order;
     private int size;
+    private Long userId;
 
     public PageRequest of() {
         setDefaultValueIfInvalid();

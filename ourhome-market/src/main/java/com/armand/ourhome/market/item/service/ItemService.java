@@ -33,8 +33,8 @@ public class ItemService {
 
     public ResponseItemDetail fetchItemDetailWithReview(Long itemId, RequestReviewPages request) {
         PageResponse<List<ResponseReview>> reviews = reviewService.fetchReviewPagesBy(itemId, request);
-        ItemDto itemDto = findItemBy(itemId);
-        return itemMapper.toResponseItemDetail(itemDto, reviews);
+        Item item = getItem(itemId);
+        return itemMapper.toResponseItemDetail(item, reviews, reviewService.getReviewAggregateBy(item));
     }
 
     public ResponseItem fetchItemPagesBy(Long lastItemId, int size) {
@@ -42,11 +42,6 @@ public class ItemService {
                 .map(item -> itemMapper.toItemDto(item, reviewService.getReviewAggregateBy(item)))
                 .collect(Collectors.toList());
         return new ResponseItem(items);
-    }
-
-    public ItemDto findItemBy(Long itemId) {
-        Item item = getItem(itemId);
-        return itemMapper.toItemDto(item, reviewService.getReviewAggregateBy(item));
     }
 
     private Item getItem(Long itemId) {
