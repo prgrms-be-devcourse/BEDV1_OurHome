@@ -21,7 +21,11 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     void deleteByFollowerAndFollowing(User follower, User following);
     // 해당 유저의 팔로우 관계 리스트
     List<Follow> findByFollowing(User following);
+
     // Cursor 페이징 (반환값 Page X)
     List<Follow> findByFollowerAndIdLessThanOrderByIdDesc(User follower, Long lastId, Pageable pageable);
     List<Follow> findByFollowingAndIdLessThanOrderByIdDesc(User following, Long lastId, Pageable pageable);
+    // 최초 요청시
+    List<Follow> findByFollowerOrderByIdDesc(User follower, Pageable pageable);
+    List<Follow> findByFollowingOrderByIdDesc(User follower, Pageable pageable);
 }

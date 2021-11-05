@@ -145,10 +145,12 @@ public class UserService {
     public CursorPageResponse<List<FollowInfoResponse>> followingPage(Long id, Long myId, CursorPageRequest pageRequest) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         User me = userRepository.findById(myId).get();
-//        if(pageRequest.isFirst())
-        List<Follow> followList = followRepository.findByFollowerAndIdLessThanOrderByIdDesc(
-                user, pageRequest.getLastId(), PageRequest.of(0, pageRequest.getSize())
-        );
+
+        PageRequest pageable = PageRequest.of(0, pageRequest.getSize());
+        List<Follow> followList = pageRequest.getIsFirst() ?
+                followRepository.findByFollowerOrderByIdDesc(user, pageable) :
+                followRepository.findByFollowerAndIdLessThanOrderByIdDesc(user, pageRequest.getLastId(), pageable);
+
         List<FollowInfoResponse> pageContent = new ArrayList<>();
         for (Follow follow : followList) {
             pageContent.add(
@@ -158,16 +160,19 @@ public class UserService {
                     )
             );
         }
-        Long lastId = pageRequest.getLastId() - pageContent.size();
+        Long lastId = followList.isEmpty() ? null : followList.get(followList.size() - 1).getId();
         return new CursorPageResponse<>(pageContent, lastId);
     }
 
     public CursorPageResponse<List<FollowInfoResponse>> followerPage(Long id, Long myId, CursorPageRequest pageRequest) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         User me = userRepository.findById(myId).get();
-        List<Follow> followList = followRepository.findByFollowingAndIdLessThanOrderByIdDesc(
-                user, pageRequest.getLastId(), PageRequest.of(0, pageRequest.getSize())
-        );
+
+        PageRequest pageable = PageRequest.of(0, pageRequest.getSize());
+        List<Follow> followList = pageRequest.getIsFirst() ?
+                followRepository.findByFollowingOrderByIdDesc(user, pageable) :
+                followRepository.findByFollowingAndIdLessThanOrderByIdDesc(user, pageRequest.getLastId(), pageable);
+
         List<FollowInfoResponse> pageContent = new ArrayList<>();
         for (Follow follow : followList) {
             pageContent.add(
@@ -177,11 +182,11 @@ public class UserService {
                     )
             );
         }
-        Long lastId = pageRequest.getLastId() - pageContent.size();
+        Long lastId = followList.isEmpty() ? null : followList.get(followList.size() - 1).getId();
         return new CursorPageResponse<>(pageContent, lastId);
     }
 
-    // ------------------------------------------------------------------------
+    // ---------------------------- ( util ) ----------------------------
 
     private void validDuplicateEmail(String email) {
         if (userRepository.existsByEmail(email))
