@@ -19,7 +19,6 @@ import java.util.List;
  */
 
 @Getter
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResPost {
 

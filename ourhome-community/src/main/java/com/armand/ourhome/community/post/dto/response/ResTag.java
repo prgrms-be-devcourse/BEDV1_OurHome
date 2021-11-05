@@ -15,7 +15,6 @@ import javax.validation.constraints.NotBlank;
  */
 
 @Getter
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResTag {
     @JsonProperty("id")

@@ -14,7 +14,6 @@ import javax.validation.constraints.NotBlank;
  */
 
 @Getter
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ReqTag {
     @JsonProperty("id")
     private Long tagId;

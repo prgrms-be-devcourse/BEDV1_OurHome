@@ -15,7 +15,6 @@ import java.util.List;
  */
 
 @Getter
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ReqContent {
     @JsonProperty("id")
     private Long contentId;
