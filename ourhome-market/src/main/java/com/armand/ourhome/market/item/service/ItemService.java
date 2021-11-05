@@ -1,5 +1,6 @@
 package com.armand.ourhome.market.item.service;
 
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.domain.item.domain.Item;
 import com.armand.ourhome.domain.item.repository.ItemRepository;
 import com.armand.ourhome.market.item.dto.ItemDto;
@@ -9,7 +10,6 @@ import com.armand.ourhome.market.item.exception.ItemNotFoundException;
 import com.armand.ourhome.market.item.mapper.ItemMapper;
 import com.armand.ourhome.market.review.service.ReviewService;
 import com.armand.ourhome.market.review.dto.request.RequestReviewPages;
-import com.armand.ourhome.market.review.dto.response.PageResponse;
 import com.armand.ourhome.market.review.dto.response.ResponseReview;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;

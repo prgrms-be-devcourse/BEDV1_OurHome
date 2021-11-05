@@ -2,9 +2,6 @@ package com.armand.ourhome.market.item.dto;
 
 
 import com.armand.ourhome.domain.item.domain.Category;
-import com.armand.ourhome.market.review.dto.ReviewDto;
-import com.armand.ourhome.market.review.dto.response.PageResponse;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -13,13 +10,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ItemDto {
 
     private Long itemId;

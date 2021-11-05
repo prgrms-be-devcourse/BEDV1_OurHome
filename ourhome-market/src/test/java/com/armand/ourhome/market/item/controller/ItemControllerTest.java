@@ -1,5 +1,6 @@
 package com.armand.ourhome.market.item.controller;
 
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.domain.item.domain.Category;
 import com.armand.ourhome.domain.item.domain.Company;
 import com.armand.ourhome.domain.item.domain.Item;
@@ -9,7 +10,6 @@ import com.armand.ourhome.market.item.dto.response.ResponseItemDetail;
 import com.armand.ourhome.market.item.mapper.ItemMapper;
 import com.armand.ourhome.market.item.service.ItemService;
 import com.armand.ourhome.market.review.service.ReviewService;
-import com.armand.ourhome.market.review.dto.response.PageResponse;
 import com.armand.ourhome.market.review.dto.response.ResponseReview;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
@@ -99,7 +99,8 @@ class ItemControllerTest {
                 .totalElements(1)
                 .totalPages(1)
                 .content(dtoList)
-                .size(5)
+                .numberOfElements(1)
+                .number(1)
                 .build();
 
         ResponseItemDetail itemDto = ResponseItemDetail.builder()
@@ -143,7 +144,8 @@ class ItemControllerTest {
                                 fieldWithPath("reviews").type(OBJECT).description("리뷰 정보"),
                                 fieldWithPath("reviews.total_elements").type(NUMBER).description("리뷰 총 수"),
                                 fieldWithPath("reviews.total_pages").type(NUMBER).description("리뷰 페이지 총 수"),
-                                fieldWithPath("reviews.size").type(NUMBER).description("리뷰 페이지 사이즈"),
+                                fieldWithPath("reviews.number").type(NUMBER).description("리뷰 페이지 넘버"),
+                                fieldWithPath("reviews.number_of_elements").type(NUMBER).description("반환된 리뷰 개수"),
                                 fieldWithPath("reviews.content").type(ARRAY).description("리뷰 내용"),
                                 fieldWithPath("reviews.content[].review_id").type(NUMBER).description("리뷰 아이디"),
                                 fieldWithPath("reviews.content[].user_id").type(NUMBER).description("리뷰 작성자 아이디"),
