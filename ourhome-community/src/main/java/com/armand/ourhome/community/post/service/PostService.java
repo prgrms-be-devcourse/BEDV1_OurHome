@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.yaml.snakeyaml.util.EnumUtils;
 
 import java.util.List;
 
@@ -70,19 +71,22 @@ public class PostService {
     }
 
 
-    public Page<ResPost> getAllBYCriteria(CriteriaType criteriaType, String type, Pageable pageable, Long userId){
+    public Page<ResPost> getAllBYCriteria(String criteriaTypeRequest, String type, Pageable pageable, Long userId){
+        CriteriaType criteriaType = CriteriaType.findCriteriaTypeForUrl(criteriaTypeRequest);
         switch(criteriaType) {
             case RESIDENTIAL_TYPE -> {
+                if (! ResidentialType.getIfPresent(type)) throw new CriteriaNotFountException(type);
                 return getAllByResidentialType(ResidentialType.valueOf(type), pageable, userId);
             }
             case PLACE_TYPE -> {
+                if (! PlaceType.getIfPresent(type)) throw new CriteriaNotFountException(type);
                 return getAllByPlaceType(PlaceType.valueOf(type), pageable, userId);
             }
             case TAG -> {
                 return getAllByTag(type, pageable, userId);
             }
         }
-         throw new CriteriaNotFountException(criteriaType.toString());
+         throw new CriteriaNotFountException(criteriaTypeRequest);
     }
 
     public Page<ResPost> getAllByResidentialType(ResidentialType residentialType, Pageable pageable, Long userId){

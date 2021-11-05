@@ -1,5 +1,7 @@
 package com.armand.ourhome.community.post.entity;
 
+import java.util.Arrays;
+
 public enum PlaceType implements Criteria {
     ONEROOM("원룸"),
     LIVINGROOM("거실"),
@@ -18,6 +20,9 @@ public enum PlaceType implements Criteria {
         this.displaceName = displaceName;
     }
 
+    public static Boolean getIfPresent(String placeTypeRequest){
+        return Arrays.stream(PlaceType.values()).anyMatch((v) -> v.name().equals(placeTypeRequest));
+    }
     public String getDisplaceName(){
         return displaceName;
     }

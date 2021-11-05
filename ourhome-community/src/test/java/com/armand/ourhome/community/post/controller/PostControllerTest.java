@@ -248,7 +248,7 @@ class PostControllerTest {
         //When, Then
         var userId = new ReqUserId(user.getId());
         mockMvc.perform(get("/api/posts/filter")
-                        .param("criteria_type", "RESIDENTIAL_TYPE")
+                        .param("criteria_type", "residential-type")
                         .param("criteria", "APARTMENT")
                         .param("size", "1")
                         .param("page", "0")
@@ -315,7 +315,7 @@ class PostControllerTest {
         //When, Then
         var userId = new ReqUserId(user.getId());
         mockMvc.perform(get("/api/posts/filter")
-                        .param("criteria_type", "PLACE_TYPE")
+                        .param("criteria_type", "place-type")
                         .param("criteria", "LIVINGROOM")
                         .param("size", "1")
                         .param("page", "0")
@@ -334,7 +334,7 @@ class PostControllerTest {
         //When, Then
         var userId = new ReqUserId(user.getId());
         mockMvc.perform(get("/api/posts/filter")
-                        .param("criteria_type", "TAG")
+                        .param("criteria_type", "tag")
                         .param("criteria", "tag1")
                         .param("size", "1")
                         .param("page", "0")

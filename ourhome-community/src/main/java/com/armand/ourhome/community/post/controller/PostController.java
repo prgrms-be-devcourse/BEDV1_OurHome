@@ -42,7 +42,7 @@ public class PostController {
 
     @GetMapping("/filter")
     public ResponseEntity<Page<ResPost>> getAllByCriteria(Pageable pageable,
-                                                            @RequestParam(name = "criteria_type") CriteriaType criteriaType,
+                                                            @RequestParam(name = "criteria_type") String criteriaType,
                                                             @RequestParam(name = "criteria") String criteria,
                                                             @Valid @RequestBody final ReqUserId reqUserId){
         return ResponseEntity.ok(postService.getAllBYCriteria(criteriaType, criteria, pageable, reqUserId.getUserId()));
