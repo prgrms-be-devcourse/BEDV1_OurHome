@@ -1,4 +1,5 @@
 spring:
   config:
     import: classpath:aws.yaml
-
+  jackson:
+    property-naming-strategy: SNAKE_CASE
