@@ -1,8 +1,11 @@
 package com.armand.ourhome.market.voucher.controller;
 
+import com.armand.ourhome.market.voucher.dto.PageResponse;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
+import com.armand.ourhome.market.voucher.dto.WalletDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
 import com.armand.ourhome.market.voucher.service.VoucherService;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -25,7 +29,7 @@ public class VoucherController {
   private final VoucherService voucherService;
 
   @GetMapping
-  public ResponseEntity<Page<VoucherDto>> lookUp(Pageable pageable) {
+  public ResponseEntity<PageResponse<List<VoucherDto>>> lookUp(Pageable pageable) {
     return ResponseEntity.ok(voucherService.lookUp(pageable));
   }
 
@@ -41,9 +45,20 @@ public class VoucherController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<VoucherDto> delete(@PathVariable Long id) {
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
     voucherService.delete(id);
     return ResponseEntity.ok().build();
   }
+
+  @PostMapping("/{id}/assign-to-user")
+  public ResponseEntity<WalletDto> assignToUser(@PathVariable Long id, @RequestParam Long userId) {
+    return ResponseEntity.ok(voucherService.assignToUser(id, userId));
+  }
+//
+//  @DeleteMapping("/{id}/use-voucher")
+//  public ResponseEntity<Void> use(@PathVariable Long id, @RequestParam Long userId) {
+//    voucherService.use(id, userId);
+//    return ResponseEntity.ok().build();
+//  }
 
 }

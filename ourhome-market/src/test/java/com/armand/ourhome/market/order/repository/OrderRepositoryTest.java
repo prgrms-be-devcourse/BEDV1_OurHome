@@ -79,7 +79,7 @@ class OrderRepositoryTest {
                 .item(ramenItem)
                 .build());
 
-        Order order = Order.createOrder(PaymentType.FUND_TRANSFER, "address", user, delivery, orderItems);
+        Order order = Order.createOrder(PaymentType.FUND_TRANSFER, "address", user, delivery, orderItems, null);
 
         deliveryRepository.save(delivery);
         userRepository.save(user);

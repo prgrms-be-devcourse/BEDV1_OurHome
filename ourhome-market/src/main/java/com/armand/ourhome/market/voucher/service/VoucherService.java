@@ -1,15 +1,27 @@
 package com.armand.ourhome.market.voucher.service;
 
+import com.armand.ourhome.common.error.exception.EntityNotFoundException;
+import com.armand.ourhome.domain.user.User;
+import com.armand.ourhome.domain.user.UserRepository;
 import com.armand.ourhome.market.voucher.converter.VoucherConverter;
+import com.armand.ourhome.market.voucher.converter.WalletMapper;
 import com.armand.ourhome.market.voucher.domain.Voucher;
+import com.armand.ourhome.market.voucher.domain.Wallet;
+import com.armand.ourhome.market.voucher.dto.PageResponse;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
+import com.armand.ourhome.market.voucher.dto.WalletDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
 import com.armand.ourhome.market.voucher.exception.DuplicateVoucherException;
+import com.armand.ourhome.market.voucher.exception.DuplicateWalletException;
 import com.armand.ourhome.market.voucher.exception.VoucherNotFoundException;
 import com.armand.ourhome.market.voucher.repository.VoucherRepository;
+import com.armand.ourhome.market.voucher.repository.WalletRepository;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,10 +35,19 @@ public class VoucherService {
   private final VoucherRepository<Voucher> voucherRepository;
   private final VoucherConverter voucherConverter;
 
-  public Page<VoucherDto> lookUp(Pageable pageable) {
-    Page<VoucherDto> allVouchers = voucherRepository.findAll(pageable)
+  private final WalletRepository walletRepository;
+  private final UserRepository userRepository;
+  private final WalletMapper walletMapper = Mappers.getMapper(WalletMapper.class);
+
+  public PageResponse<List<VoucherDto>> lookUp(Pageable pageable) {
+    Page<VoucherDto> pages = voucherRepository.findAll(pageable)
         .map(voucher -> voucherConverter.toDto(voucher));
-    return allVouchers;
+
+    List<VoucherDto> allVouchers = voucherRepository.findAll().stream()
+        .map(voucher -> voucherConverter.toDto(voucher)).collect(Collectors.toList());
+
+    return new PageResponse<>(allVouchers, pages.getTotalElements(), pages.getTotalPages(),
+        pages.getSize());
   }
 
   @Transactional
@@ -41,7 +62,7 @@ public class VoucherService {
   @Transactional
   public VoucherDto update(Long id, RequestVoucher request) {
     // 같은 id값의 바우처가 존재하는지 확인
-    validateExistId(id);
+    validateExistVoucherById(id);
     // 수정하고자하는 정보와 같은 바우처가 존재하는지 확인
     validateDuplicateVoucher(request);
     // 수정하고자하는 바우처의 타입과 기존 바우처의 타입이 동일한지 확인
@@ -55,13 +76,26 @@ public class VoucherService {
 
   @Transactional
   public void delete(Long id) {
-    validateExistId(id);
+    validateExistVoucherById(id);
 
     Voucher voucher = voucherRepository.findById(id).get();
     voucherRepository.delete(voucher);
   }
 
-  private void validateExistId(Long id) {
+  @Transactional
+  public WalletDto assignToUser(Long id, Long userId) {
+    validateExistVoucherById(id);
+    validateExistUserById(userId);
+    validateDuplicatedWallet(id, userId);
+
+    Voucher voucher = voucherRepository.findById(id).get();
+    User user = userRepository.findById(userId).get();
+
+    Wallet wallet = walletRepository.save(Wallet.of(user, voucher));
+    return walletMapper.toDto(wallet);
+  }
+
+  private void validateExistVoucherById(Long id) {
     boolean existsById = voucherRepository.existsById(id);
 
     if (!existsById) {
@@ -84,6 +118,24 @@ public class VoucherService {
       case PERCENT -> voucherRepository.findByPercentAndMinLimit(request.getValue(),
           request.getMinLimit());
     };
+  }
+
+  private void validateExistUserById(Long userId) {
+    boolean existsById = userRepository.existsById(userId);
+
+    if (!existsById) {
+      throw new EntityNotFoundException(
+          MessageFormat.format("등록된 사용자를 찾을 수 없습니다. userId : {0}", userId));
+    }
+  }
+
+  private void validateDuplicatedWallet(Long id, Long userId) {
+    boolean existsByUserIdAndVoucherId = walletRepository.existsByUserIdAndVoucherId(userId, id);
+
+    if (existsByUserIdAndVoucherId) {
+      throw new DuplicateWalletException(
+          MessageFormat.format(" 사용자(userId : {0})는 바우처(voucherId : {1})를 이미 갖고있습니다.", userId, id));
+    }
   }
 
 }

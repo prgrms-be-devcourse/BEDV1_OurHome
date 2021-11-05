@@ -13,10 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.VoucherType;
+import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
 import com.armand.ourhome.market.voucher.service.VoucherService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -44,51 +43,64 @@ class VoucherControllerTest {
   @MockBean
   private VoucherService voucherService;
 
-  private VoucherDto voucherResponse;
-
-  @BeforeAll
-  void setUp() {
-    voucherResponse = VoucherDto.builder()
+  @Test
+  void testSaveVoucher() throws Exception {
+    // given
+    RequestVoucher requestVoucher = RequestVoucher.builder()
+        .value(20)
+        .minLimit(30000)
+        .voucherType(VoucherType.PERCENT)
+        .build();
+    VoucherDto voucherResponse = VoucherDto.builder()
         .id(1L)
         .value(20)
         .minLimit(30000)
         .voucherType(VoucherType.PERCENT)
         .build();
-  }
 
-  @Test
-  void testSaveVoucher() throws Exception {
-    // given
     given(voucherService.save(any())).willReturn(voucherResponse);
 
     // when
     ResultActions resultActions = mockMvc.perform(post("/api/vouchers")
-            .content(objectMapper.writeValueAsString(voucherResponse))
+            .content(objectMapper.writeValueAsString(requestVoucher))
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print());
 
     // then
     resultActions.andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("id").value(1L));
+        .andExpect(jsonPath("voucher_id").value(1L));
   }
 
   @Test
   void testUpdateVoucher() throws Exception {
     // given
-    given(voucherService.update(anyLong(), any())).willReturn(voucherResponse);
+    RequestVoucher updatedVoucher = RequestVoucher.builder()
+        .value(10)
+        .minLimit(30000)
+        .voucherType(VoucherType.PERCENT)
+        .build();
+
+    VoucherDto updatedResponse = VoucherDto.builder()
+        .id(1L)
+        .value(10)
+        .minLimit(30000)
+        .voucherType(VoucherType.PERCENT)
+        .build();
+
+    given(voucherService.update(anyLong(), any())).willReturn(updatedResponse);
 
     // when
     ResultActions resultActions = mockMvc.perform(patch("/api/vouchers/{id}", 1L)
-            .content(objectMapper.writeValueAsString(voucherResponse))
+            .content(objectMapper.writeValueAsString(updatedVoucher))
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print());
 
     // then
     resultActions.andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("id").value(1L))
-        .andExpect(jsonPath("value").value(20));
+        .andExpect(jsonPath("voucher_id").value(1L))
+        .andExpect(jsonPath("value").value(10));
   }
 
 }

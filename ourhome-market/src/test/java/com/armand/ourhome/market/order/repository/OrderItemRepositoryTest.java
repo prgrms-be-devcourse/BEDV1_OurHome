@@ -83,7 +83,7 @@ class OrderItemRepositoryTest {
                 .item(ramenItem)
                 .build());
 
-        Order order = Order.createOrder(PaymentType.CREDIT_CARD, "address", user, delivery, orderItems);
+        Order order = Order.createOrder(PaymentType.CREDIT_CARD, "address", user, delivery, orderItems, null);
 
         itemRepository.saveAll(List.of(ramenItem, soapItem));
         deliveryRepository.save(delivery);
