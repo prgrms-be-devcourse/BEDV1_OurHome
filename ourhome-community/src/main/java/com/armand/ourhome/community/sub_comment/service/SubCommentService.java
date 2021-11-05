@@ -6,10 +6,10 @@ import com.armand.ourhome.community.exception.CommentNotFountException;
 import com.armand.ourhome.community.exception.SubCommentNotFountException;
 import com.armand.ourhome.community.exception.UserNotFountException;
 import com.armand.ourhome.community.sub_comment.dto.mapper.CreateSubCommentMapper;
-import com.armand.ourhome.community.sub_comment.dto.mapper.DestroySubCommentMapper;
+import com.armand.ourhome.community.sub_comment.dto.mapper.DeleteSubCommentMapper;
 import com.armand.ourhome.community.sub_comment.dto.request.CreateSubCommentRequest;
 import com.armand.ourhome.community.sub_comment.dto.response.CreateSubCommentResponse;
-import com.armand.ourhome.community.sub_comment.dto.response.DestroySubCommentResponse;
+import com.armand.ourhome.community.sub_comment.dto.response.DeleteSubCommentResponse;
 import com.armand.ourhome.community.sub_comment.entity.SubComment;
 import com.armand.ourhome.community.sub_comment.repository.SubCommentRepository;
 import com.armand.ourhome.domain.user.User;
@@ -45,7 +45,7 @@ public class SubCommentService {
     }
 
     @Transactional
-    public DestroySubCommentResponse destroySubComment(Long subCommentId) {
+    public DeleteSubCommentResponse deleteSubComment(Long subCommentId) {
         SubComment subComment = subCommentRepository.findById(subCommentId)
             .orElseThrow(() -> new SubCommentNotFountException(subCommentId));
         subCommentRepository.delete(subComment);
@@ -55,8 +55,10 @@ public class SubCommentService {
             List<SubComment> subCommentList = subCommentRepository.findByComment(comment);
             if (subCommentList.isEmpty()) {
                 commentRepository.delete(comment);
+                return DeleteSubCommentMapper.INSTANCE.subCommentToDeleteSubCommentResponse(subComment.getId(),
+                    comment.getId());
             }
         }
-        return DestroySubCommentMapper.INSTANCE.subCommentToDestroySubCommentResponse(subCommentId);
+        return DeleteSubCommentMapper.INSTANCE.subCommentToDeleteSubCommentResponse(subComment.getId(), null);
     }
 }

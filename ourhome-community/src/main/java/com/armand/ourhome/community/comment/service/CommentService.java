@@ -53,7 +53,7 @@ public class CommentService {
         List<SubComment> subCommentList = subCommentRepository.findByComment(comment);
         if (subCommentList.isEmpty()) {
             commentRepository.delete(comment);
-            return DeleteCommentMapper.INSTANCE.commentToDeleteCommentResponse(null, commentId);
+            return DeleteCommentMapper.INSTANCE.commentToDeleteCommentResponse(null, comment.getId());
         } else {
             comment.removeComment();
             Comment removeComment = commentRepository.save(comment);
