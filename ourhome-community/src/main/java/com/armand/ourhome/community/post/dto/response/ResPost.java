@@ -40,6 +40,12 @@ public class ResPost {
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
 
+    private Boolean isFollower;
+
+    public void setIsFollower(Boolean isFollower){
+        this.isFollower = isFollower;
+    }
+
     @Builder
     public ResPost(Long id,
                    String title,

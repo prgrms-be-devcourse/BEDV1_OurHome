@@ -1,5 +1,7 @@
 package com.armand.ourhome.community.post.service;
 
+import com.armand.ourhome.community.follow.entity.Follow;
+import com.armand.ourhome.community.follow.repository.FollowRepository;
 import com.armand.ourhome.community.post.dto.request.ReqContent;
 import com.armand.ourhome.community.post.dto.request.ReqPost;
 import com.armand.ourhome.community.post.dto.request.ReqTag;
@@ -48,11 +50,15 @@ class PostServiceTest {
     private PostService postService;
 
 
+    @Autowired
+    private FollowRepository followRepository;
+
     private User userSaved;
     private Long userId;
 
     @BeforeEach
     void setUp(){
+        // 추후 userOfPost와 user 로 나눠서 테스트 확인할 것. 우선 colloller에서 기능 작동 확인완료하였음.
         userSaved = userRepository.save(User.builder()
                         .email("test@email.com")
                         .password("1223")
@@ -62,10 +68,15 @@ class PostServiceTest {
                         .build());
         userId = userSaved.getId();
 
+        followRepository.save(Follow.builder()
+                .follower(userSaved)
+                .following(userSaved)
+                .build());
     }
     @AfterEach
     void tearDown(){
         postRepository.deleteAll();
+        followRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -172,11 +183,12 @@ class PostServiceTest {
                 .build());
 
         //When
-        Page<ResPost> postDtoList = postService.getAll(Pageable.ofSize(5).withPage(0));
+        Page<ResPost> postDtoList = postService.getAll(Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().size(), is(2));
         assertThat(postDtoList.getContent().get(1).getContentList().get(0).getMediaUrl(), is("/post/picture-2DETACHED_HOUCE.jpg"));
+        assertThat(postDtoList.getContent().get(0).getIsFollower(), is(true));
     }
 
     @Test
@@ -225,7 +237,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        Page<ResPost> postDtoList = postService.getAllByResidentialType(ResidentialType.APARTMENT, Pageable.ofSize(5).withPage(0));
+        Page<ResPost> postDtoList = postService.getAllByResidentialType(ResidentialType.APARTMENT, Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().size(), is(1));
@@ -289,7 +301,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        Page<ResPost> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
+        Page<ResPost> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().get(1).getContentList().get(0).getMediaUrl(), is("/post/picture-2DETACHED_HOUCE.jpg"));
@@ -344,7 +356,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        Page<ResPost> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
+        Page<ResPost> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().size(), is(1));
@@ -407,7 +419,7 @@ class PostServiceTest {
                 .build());
 
         //When
-        Page<ResPost> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0));
+        Page<ResPost> postDtoList = postService.getAllByPlaceType(PlaceType.BATHROOM, Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().size(), is(1));
@@ -477,7 +489,7 @@ class PostServiceTest {
 
 
         //When
-        Page<ResPost> postDtoList = postService.getAllByTag("tag1", Pageable.ofSize(5).withPage(0));
+        Page<ResPost> postDtoList = postService.getAllByTag("tag1", Pageable.ofSize(5).withPage(0), userId);
 
         //Then
         assertThat(postDtoList.getContent().size(), is(2));

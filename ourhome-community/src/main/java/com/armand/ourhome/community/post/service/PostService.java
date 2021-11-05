@@ -1,6 +1,7 @@
 package com.armand.ourhome.community.post.service;
 
 import com.armand.ourhome.common.utils.AwsS3Uploader;
+import com.armand.ourhome.community.follow.repository.FollowRepository;
 import com.armand.ourhome.community.post.controller.common.CriteriaType;
 import com.armand.ourhome.community.post.dto.request.ReqContent;
 import com.armand.ourhome.community.post.dto.request.ReqPost;
@@ -40,6 +41,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final ContentRepository contentRepository;
     private final TagRepository tagRepository;
+    private final FollowRepository followRepository;
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
     private final AwsS3Uploader awsS3Uploader;
 
@@ -57,41 +59,57 @@ public class PostService {
         return postRepository.save(postMapper.toEntity(postDto, user)).getId();
     }
 
-    public Page<ResPost> getAll(Pageable pageable) {
+    public Page<ResPost> getAll(Pageable pageable, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
         Page<Post> postWithPage = postRepository.findAll(pageable);
-        List<ResPost> postDtoList = postMapper.toDtoList(postWithPage.getContent());
+
+        // 본 게시물에 대해 팔로워 여부 확인
+        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+
         return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
-    public Page<ResPost> getAllBYCriteria(CriteriaType criteriaType, String type, Pageable pageable){
+
+    public Page<ResPost> getAllBYCriteria(CriteriaType criteriaType, String type, Pageable pageable, Long userId){
         switch(criteriaType) {
             case RESIDENTIAL_TYPE -> {
-                return getAllByResidentialType(ResidentialType.valueOf(type), pageable);
+                return getAllByResidentialType(ResidentialType.valueOf(type), pageable, userId);
             }
             case PLACE_TYPE -> {
-                return getAllByPlaceType(PlaceType.valueOf(type), pageable);
+                return getAllByPlaceType(PlaceType.valueOf(type), pageable, userId);
             }
             case TAG -> {
-                return getAllByTag(type, pageable);
+                return getAllByTag(type, pageable, userId);
             }
         }
          throw new CriteriaNotFountException(criteriaType.toString());
     }
 
-    public Page<ResPost> getAllByResidentialType(ResidentialType residentialType, Pageable pageable){
+    public Page<ResPost> getAllByResidentialType(ResidentialType residentialType, Pageable pageable, Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
         Page<Post> postWithPage = postRepository.findAllByResidentialType(residentialType, pageable);
-        List<ResPost> postDtoList = postMapper.toDtoList(postWithPage.getContent());
+
+        // 본 게시물에 대해 팔로워 여부 확인
+        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
         return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
-    public Page<ResPost> getAllByPlaceType(PlaceType placeType, Pageable pageable){
+    public Page<ResPost> getAllByPlaceType(PlaceType placeType, Pageable pageable, Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
         Page<Post> postWithPage = postRepository.findAllByPlaceType(placeType, pageable);
-        return new PageImpl<>(postMapper.toDtoList(postWithPage.getContent()), pageable, postWithPage.getTotalElements());
+
+        // 본 게시물에 대해 팔로워 여부 확인
+        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
-    public Page<ResPost> getAllByTag(String tagName, Pageable pageable){
+    public Page<ResPost> getAllByTag(String tagName, Pageable pageable, Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
         Page<Post> postWithPage = postRepository.findAllByTag(tagName, pageable);
-        return new PageImpl<>(postMapper.toDtoList(postWithPage.getContent()), pageable, postWithPage.getTotalElements());
+
+        // 본 게시물에 대해 팔로워 여부 확인
+        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
     @Transactional
@@ -119,5 +137,13 @@ public class PostService {
     @Transactional
     public void delete(final Long postId){
         postRepository.deleteById(postId);
+    }
+
+    private List<ResPost> setIsFollower(User user, List<Post> posts, List<ResPost> resPosts){
+        for (int i =0; i < posts.size(); i++){
+            User userOfPost = posts.get(i).getUser();
+            resPosts.get(i).setIsFollower(followRepository.existsByFollowerAndFollowing(user, userOfPost));
+        }
+        return resPosts;
     }
 }
