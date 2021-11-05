@@ -1,9 +1,8 @@
 package com.armand.ourhome.market.item.dto.response;
 
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.domain.item.domain.Category;
-import com.armand.ourhome.market.review.dto.response.PageResponse;
 import com.armand.ourhome.market.review.dto.response.ResponseReview;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AccessLevel;
@@ -16,7 +15,6 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ResponseItemDetail {
 
     private String name;

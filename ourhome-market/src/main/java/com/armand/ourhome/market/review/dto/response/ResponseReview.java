@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ResponseReview {
 
     private Long reviewId;

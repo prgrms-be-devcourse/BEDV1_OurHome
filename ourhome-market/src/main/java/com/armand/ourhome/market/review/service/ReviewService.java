@@ -1,5 +1,6 @@
 package com.armand.ourhome.market.review.service;
 
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.common.error.exception.InvalidValueException;
 import com.armand.ourhome.domain.item.domain.Item;
 import com.armand.ourhome.domain.item.repository.ItemRepository;
@@ -141,7 +142,13 @@ public class ReviewService {
                 .map(review -> reviewMapper.toResponseDto(review, checkReviewPraised(request.getUserId(), review.getId())))
                 .collect(Collectors.toList());
 
-        return new PageResponse<>(pages.getTotalElements(), pages.getTotalPages(), reviews, pages.getSize());
+        return PageResponse.<List<ResponseReview>>builder()
+                .number(pages.getNumber())
+                .numberOfElements(pages.getNumberOfElements())
+                .totalPages(pages.getTotalPages())
+                .totalElements(pages.getTotalElements())
+                .content(reviews)
+                .build();
     }
 
     public boolean checkReviewPraised(Long userId, Long reviewId) {
