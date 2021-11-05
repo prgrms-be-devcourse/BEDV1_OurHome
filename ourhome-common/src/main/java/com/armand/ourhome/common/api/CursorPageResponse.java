@@ -1,4 +1,4 @@
-package com.armand.ourhome.community.follow.dto;
+package com.armand.ourhome.common.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,9 +6,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-@Builder
 public class CursorPageResponse<T> {
     private T content;
-    private long totalLeftPages;
     private Long lastId;
 }

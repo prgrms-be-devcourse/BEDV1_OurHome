@@ -1,10 +1,11 @@
 package com.armand.ourhome.community.follow.service;
 
-import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.common.error.exception.InvalidValueException;
 import com.armand.ourhome.common.error.exception.user.UserNotFoundException;
 import com.armand.ourhome.community.bookmark.repository.BookmarkRepository;
-import com.armand.ourhome.community.follow.dto.CursorPageRequest;
+import com.armand.ourhome.community.comment.entity.Comment;
+import com.armand.ourhome.community.comment.repository.CommentRepository;
+import com.armand.ourhome.common.api.CursorPageRequest;
 import com.armand.ourhome.community.follow.dto.FeedResponse;
 import com.armand.ourhome.community.follow.entity.Follow;
 import com.armand.ourhome.community.follow.repository.FollowRepository;
@@ -12,12 +13,12 @@ import com.armand.ourhome.community.like.repository.LikeRepository;
 import com.armand.ourhome.community.post.entity.Content;
 import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.community.post.repository.PostRepository;
+import com.armand.ourhome.community.sub_comment.repository.SubCommentRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -37,6 +37,8 @@ public class FollowService {
     private final PostRepository postRepository;
     private final LikeRepository likeRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final CommentRepository commentRepository;
+    private final SubCommentRepository subCommentRepository;
 
     @Transactional
     public void follow(Long followingId, Long myId) {
@@ -81,7 +83,6 @@ public class FollowService {
         );
 
         for (Post post : postPage) {
-            FeedResponse.FeedResponseBuilder responseBuilder = FeedResponse.builder();
             User user = post.getUser();
             List<Content> contentList = post.getContentList();
 
@@ -95,18 +96,27 @@ public class FollowService {
                     .map(tag -> tag.getName())
                     .collect(Collectors.toList());
 
-            FeedResponse response = responseBuilder
-                    .profileImageUrl(user.getProfileImageUrl())
-                    .nickname(user.getNickname())
-                    .mediaUrlList(mediaUrlList)
-                    .description(contentList.get(0).getDescription())
-                    .tagList(tagList)
-                    .likeCount(likeRepository.countByPost(post))
-                    .isLike(likeRepository.existsByPostAndUser(post, me))
-                    .bookmarkCount(bookmarkRepository.countByPost(post))
-                    .isBookmark(bookmarkRepository.existsByPostAndUser(post, me))
-                    .commentCount()
-                    .build();
+            List<Comment> commentList = commentRepository.findAllByPost(post);
+            Long aLong = subCommentRepository.countByCommentList(commentList);
+
+            System.out.println(commentList.size());
+            System.out.println(aLong);
+
+
+
+
+//            FeedResponse response = FeedResponse.builder()
+//                    .profileImageUrl(user.getProfileImageUrl())
+//                    .nickname(user.getNickname())
+//                    .mediaUrlList(mediaUrlList)
+//                    .description(contentList.get(0).getDescription())
+//                    .tagList(tagList)
+//                    .likeCount(likeRepository.countByPost(post))
+//                    .isLike(likeRepository.existsByPostAndUser(post, me))
+//                    .bookmarkCount(bookmarkRepository.countByPost(post))
+//                    .isBookmark(bookmarkRepository.existsByPostAndUser(post, me))
+//                    .commentCount()
+//                    .build();
 
 
         }

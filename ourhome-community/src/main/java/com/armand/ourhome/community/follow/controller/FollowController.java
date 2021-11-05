@@ -1,15 +1,10 @@
 package com.armand.ourhome.community.follow.controller;
 
-import com.armand.ourhome.community.follow.dto.CursorPageRequest;
-import com.armand.ourhome.community.follow.dto.FeedResponse;
+import com.armand.ourhome.common.api.CursorPageRequest;
 import com.armand.ourhome.community.follow.service.FollowService;
-import com.armand.ourhome.community.user.dto.response.PageableResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/follow")

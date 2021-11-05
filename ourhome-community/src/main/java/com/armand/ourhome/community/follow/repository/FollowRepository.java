@@ -5,6 +5,8 @@ import com.armand.ourhome.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -18,7 +20,8 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     // 팔로우 관계 삭제
     void deleteByFollowerAndFollowing(User follower, User following);
     // 해당 유저의 팔로우 관계 리스트
-    Page<Follow> findByFollower(User follower, Pageable pageable);
-    Page<Follow> findByFollowing(User following, Pageable pageable);
     List<Follow> findByFollowing(User following);
+    // Cursor 페이징 (반환값 Page X)
+    List<Follow> findByFollowerAndIdLessThanOrderByIdDesc(User follower, Long lastId, Pageable pageable);
+    List<Follow> findByFollowingAndIdLessThanOrderByIdDesc(User following, Long lastId, Pageable pageable);
 }

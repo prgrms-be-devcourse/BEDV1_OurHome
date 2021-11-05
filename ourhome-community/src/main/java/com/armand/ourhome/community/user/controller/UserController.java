@@ -1,6 +1,9 @@
 package com.armand.ourhome.community.user.controller;
 
 
+import com.armand.ourhome.common.api.CursorPageRequest;
+import com.armand.ourhome.common.api.CursorPageResponse;
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.community.user.dto.response.*;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
@@ -74,23 +77,23 @@ public class UserController {
 
     // 팔로잉 페이지
     @GetMapping("/{id}/followings")
-    public ResponseEntity<PageableResponse<List<FollowInfoResponse>>> followingPage(
+    public ResponseEntity<CursorPageResponse<List<FollowInfoResponse>>> followingPage(
             @PathVariable(value = "id") Long id,
             @RequestParam(value = "token") Long token,
-            Pageable pageable
+            CursorPageRequest pageRequest
     ) {
-        PageableResponse<List<FollowInfoResponse>> response = userService.followingPage(id, token, pageable);
+        CursorPageResponse<List<FollowInfoResponse>> response = userService.followingPage(id, token, pageRequest);
         return ResponseEntity.ok(response);
     }
 
     // 팔로워 페이지
     @GetMapping("/{id}/followers")
-    public ResponseEntity<PageableResponse<List<FollowInfoResponse>>> followerPage(
+    public ResponseEntity<CursorPageResponse<List<FollowInfoResponse>>> followerPage(
             @PathVariable(value = "id") Long id,
             @RequestParam(value = "token") Long token,
-            Pageable pageable
+            CursorPageRequest pageRequest
     ){
-        PageableResponse<List<FollowInfoResponse>> response = userService.followerPage(id, token, pageable);
+        CursorPageResponse<List<FollowInfoResponse>> response = userService.followerPage(id, token, pageRequest);
         return ResponseEntity.ok(response);
     }
 }

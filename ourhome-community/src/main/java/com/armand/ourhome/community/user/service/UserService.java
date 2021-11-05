@@ -1,6 +1,8 @@
 package com.armand.ourhome.community.user.service;
 
 
+import com.armand.ourhome.common.api.CursorPageRequest;
+import com.armand.ourhome.common.api.CursorPageResponse;
 import com.armand.ourhome.common.error.exception.EntityNotFoundException;
 import com.armand.ourhome.common.error.exception.InvalidValueException;
 import com.armand.ourhome.common.error.exception.user.UserNotFoundException;
@@ -23,6 +25,7 @@ import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -140,38 +142,45 @@ public class UserService {
         return responseBuilder.build();
     }
 
-    public PageableResponse<List<FollowInfoResponse>> followingPage(Long id, Long myId, Pageable pageable) {
+    public CursorPageResponse<List<FollowInfoResponse>> followingPage(Long id, Long myId, CursorPageRequest pageRequest) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         User me = userRepository.findById(myId).get();
-        Page<Follow> followPage = followRepository.findByFollower(user, pageable);
-        List<FollowInfoResponse> contentList = new ArrayList<>();
-        for (Follow follow : followPage) {
-            contentList.add(
+//        if(pageRequest.isFirst())
+        List<Follow> followList = followRepository.findByFollowerAndIdLessThanOrderByIdDesc(
+                user, pageRequest.getLastId(), PageRequest.of(0, pageRequest.getSize())
+        );
+        List<FollowInfoResponse> pageContent = new ArrayList<>();
+        for (Follow follow : followList) {
+            pageContent.add(
                     FollowInfoResponse.of(
                             follow.getFollowing(),
                             followRepository.existsByFollowerAndFollowing(me, follow.getFollowing())
                     )
             );
         }
-        return new PageableResponse<>(followPage.getNumber(), followPage.getTotalPages(), contentList);
+        Long lastId = pageRequest.getLastId() - pageContent.size();
+        return new CursorPageResponse<>(pageContent, lastId);
     }
 
-
-    public PageableResponse<List<FollowInfoResponse>> followerPage(Long id, Long myId, Pageable pageable) {
+    public CursorPageResponse<List<FollowInfoResponse>> followerPage(Long id, Long myId, CursorPageRequest pageRequest) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         User me = userRepository.findById(myId).get();
-        Page<Follow> followPage = followRepository.findByFollowing(user, pageable);
-        List<FollowInfoResponse> contentList = new ArrayList<>();
-        for (Follow follow : followPage) {
-            contentList.add(
+        List<Follow> followList = followRepository.findByFollowingAndIdLessThanOrderByIdDesc(
+                user, pageRequest.getLastId(), PageRequest.of(0, pageRequest.getSize())
+        );
+        List<FollowInfoResponse> pageContent = new ArrayList<>();
+        for (Follow follow : followList) {
+            pageContent.add(
                     FollowInfoResponse.of(
                             follow.getFollower(),
                             followRepository.existsByFollowerAndFollowing(me, follow.getFollower())
                     )
             );
         }
-        return new PageableResponse<>(followPage.getNumber(), followPage.getTotalPages(), contentList);
+        Long lastId = pageRequest.getLastId() - pageContent.size();
+        return new CursorPageResponse<>(pageContent, lastId);
     }
+
     // ------------------------------------------------------------------------
 
     private void validDuplicateEmail(String email) {
