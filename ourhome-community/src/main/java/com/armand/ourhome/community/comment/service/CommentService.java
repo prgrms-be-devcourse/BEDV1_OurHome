@@ -12,11 +12,9 @@ import com.armand.ourhome.community.exception.PostNotFountException;
 import com.armand.ourhome.community.exception.UserNotFountException;
 import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.community.post.repository.PostRepository;
-import com.armand.ourhome.community.sub_comment.entity.SubComment;
 import com.armand.ourhome.community.sub_comment.repository.SubCommentRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,8 +48,8 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new CommentNotFountException(commentId));
 
-        List<SubComment> subCommentList = subCommentRepository.findByComment(comment);
-        if (subCommentList.isEmpty()) {
+        Long countByComment = subCommentRepository.countByComment(comment);
+        if (countByComment == 0) {
             commentRepository.delete(comment);
             return DeleteCommentMapper.INSTANCE.commentToDeleteCommentResponse(null, comment.getId());
         } else {

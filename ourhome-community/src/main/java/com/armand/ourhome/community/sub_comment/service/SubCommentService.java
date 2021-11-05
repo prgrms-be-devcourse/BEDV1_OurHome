@@ -14,7 +14,6 @@ import com.armand.ourhome.community.sub_comment.entity.SubComment;
 import com.armand.ourhome.community.sub_comment.repository.SubCommentRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,8 +51,8 @@ public class SubCommentService {
 
         Comment comment = subComment.getComment();
         if (comment != null && comment.isRemoved()) {
-            List<SubComment> subCommentList = subCommentRepository.findByComment(comment);
-            if (subCommentList.isEmpty()) {
+            Long countByComment = subCommentRepository.countByComment(comment);
+            if (countByComment == 0) {
                 commentRepository.delete(comment);
                 return DeleteSubCommentMapper.INSTANCE.subCommentToDeleteSubCommentResponse(subComment.getId(),
                     comment.getId());
