@@ -1,10 +1,10 @@
 package com.armand.ourhome.community.comment.service;
 
 import com.armand.ourhome.community.comment.dto.mapper.CreateCommentMapper;
-import com.armand.ourhome.community.comment.dto.mapper.RemoveCommentMapper;
+import com.armand.ourhome.community.comment.dto.mapper.DeleteCommentMapper;
 import com.armand.ourhome.community.comment.dto.request.CreateCommentRequest;
 import com.armand.ourhome.community.comment.dto.response.CreateCommentResponse;
-import com.armand.ourhome.community.comment.dto.response.RemoveCommentResponse;
+import com.armand.ourhome.community.comment.dto.response.DeleteCommentResponse;
 import com.armand.ourhome.community.comment.entity.Comment;
 import com.armand.ourhome.community.comment.repository.CommentRepository;
 import com.armand.ourhome.community.exception.CommentNotFountException;
@@ -12,8 +12,11 @@ import com.armand.ourhome.community.exception.PostNotFountException;
 import com.armand.ourhome.community.exception.UserNotFountException;
 import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.community.post.repository.PostRepository;
+import com.armand.ourhome.community.sub_comment.entity.SubComment;
+import com.armand.ourhome.community.sub_comment.repository.SubCommentRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final SubCommentRepository subCommentRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
 
@@ -42,13 +46,18 @@ public class CommentService {
     }
 
     @Transactional
-    public RemoveCommentResponse removeComment(Long commentId) {
+    public DeleteCommentResponse deleteComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new CommentNotFountException(commentId));
 
-        comment.removeComment();
-        Comment removeComment = commentRepository.save(comment);
-
-        return RemoveCommentMapper.INSTANCE.commentToRemoveCommentResponse(removeComment);
+        List<SubComment> subCommentList = subCommentRepository.findByComment(comment);
+        if (subCommentList.isEmpty()) {
+            commentRepository.delete(comment);
+            return DeleteCommentMapper.INSTANCE.commentToDeleteCommentResponse(null, commentId);
+        } else {
+            comment.removeComment();
+            Comment removeComment = commentRepository.save(comment);
+            return DeleteCommentMapper.INSTANCE.commentToDeleteCommentResponse(removeComment.getId(), null);
+        }
     }
 }
