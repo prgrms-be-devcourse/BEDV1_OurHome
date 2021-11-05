@@ -2,12 +2,12 @@ package com.armand.ourhome.community.comment.controller;
 
 import com.armand.ourhome.community.comment.dto.request.CreateCommentRequest;
 import com.armand.ourhome.community.comment.dto.response.CreateCommentResponse;
-import com.armand.ourhome.community.comment.dto.response.RemoveCommentResponse;
+import com.armand.ourhome.community.comment.dto.response.DeleteCommentResponse;
 import com.armand.ourhome.community.comment.service.CommentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,9 +28,9 @@ public class CommentController {
         return ResponseEntity.ok(createCommentResponse);
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<RemoveCommentResponse> removeComment(@PathVariable("id") final Long commentId) {
-        RemoveCommentResponse removeCommentResponse = commentService.removeComment(commentId);
-        return ResponseEntity.ok(removeCommentResponse);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<DeleteCommentResponse> deleteComment(@PathVariable("id") final Long commentId) {
+        DeleteCommentResponse deleteCommentResponse = commentService.deleteComment(commentId);
+        return ResponseEntity.ok(deleteCommentResponse);
     }
 }
