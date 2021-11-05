@@ -4,8 +4,8 @@ import com.armand.ourhome.common.error.exception.EntityNotFoundException;
 
 public class WalletNotFoundException extends EntityNotFoundException {
 
-  public WalletNotFoundException(String message) {
-    super(message);
-  }
+	public WalletNotFoundException(String message) {
+		super(message);
+	}
 
 }

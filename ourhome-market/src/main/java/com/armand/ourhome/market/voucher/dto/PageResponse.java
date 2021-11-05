@@ -12,9 +12,9 @@ import lombok.Getter;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class PageResponse<T> {
 
-  private T content;
-  private long totalElements;
-  private int totalPages;
-  private int size;
+	private T content;
+	private long totalElements;
+	private int totalPages;
+	private int size;
 
 }

@@ -5,7 +5,8 @@ import com.armand.ourhome.common.error.exception.ErrorCode;
 
 public class DuplicateWalletException extends BusinessException {
 
-  public DuplicateWalletException(String message) {
-    super(message, ErrorCode.INVALID_INPUT_VALUE);
-  }
+	public DuplicateWalletException(String message) {
+		super(message, ErrorCode.INVALID_INPUT_VALUE);
+	}
+
 }

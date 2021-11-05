@@ -21,28 +21,28 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(name = "voucher"
-    , uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"amount", "percent", "min_limit"})}
+	, uniqueConstraints = {
+	@UniqueConstraint(columnNames = {"amount", "percent", "min_limit"})}
 )
 public abstract class Voucher extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-  @Column(name = "min_limit", nullable = false)
-  private Integer minLimit;
+	@Column(name = "min_limit", nullable = false)
+	private Integer minLimit;
 
-  public Voucher(Integer minLimit) {
-    this.minLimit = minLimit;
-  }
+	public Voucher(Integer minLimit) {
+		this.minLimit = minLimit;
+	}
 
-  public abstract void update(int value, int minLimit);
+	public abstract void update(int value, int minLimit);
 
-  public void updateMinLimit(int minLimit) {
-    this.minLimit = minLimit;
-  }
+	public void updateMinLimit(int minLimit) {
+		this.minLimit = minLimit;
+	}
 
-  public abstract long getDiscountPrice(long currentPrice);
+	public abstract long getDiscountPrice(long currentPrice);
 
 }

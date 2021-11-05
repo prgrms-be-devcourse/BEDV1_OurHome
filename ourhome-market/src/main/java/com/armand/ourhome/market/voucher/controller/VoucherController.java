@@ -26,34 +26,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class VoucherController {
 
-  private final VoucherService voucherService;
+	private final VoucherService voucherService;
 
-  @GetMapping
-  public ResponseEntity<PageResponse<List<VoucherDto>>> lookUp(Pageable pageable) {
-    return ResponseEntity.ok(voucherService.lookUp(pageable));
-  }
+	@GetMapping
+	public ResponseEntity<PageResponse<List<VoucherDto>>> lookUp(Pageable pageable) {
+		return ResponseEntity.ok(voucherService.lookUp(pageable));
+	}
 
-  @PostMapping
-  public ResponseEntity<VoucherDto> save(@Valid @RequestBody RequestVoucher request) {
-    return ResponseEntity.ok(voucherService.save(request));
-  }
+	@PostMapping
+	public ResponseEntity<VoucherDto> save(@Valid @RequestBody RequestVoucher request) {
+		return ResponseEntity.ok(voucherService.save(request));
+	}
 
-  @PatchMapping("/{id}")
-  public ResponseEntity<VoucherDto> update(@PathVariable Long id,
-      @Valid @RequestBody RequestVoucher request) {
-    return ResponseEntity.ok(voucherService.update(id, request));
-  }
+	@PatchMapping("/{id}")
+	public ResponseEntity<VoucherDto> update(@PathVariable Long id,
+		@Valid @RequestBody RequestVoucher request) {
+		return ResponseEntity.ok(voucherService.update(id, request));
+	}
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id) {
-    voucherService.delete(id);
-    return ResponseEntity.ok().build();
-  }
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		voucherService.delete(id);
+		return ResponseEntity.ok().build();
+	}
 
-  @PostMapping("/{id}/assign-to-user")
-  public ResponseEntity<WalletDto> assignToUser(@PathVariable Long id, @RequestParam Long userId) {
-    return ResponseEntity.ok(voucherService.assignToUser(id, userId));
-  }
+	@PostMapping("/{id}/assign-to-user")
+	public ResponseEntity<WalletDto> assignToUser(@PathVariable Long id,
+		@RequestParam Long userId) {
+		return ResponseEntity.ok(voucherService.assignToUser(id, userId));
+	}
 //
 //  @DeleteMapping("/{id}/use-voucher")
 //  public ResponseEntity<Void> use(@PathVariable Long id, @RequestParam Long userId) {
