@@ -1,72 +1,72 @@
 package com.armand.ourhome.community.post.controller;
 
-import com.armand.ourhome.community.post.dto.ContentDto;
-import com.armand.ourhome.community.post.dto.PostDto;
-import com.armand.ourhome.community.post.dto.TagDto;
-import com.armand.ourhome.community.post.entity.PlaceType;
-import com.armand.ourhome.community.post.entity.ResidentialType;
-import com.armand.ourhome.community.post.entity.SquareType;
-import com.armand.ourhome.community.post.entity.StyleType;
+import com.armand.ourhome.community.post.controller.common.CriteriaType;
+import com.armand.ourhome.community.post.dto.request.ReqPost;
+import com.armand.ourhome.community.post.dto.request.ReqUserId;
+import com.armand.ourhome.community.post.dto.response.ResPost;
+import com.armand.ourhome.community.post.dto.response.ResReturnId;
+import com.armand.ourhome.community.post.entity.Criteria;
 import com.armand.ourhome.community.post.service.PostService;
-import com.armand.ourhome.domain.user.User;
-import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.function.EntityResponse;
 
 import javax.validation.Valid;
-import java.io.IOException;
-import java.util.List;
+
 
 /**
  * Created by yunyun on 2021/10/29.
  */
 
 @RestController
-@RequestMapping("/api/v1/post")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
-    private final UserRepository userRepository;
-
     @PostMapping
-    public ResponseEntity<Long> save(@RequestBody @Valid final PostDto postDto) throws IOException {
-        return ResponseEntity.ok(postService.save(postDto));
+    public ResponseEntity<ResReturnId> save(@Valid @RequestBody final ReqPost postDto) {
+        return ResponseEntity.ok(ResReturnId.builder()
+                .id(postService.save(postDto))
+                .build());
     }
 
     @GetMapping
-    public ResponseEntity<Page<PostDto>> getAll(Pageable pageable) {
-        return ResponseEntity.ok(postService.getAll(pageable));
+    public ResponseEntity<Page<ResPost>> getAll(Pageable pageable,
+                                                @Valid @RequestBody final ReqUserId reqUserId) {
+        return ResponseEntity.ok(postService.getAll(pageable, reqUserId.getUserId()));
     }
 
-    @GetMapping("/residentialType/{residentialType}")
-    public ResponseEntity<Page<PostDto>> getAllByResidentialType(Pageable pageable,
-                                                                 @Valid @PathVariable final ResidentialType residentialType) {
-        return ResponseEntity.ok(postService.getAllByResidentialType(residentialType, pageable));
+    @GetMapping("/filter")
+    public ResponseEntity<Page<ResPost>> getAllByCriteria(Pageable pageable,
+                                                            @RequestParam(name = "criteria_type") String criteriaType,
+                                                            @RequestParam(name = "criteria") String criteria,
+                                                            @Valid @RequestBody final ReqUserId reqUserId){
+        return ResponseEntity.ok(postService.getAllBYCriteria(criteriaType, criteria, pageable, reqUserId.getUserId()));
     }
 
-    @PostMapping("/{postId}")
-    public ResponseEntity<Long> update(@RequestBody @Valid final PostDto postDto,
-                                       @Valid @PathVariable final Long postId){
-        return ResponseEntity.ok(postService.update(postDto, postId));
+    @PostMapping("/{id}")
+    public ResponseEntity<ResReturnId> update(@RequestBody @Valid final ReqPost postDto,
+                                       @PathVariable final Long id){
+        return ResponseEntity.ok(ResReturnId.builder()
+                .id(postService.update(postDto, id))
+                .build());
     }
 
-    @GetMapping("/{postId}")
-    public ResponseEntity<PostDto> getOne(@Valid @PathVariable final Long postId){
-     return ResponseEntity.ok(postService.getOne(postId));
+    @GetMapping("/{id}")
+    public ResponseEntity<ResPost> getOne(@PathVariable final Long id){
+     return ResponseEntity.ok(postService.getOne(id));
     }
 
-    @DeleteMapping("/{postId}")
-    public ResponseEntity<Long> delete(@Valid @PathVariable final Long postId){
-        postService.delete(postId);
-        return ResponseEntity.ok(postId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResReturnId> delete(@PathVariable final Long id){
+        postService.delete(id);
+        return ResponseEntity.ok(ResReturnId.builder()
+                .id(id)
+                .build());
     }
 
 }

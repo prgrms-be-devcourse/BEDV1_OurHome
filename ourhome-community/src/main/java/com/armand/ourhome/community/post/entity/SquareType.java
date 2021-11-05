@@ -1,6 +1,6 @@
 package com.armand.ourhome.community.post.entity;
 
-public enum SquareType {
+public enum SquareType implements Criteria {
     SIZE_LESS_THAN_10_PYEONG("10평미만"),
     SIZE_10_PYEONG("10평대"),
     SIZE_20_PYEONG("20평대"),

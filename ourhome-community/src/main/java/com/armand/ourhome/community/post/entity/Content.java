@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -32,7 +33,7 @@ public class Content {
     private PlaceType placeType;
 
     @OneToMany(mappedBy = "content", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tag> tags;
+    private List<Tag> tags = new ArrayList<>();
 
     public void addTag(Tag tag){
         tags.add(tag);
@@ -45,7 +46,7 @@ public class Content {
     }
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "post_id")
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = false)
     private Post post;
 
     void setPost(Post post){
@@ -60,6 +61,6 @@ public class Content {
         this.mediaUrl = mediaUrl;
         this.description = description;
         this.placeType = placeType;
-        this.tags = tags;
+        tags.forEach(tag -> addTag(tag));
     }
 }

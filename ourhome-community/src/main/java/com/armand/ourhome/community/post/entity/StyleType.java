@@ -1,6 +1,6 @@
 package com.armand.ourhome.community.post.entity;
 
-public enum StyleType {
+public enum StyleType implements Criteria {
     MODERN("모던"),
     NORDIC_STYPE("북유럽"),
     VINTAGE("빈티지"),

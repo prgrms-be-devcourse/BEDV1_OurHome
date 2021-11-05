@@ -8,6 +8,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.springframework.util.Assert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +21,7 @@ public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    private Long postId;
+    private Long id;
 
 
     @Column(name="title", nullable = false, length = 50)
@@ -48,7 +49,7 @@ public class Post extends BaseEntity {
 
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Content> contentList;
+    private List<Content> contentList = new ArrayList<>();
 
     public void addContent(final Content content){
         contentList.add(content);
@@ -65,7 +66,7 @@ public class Post extends BaseEntity {
     }
 
     @Builder
-    public Post(Long postId,
+    public Post(Long id,
                 String title,
                 SquareType squareType,
                 ResidentialType residentialType,
@@ -78,29 +79,14 @@ public class Post extends BaseEntity {
         Assert.notNull(user, "사용자 정보는 null 값을 허용하지 않습니다.");
         Checking.validLength(0, 50, "post title", title);
 
-        this.postId = postId;
+        this.id = id;
         this.title = title;
         this.squareType = squareType;
         this.residentialType = residentialType;
         this.styleType = styleType;
         this.viewCount = viewCount;
         this.user = user;
-        this.contentList = contentList;
+        contentList.forEach( content -> addContent(content)); // 동적팩토리매서드 사용해서 적요해 볼 것. // 생성자 책임의 범위를 넘었음.
     }
-
-//    @Override
-//    public boolean equals(Object other){
-//        if (this.getClass().isInstance(other)){
-//            return this.postId == ((Post)other).postId;
-//        } else {
-//            return false;
-//        }
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return postId.intValue();
-//    }
-
 
 }

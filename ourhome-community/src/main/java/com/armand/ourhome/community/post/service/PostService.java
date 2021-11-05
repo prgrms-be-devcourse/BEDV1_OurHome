@@ -1,14 +1,15 @@
 package com.armand.ourhome.community.post.service;
 
-import com.armand.ourhome.common.error.exception.BusinessException;
-import com.armand.ourhome.common.error.exception.ErrorCode;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
-import com.armand.ourhome.community.post.dto.ContentDto;
-import com.armand.ourhome.community.post.dto.PostDto;
-import com.armand.ourhome.community.post.entity.Content;
-import com.armand.ourhome.community.post.entity.PlaceType;
-import com.armand.ourhome.community.post.entity.Post;
-import com.armand.ourhome.community.post.entity.ResidentialType;
+import com.armand.ourhome.community.follow.repository.FollowRepository;
+import com.armand.ourhome.community.post.controller.common.CriteriaType;
+import com.armand.ourhome.community.post.dto.request.ReqContent;
+import com.armand.ourhome.community.post.dto.request.ReqPost;
+import com.armand.ourhome.community.post.dto.response.ResPost;
+import com.armand.ourhome.community.post.entity.*;
+import com.armand.ourhome.community.post.exception.CriteriaNotFountException;
+import com.armand.ourhome.community.post.exception.PostNotFoundException;
+import com.armand.ourhome.community.post.exception.UserNotFountException;
 import com.armand.ourhome.community.post.mapper.PostMapper;
 import com.armand.ourhome.community.post.repository.ContentRepository;
 import com.armand.ourhome.community.post.repository.PostRepository;
@@ -18,16 +19,13 @@ import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.yaml.snakeyaml.util.EnumUtils;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -44,72 +42,98 @@ public class PostService {
     private final PostRepository postRepository;
     private final ContentRepository contentRepository;
     private final TagRepository tagRepository;
+    private final FollowRepository followRepository;
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
     private final AwsS3Uploader awsS3Uploader;
 
     @Transactional
-    public Long save(final PostDto postDto){
+    public Long save(final ReqPost postDto){
+
+        User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
 
         int contentSize = postDto.getContentList().size();
         for (int i = 0; i < contentSize; i++){
-            String mediaUrl = awsS3Uploader.upload(postDto.getContentList().get(i).getImageBase64(), "user-posts");
+            String mediaUrl = awsS3Uploader.upload(postDto.getContentList().get(i).getImageBase64(), "post");
             postDto.getContentList().get(i).setMediaUrl(mediaUrl);
         }
-        User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new BusinessException("해당 사용자 정보는 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
-        return postRepository.save(postMapper.toEntity(postDto, user)).getPostId();
+
+        return postRepository.save(postMapper.toEntity(postDto, user)).getId();
     }
 
-    public Page<PostDto> getAll(Pageable pageable) {
-        //return postMapper.toDtoList(postRepository.findAll(pageable));
-        return null;
+    public Page<ResPost> getAll(Pageable pageable, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
+        Page<Post> postWithPage = postRepository.findAll(pageable);
+
+        // 본 게시물에 대해 팔로워 여부 확인
+        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+
+        return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
-    public Page<PostDto> getAllByResidentialType(ResidentialType residentialType, Pageable pageable){
-        //return postMapper.toDtoList(postRepository.findAllByResidentialType(residentialType, pageable));
-        return null;
+
+    public Page<ResPost> getAllBYCriteria(String criteriaTypeRequest, String type, Pageable pageable, Long userId){
+        CriteriaType criteriaType = CriteriaType.findCriteriaTypeForUrl(criteriaTypeRequest);
+        switch(criteriaType) {
+            case RESIDENTIAL_TYPE -> {
+                if (! ResidentialType.getIfPresent(type)) throw new CriteriaNotFountException(type);
+                return getAllByResidentialType(ResidentialType.valueOf(type), pageable, userId);
+            }
+            case PLACE_TYPE -> {
+                if (! PlaceType.getIfPresent(type)) throw new CriteriaNotFountException(type);
+                return getAllByPlaceType(PlaceType.valueOf(type), pageable, userId);
+            }
+            case TAG -> {
+                return getAllByTag(type, pageable, userId);
+            }
+        }
+         throw new CriteriaNotFountException(criteriaTypeRequest);
     }
 
+    public Page<ResPost> getAllByResidentialType(ResidentialType residentialType, Pageable pageable, Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
+        Page<Post> postWithPage = postRepository.findAllByResidentialType(residentialType, pageable);
 
-    public Page<PostDto> getAllByPlaceType(PlaceType placeType, Pageable pageable){
-//        return postMapper.toDtoList(contentRepository.findAllByPlaceType(placeType, pageable)
-//                .stream()
-//                .map( v -> v.getPost())
-//                .distinct()
-//                .toList());
-        return null;
-
+        // 본 게시물에 대해 팔로워 여부 확인
+        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
-    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
-        Map<Object, Boolean> map = new ConcurrentHashMap<>();
-        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    public Page<ResPost> getAllByPlaceType(PlaceType placeType, Pageable pageable, Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
+        Page<Post> postWithPage = postRepository.findAllByPlaceType(placeType, pageable);
+
+        // 본 게시물에 대해 팔로워 여부 확인
+        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
     }
 
-    public Page<PostDto> getAllByTag(String tagName, Pageable pageable){
-        //return postMapper.toDtoList(tagRepository.findAllByName(tagName, pageable).stream().map(v -> v.getContent().getPost()).distinct().toList());
-        return null;
-    }
+    public Page<ResPost> getAllByTag(String tagName, Pageable pageable, Long userId){
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
+        Page<Post> postWithPage = postRepository.findAllByTag(tagName, pageable);
 
+        // 본 게시물에 대해 팔로워 여부 확인
+        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        return new PageImpl<>(postDtoList, pageable, postWithPage.getTotalElements());
+    }
 
     @Transactional
-    public Long update(final PostDto postDto, Long postId){
-        List<ContentDto> contentDtoList = postDto.getContentList();
+    public Long update(final ReqPost postDto, Long postId){
+        List<ReqContent> contentDtoList = postDto.getContentList();
 
         for (int i = 0; i < contentDtoList.size(); i++){
             if (contentDtoList.get(i).getUpdatedFlag()) {
-                contentDtoList.get(i).setMediaUrl(awsS3Uploader.upload(contentDtoList.get(i).getImageBase64(), "user-posts"));
+                contentDtoList.get(i).setMediaUrl(awsS3Uploader.upload(contentDtoList.get(i).getImageBase64(), "post"));
             }
         }
-        Post postBeforeUpdate = postRepository.findById(postId).orElseThrow(() -> new BusinessException("해당 게시물은 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
+        Post postBeforeUpdate = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId.toString(), "post's id"));
+
         postMapper.updateFromDto(postDto, postBeforeUpdate);
-        return postDto.getPostId();
+        return postDto.getId();
     }
 
-
-
     @Transactional
-    public PostDto getOne(final Long postId){
-        Post post = postRepository.findById(postId).orElseThrow(() -> new BusinessException("해당 게시물은 존재하지 않습니다.", ErrorCode.ENTITY_NOT_FOUND));
+    public ResPost getOne(final Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(() ->new PostNotFoundException(postId.toString(), "post's id"));
         post.plusViewCount();
         return postMapper.toDto(post);
     }
@@ -117,8 +141,13 @@ public class PostService {
     @Transactional
     public void delete(final Long postId){
         postRepository.deleteById(postId);
+    }
 
-
-
+    private List<ResPost> setIsFollower(User user, List<Post> posts, List<ResPost> resPosts){
+        for (int i =0; i < posts.size(); i++){
+            User userOfPost = posts.get(i).getUser();
+            resPosts.get(i).setIsFollower(followRepository.existsByFollowerAndFollowing(user, userOfPost));
+        }
+        return resPosts;
     }
 }
