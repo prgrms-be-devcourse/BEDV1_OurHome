@@ -153,8 +153,9 @@ public class UserService {
                     )
             );
         }
-        return new PageableResponse(followPage.getNumber(), followPage.getTotalPages(), contentList);
+        return new PageableResponse<>(followPage.getNumber(), followPage.getTotalPages(), contentList);
     }
+
 
     public PageableResponse<List<FollowInfoResponse>> followerPage(Long id, Long myId, Pageable pageable) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
@@ -169,9 +170,8 @@ public class UserService {
                     )
             );
         }
-        return new PageableResponse(followPage.getNumber(), followPage.getTotalPages(), contentList);
+        return new PageableResponse<>(followPage.getNumber(), followPage.getTotalPages(), contentList);
     }
-
     // ------------------------------------------------------------------------
 
     private void validDuplicateEmail(String email) {

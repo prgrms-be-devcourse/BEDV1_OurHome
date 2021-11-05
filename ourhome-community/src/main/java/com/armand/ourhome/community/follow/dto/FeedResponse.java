@@ -13,7 +13,7 @@ import java.util.List;
 public class FeedResponse {
     private String profileImageUrl;
     private String nickname;
-    private String mediaUrl;
+    private List<String> mediaUrlList;
     private String description;
     private List<String> tagList;
     private Long likeCount;

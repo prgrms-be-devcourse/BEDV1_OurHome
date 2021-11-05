@@ -30,7 +30,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Long countAllByUser(User user);
 
     // 다수의 user id에 맞는 게시글을 페이징으로 찾는다
-    @Query("SELECT p FROM Post p WHERE p.user.id IN(:userIdList)")
-    Page<Post> findByUserIdList(@Param("userIdList") List<Long> userIdList, Pageable pageable);
+    @Query("SELECT p FROM Post p WHERE p.user.id IN(:userIdList) and p.id < :lastId order by p.id desc")
+    Page<Post> findByUserIdListOrderByIdDesc(
+            @Param("userIdList") List<Long> userIdList,
+            @Param("lastId") Long lastId,
+            Pageable pageable
+    );
 
 }

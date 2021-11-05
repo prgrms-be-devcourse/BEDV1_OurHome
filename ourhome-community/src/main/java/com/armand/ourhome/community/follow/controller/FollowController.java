@@ -1,5 +1,6 @@
 package com.armand.ourhome.community.follow.controller;
 
+import com.armand.ourhome.community.follow.dto.CursorPageRequest;
 import com.armand.ourhome.community.follow.dto.FeedResponse;
 import com.armand.ourhome.community.follow.service.FollowService;
 import com.armand.ourhome.community.user.dto.response.PageableResponse;
@@ -38,13 +39,14 @@ public class FollowController {
     }
 
     // 팔로우 피드
+    // api/follow/feed?token={}&size={}&lastId={}
     @GetMapping("/feed")
 //    public ResponseEntity<PageableResponse<List<FeedResponse>>> feedPage(
     public ResponseEntity<Void> feedPage(
             @RequestParam(value = "token") Long token,
-            Pageable pageable
+            CursorPageRequest pageRequest
     ) {
-        followService.feedPage(token, pageable);
+        followService.feedPage(token, pageRequest);
         return ResponseEntity.ok().build();
     }
 
