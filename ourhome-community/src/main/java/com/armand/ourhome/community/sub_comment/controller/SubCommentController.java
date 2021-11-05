@@ -2,7 +2,7 @@ package com.armand.ourhome.community.sub_comment.controller;
 
 import com.armand.ourhome.community.sub_comment.dto.request.CreateSubCommentRequest;
 import com.armand.ourhome.community.sub_comment.dto.response.CreateSubCommentResponse;
-import com.armand.ourhome.community.sub_comment.dto.response.DestroySubCommentResponse;
+import com.armand.ourhome.community.sub_comment.dto.response.DeleteSubCommentResponse;
 import com.armand.ourhome.community.sub_comment.service.SubCommentService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +30,8 @@ public class SubCommentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<DestroySubCommentResponse> destroySubComment(@PathVariable("id") final Long subCommentId) {
-        DestroySubCommentResponse destroySubCommentResponse = subCommentService.destroySubComment(subCommentId);
-        return ResponseEntity.ok(destroySubCommentResponse);
+    public ResponseEntity<DeleteSubCommentResponse> deleteSubComment(@PathVariable("id") final Long subCommentId) {
+        DeleteSubCommentResponse deleteSubCommentResponse = subCommentService.deleteSubComment(subCommentId);
+        return ResponseEntity.ok(deleteSubCommentResponse);
     }
 }
