@@ -1,16 +1,18 @@
 package com.armand.ourhome.community.user.service;
 
 
+import com.armand.ourhome.common.api.CursorPageRequest;
+import com.armand.ourhome.common.api.CursorPageResponse;
 import com.armand.ourhome.common.error.exception.EntityNotFoundException;
 import com.armand.ourhome.common.error.exception.InvalidValueException;
 import com.armand.ourhome.common.error.exception.user.UserNotFoundException;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.community.bookmark.repository.BookmarkRepository;
-import com.armand.ourhome.community.user.dto.response.FollowPageResponse;
+import com.armand.ourhome.community.follow.entity.Follow;
+import com.armand.ourhome.community.post.entity.*;
+import com.armand.ourhome.community.user.dto.response.FollowInfoResponse;
 import com.armand.ourhome.community.follow.repository.FollowRepository;
 import com.armand.ourhome.community.like.repository.LikeRepository;
-import com.armand.ourhome.community.post.entity.Content;
-import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.community.post.repository.PostRepository;
 import com.armand.ourhome.community.user.dto.mapper.SignUpMapper;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
@@ -22,6 +24,8 @@ import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -97,13 +100,13 @@ public class UserService {
         return UpdateResponse.of(me);
     }
 
-    public UserPageResponse userPage(Long id, Long myId, Pageable pageable) {
+    public UserInfoResponse userPage(Long id, Long myId, Pageable pageable) {
         Optional<User> byId = userRepository.findById(id);
         if (byId.isEmpty())
             throw new UserNotFoundException(id);
         User user = byId.get();
         // Thumnail list 생성
-        var postList = postRepository.findAllByUser(user, pageable);
+        Page<Post> postList = postRepository.findAllByUser(user, pageable);
         List<Thumbnail> thumbnailList = new ArrayList<>();
         for (Post post : postList) {
             List<Content> contentList = post.getContentList();
@@ -115,7 +118,7 @@ public class UserService {
             );
         }
         // 기본 response 생성
-        UserPageResponse.UserPageResponseBuilder responseBuilder = UserPageResponse.builder();
+        UserInfoResponse.UserInfoResponseBuilder responseBuilder = UserInfoResponse.builder();
         responseBuilder
                 .nickname(user.getNickname())
                 .description(user.getDescription())
@@ -139,33 +142,51 @@ public class UserService {
         return responseBuilder.build();
     }
 
-    public List<FollowPageResponse> followingPage(Long id, Long myId) {
+    public CursorPageResponse<List<FollowInfoResponse>> followingPage(Long id, Long myId, CursorPageRequest pageRequest) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         User me = userRepository.findById(myId).get();
-        return followRepository.findByFollower(user).stream()   // 다 들고오기 vs following 컬럼만 들고오기 ???
-                .map(follow ->
-                        FollowPageResponse.of(
-                                follow.getFollowing(),
-                                followRepository.existsByFollowerAndFollowing(me, follow.getFollowing())
-                        )
-                )
-                .collect(Collectors.toList());
+
+        PageRequest pageable = PageRequest.of(0, pageRequest.getSize());
+        List<Follow> followList = pageRequest.getIsFirst() ?
+                followRepository.findByFollowerOrderByIdDesc(user, pageable) :
+                followRepository.findByFollowerAndIdLessThanOrderByIdDesc(user, pageRequest.getLastId(), pageable);
+
+        List<FollowInfoResponse> pageContent = new ArrayList<>();
+        for (Follow follow : followList) {
+            pageContent.add(
+                    FollowInfoResponse.of(
+                            follow.getFollowing(),
+                            followRepository.existsByFollowerAndFollowing(me, follow.getFollowing())
+                    )
+            );
+        }
+        Long lastId = followList.isEmpty() ? null : followList.get(followList.size() - 1).getId();
+        return new CursorPageResponse<>(pageContent, lastId);
     }
 
-    public List<FollowPageResponse> followerPage(Long id, Long myId) {
+    public CursorPageResponse<List<FollowInfoResponse>> followerPage(Long id, Long myId, CursorPageRequest pageRequest) {
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
         User me = userRepository.findById(myId).get();
-        return followRepository.findByFollowing(user).stream()
-                .map(follow ->
-                        FollowPageResponse.of(
-                                follow.getFollower(),
-                                followRepository.existsByFollowerAndFollowing(me, follow.getFollower())
-                        )
-                )
-                .collect(Collectors.toList());
+
+        PageRequest pageable = PageRequest.of(0, pageRequest.getSize());
+        List<Follow> followList = pageRequest.getIsFirst() ?
+                followRepository.findByFollowingOrderByIdDesc(user, pageable) :
+                followRepository.findByFollowingAndIdLessThanOrderByIdDesc(user, pageRequest.getLastId(), pageable);
+
+        List<FollowInfoResponse> pageContent = new ArrayList<>();
+        for (Follow follow : followList) {
+            pageContent.add(
+                    FollowInfoResponse.of(
+                            follow.getFollower(),
+                            followRepository.existsByFollowerAndFollowing(me, follow.getFollower())
+                    )
+            );
+        }
+        Long lastId = followList.isEmpty() ? null : followList.get(followList.size() - 1).getId();
+        return new CursorPageResponse<>(pageContent, lastId);
     }
 
-    // ------------------------------------------------------------------------
+    // ---------------------------- ( util ) ----------------------------
 
     private void validDuplicateEmail(String email) {
         if (userRepository.existsByEmail(email))

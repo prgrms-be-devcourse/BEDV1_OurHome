@@ -18,6 +18,7 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findAllByResidentialType(ResidentialType residentialType, Pageable pageable);
+
     Page<Post> findAllByUser(User user, Pageable pageable);
 
     @Query("select DISTINCT p from Content c inner join c.post p on p.id = c.post.id WHERE c.placeType = :placeType")
@@ -27,5 +28,19 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByTag(@Param("tag") String tag , Pageable pageable);
 
     Long countAllByUser(User user);
+
+    // 다수의 user id에 맞는 게시글을 페이징으로 찾는다
+    @Query("SELECT p FROM Post p WHERE p.user.id IN(:userIdList) and p.id < :lastId order by p.id desc")
+    List<Post> findByUserIdListAndIdLessThanOrderByIdDesc(
+            @Param("userIdList") List<Long> userIdList,
+            @Param("lastId") Long lastId,
+            Pageable pageable
+    );
+    // 최초 요청시
+    @Query("SELECT p FROM Post p WHERE p.user.id IN(:userIdList) order by p.id desc")
+    List<Post> findByUserIdListOrderByIdDesc(
+            @Param("userIdList") List<Long> userIdList,
+            Pageable pageable
+    );
 
 }

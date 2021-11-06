@@ -15,7 +15,7 @@ import com.armand.ourhome.community.user.dto.request.UpdatePasswordRequest;
 import com.armand.ourhome.community.user.dto.response.LoginResponse;
 import com.armand.ourhome.community.user.dto.response.SignUpResponse;
 import com.armand.ourhome.community.user.dto.response.UpdateResponse;
-import com.armand.ourhome.community.user.dto.response.UserPageResponse;
+import com.armand.ourhome.community.user.dto.response.UserInfoResponse;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 
@@ -231,7 +231,7 @@ class UserServiceUnitTest {
         given(likeRepository.countByUser(user)).willReturn(0L);
 
         // When
-        UserPageResponse result = userService.userPage(1L, 1L, pageable);
+        UserInfoResponse result = userService.userPage(1L, 1L, pageable);
 
         // Then
         assertThat(result.getNickname(), is(nickname));
@@ -256,7 +256,7 @@ class UserServiceUnitTest {
         given(postRepository.countAllByUser(user)).willReturn(0L);
 
         // When -> 2번 유저가 1번 유저의 정보를 조회하려 할 때
-        UserPageResponse result = userService.userPage(1L, 2L, pageable);
+        UserInfoResponse result = userService.userPage(1L, 2L, pageable);
 
         // Then
         assertThat(result.getNickname(), is(nickname));
