@@ -96,9 +96,11 @@ public class FollowService {
 
             pageContent.add(
                     FeedResponse.builder()
-                            .id(post.getId())
+                            .userId(user.getId())
                             .profileImageUrl(user.getProfileImageUrl())
                             .nickname(user.getNickname())
+                            .postId(post.getId())
+                            .createdAt(post.getCreatedAt())
                             .mediaUrlList(mediaUrlList)
                             .description(contentList.get(0).getDescription())
                             .tagList(tagList)

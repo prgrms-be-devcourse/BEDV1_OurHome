@@ -6,21 +6,27 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Builder
 public class FeedResponse {
-    @JsonProperty("post_id")
-    private Long id;
+    private Long userId;
     private String profileImageUrl;
     private String nickname;
+
+    private Long postId;
+    private LocalDateTime createdAt;
     private List<String> mediaUrlList;
     private String description;
     private List<String> tagList;
+
     private Long likeCount;
     private Boolean isLike;
+
     private Long bookmarkCount;
     private Boolean isBookmark;
+
     private Long allCommentCount;
 }
