@@ -13,13 +13,9 @@ public class VoucherDto {
 	@JsonProperty("voucher_id")
 	private Long id;
 	private Integer value;
-	@JsonProperty("min_limit")
 	private Integer minLimit;
-	@JsonProperty("voucher_type")
 	private VoucherType voucherType;
-	@JsonProperty("created_at")
 	private LocalDateTime createdAt;
-	@JsonProperty("updated_at")
 	private LocalDateTime updatedAt;
 
 	@Builder
