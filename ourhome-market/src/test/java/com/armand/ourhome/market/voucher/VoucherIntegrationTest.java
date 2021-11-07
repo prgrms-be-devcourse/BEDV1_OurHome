@@ -102,8 +102,8 @@ public class VoucherIntegrationTest {
             preprocessResponse(prettyPrint()),
             requestFields(
                 fieldWithPath("value").type(JsonFieldType.NUMBER).description("할인 비율 또는 할인 금액"),
-                fieldWithPath("minLimit").type(JsonFieldType.NUMBER).description("바우처 사용 최소금액"),
-                fieldWithPath("voucherType").type(JsonFieldType.STRING).description("바우처 타입")
+                fieldWithPath("min_limit").type(JsonFieldType.NUMBER).description("바우처 사용 최소금액"),
+                fieldWithPath("voucher_type").type(JsonFieldType.STRING).description("바우처 타입")
             ),
             responseFields(
                 fieldWithPath("voucher_id").type(JsonFieldType.NUMBER).description("바우처 아이디"),
@@ -145,9 +145,10 @@ public class VoucherIntegrationTest {
                     .description("바우처 최초 생성시간"),
                 fieldWithPath("content[].updated_at").type(JsonFieldType.STRING)
                     .description("바우처 최근 수정시간"),
-                fieldWithPath("total_elements").type(JsonFieldType.NUMBER).description("바우처 총 개수"),
+                fieldWithPath("number").type(JsonFieldType.NUMBER).description("페이지 번호"),
                 fieldWithPath("total_pages").type(JsonFieldType.NUMBER).description("총 페이지 수"),
-                fieldWithPath("size").type(JsonFieldType.NUMBER).description("한 페이지에 노출할 바우처 수")
+                fieldWithPath("number_of_elements").type(JsonFieldType.NUMBER).description("조회된 바우처의 개수"),
+                fieldWithPath("total_elements").type(JsonFieldType.NUMBER).description("바우처 총 개수")
             )
         ));
   }
@@ -190,8 +191,8 @@ public class VoucherIntegrationTest {
             ),
             requestFields(
                 fieldWithPath("value").type(JsonFieldType.NUMBER).description("할인 비율 또는 할인 금액"),
-                fieldWithPath("minLimit").type(JsonFieldType.NUMBER).description("바우처 사용 최소금액"),
-                fieldWithPath("voucherType").type(JsonFieldType.STRING).description("바우처 타입")
+                fieldWithPath("min_limit").type(JsonFieldType.NUMBER).description("바우처 사용 최소금액"),
+                fieldWithPath("voucher_type").type(JsonFieldType.STRING).description("바우처 타입")
             ),
             responseFields(
                 fieldWithPath("voucher_id").type(JsonFieldType.NUMBER).description("바우처 아이디"),

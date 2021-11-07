@@ -1,5 +1,6 @@
 package com.armand.ourhome.market.voucher.service;
 
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.common.error.exception.EntityNotFoundException;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
@@ -7,7 +8,6 @@ import com.armand.ourhome.market.voucher.converter.VoucherConverter;
 import com.armand.ourhome.market.voucher.converter.WalletMapper;
 import com.armand.ourhome.market.voucher.domain.Voucher;
 import com.armand.ourhome.market.voucher.domain.Wallet;
-import com.armand.ourhome.market.voucher.dto.PageResponse;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.WalletDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
@@ -43,11 +43,7 @@ public class VoucherService {
 		Page<VoucherDto> pages = voucherRepository.findAll(pageable)
 			.map(voucher -> voucherConverter.toDto(voucher));
 
-		List<VoucherDto> allVouchers = voucherRepository.findAll().stream()
-			.map(voucher -> voucherConverter.toDto(voucher)).collect(Collectors.toList());
-
-		return new PageResponse<>(allVouchers, pages.getTotalElements(), pages.getTotalPages(),
-			pages.getSize());
+		return new PageResponse<>(pages.getContent(), pages.getNumber(), pages.getTotalPages(), pages.getNumberOfElements(), pages.getTotalElements());
 	}
 
 	@Transactional

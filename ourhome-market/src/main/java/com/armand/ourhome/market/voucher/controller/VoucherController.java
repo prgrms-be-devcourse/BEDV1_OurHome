@@ -1,6 +1,6 @@
 package com.armand.ourhome.market.voucher.controller;
 
-import com.armand.ourhome.market.voucher.dto.PageResponse;
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.WalletDto;
 import com.armand.ourhome.market.voucher.dto.request.RequestVoucher;
@@ -8,7 +8,6 @@ import com.armand.ourhome.market.voucher.service.VoucherService;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
