@@ -6,6 +6,7 @@ prod-db.yaml
 db.yaml
 scheme.sql
 generated
+*.html
 
 
 # --------- intelliJ 기본 설정 ---------
