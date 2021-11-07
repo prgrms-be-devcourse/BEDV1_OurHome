@@ -155,31 +155,6 @@ class VoucherServiceTest {
   }
 
   @Test
-  @DisplayName("바우처 타입을 수정할 수 없다")
-  void cannot_updateVoucherType() {
-    // given
-    RequestVoucher requestVoucher = RequestVoucher.builder()
-        .value(6000)
-        .minLimit(10000)
-        .voucherType(VoucherType.FIXED)
-        .build();
-
-    VoucherDto save = voucherService.save(requestVoucher);
-
-    RequestVoucher updatedRequest = RequestVoucher.builder()
-        .value(20)
-        .minLimit(10000)
-        .voucherType(VoucherType.PERCENT)
-        .build();
-
-    // then
-    assertThrows(DifferentTypeVoucherException.class, () -> {
-      // when
-      voucherService.update(save.getId(), updatedRequest);
-    });
-  }
-
-  @Test
   @DisplayName("바우처를 정상적으로 삭제할 수 있다")
   void testDelete() {
     // given
