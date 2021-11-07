@@ -3,11 +3,11 @@ package com.armand.ourhome.market.voucher.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.common.error.exception.BusinessException;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import com.armand.ourhome.market.voucher.domain.Voucher;
-import com.armand.ourhome.market.voucher.dto.PageResponse;
 import com.armand.ourhome.market.voucher.dto.VoucherDto;
 import com.armand.ourhome.market.voucher.dto.VoucherType;
 import com.armand.ourhome.market.voucher.dto.WalletDto;
@@ -17,9 +17,7 @@ import com.armand.ourhome.market.voucher.exception.DuplicateVoucherException;
 import com.armand.ourhome.market.voucher.exception.VoucherNotFoundException;
 import com.armand.ourhome.market.voucher.repository.VoucherRepository;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +25,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -154,31 +151,6 @@ class VoucherServiceTest {
     assertThrows(DuplicateVoucherException.class, () -> {
       // when
       voucherService.update(save.getId(), duplicatedRequest);
-    });
-  }
-
-  @Test
-  @DisplayName("바우처 타입을 수정할 수 없다")
-  void cannot_updateVoucherType() {
-    // given
-    RequestVoucher requestVoucher = RequestVoucher.builder()
-        .value(6000)
-        .minLimit(10000)
-        .voucherType(VoucherType.FIXED)
-        .build();
-
-    VoucherDto save = voucherService.save(requestVoucher);
-
-    RequestVoucher updatedRequest = RequestVoucher.builder()
-        .value(20)
-        .minLimit(10000)
-        .voucherType(VoucherType.PERCENT)
-        .build();
-
-    // then
-    assertThrows(DifferentTypeVoucherException.class, () -> {
-      // when
-      voucherService.update(save.getId(), updatedRequest);
     });
   }
 

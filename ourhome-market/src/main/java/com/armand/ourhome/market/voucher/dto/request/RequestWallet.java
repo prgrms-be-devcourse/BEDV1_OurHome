@@ -9,16 +9,16 @@ import lombok.NoArgsConstructor;
 @Getter
 public class RequestWallet {
 
-  @NotNull(message = "사용자를 할당해주세요")
-  private Long userId;
+	@NotNull(message = "사용자를 할당해주세요")
+	private Long userId;
 
-  @NotNull(message = "바우처를 지정해주세요")
-  private Long voucherId;
+	@NotNull(message = "바우처를 지정해주세요")
+	private Long voucherId;
 
-  @Builder
-  public RequestWallet(Long userId, Long voucherId) {
-    this.userId = userId;
-    this.voucherId = voucherId;
-  }
+	@Builder
+	public RequestWallet(Long userId, Long voucherId) {
+		this.userId = userId;
+		this.voucherId = voucherId;
+	}
 
 }

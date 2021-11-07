@@ -13,20 +13,20 @@ import lombok.NoArgsConstructor;
 @JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class WalletDto {
 
-  @JsonProperty("wallet_id")
-  private Long id;
-  private Long userId;
-  private VoucherDto voucherDto;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
+	@JsonProperty("wallet_id")
+	private Long id;
+	private Long userId;
+	private VoucherDto voucherDto;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 
-  @Builder
-  public WalletDto(Long id, Long userId, VoucherDto voucherDto, LocalDateTime createdAt,
-      LocalDateTime updatedAt) {
-    this.id = id;
-    this.userId = userId;
-    this.voucherDto = voucherDto;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-  }
+	@Builder
+	public WalletDto(Long id, Long userId, VoucherDto voucherDto, LocalDateTime createdAt,
+		LocalDateTime updatedAt) {
+		this.id = id;
+		this.userId = userId;
+		this.voucherDto = voucherDto;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+	}
 }
