@@ -1,7 +1,8 @@
 package com.armand.ourhome.community.user.controller;
 
+import com.armand.ourhome.community.TestHelper;
+import com.armand.ourhome.community.follow.repository.FollowRepository;
 import com.armand.ourhome.community.post.entity.*;
-import com.armand.ourhome.community.post.entity.Tag;
 import com.armand.ourhome.community.post.repository.PostRepository;
 import com.armand.ourhome.community.user.dto.request.LoginRequest;
 import com.armand.ourhome.community.user.dto.request.SignUpRequest;
@@ -20,8 +21,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
@@ -42,22 +41,17 @@ class UserControllerTest {
     @Autowired
     private PostRepository postRepository;
     @Autowired
+    private FollowRepository followRepository;
+    @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
 
-    User simpleUser = User.builder()
-            .email("test@mail.com")
-            .password("12341234")
-            .nickname("test")
-            .description("한줄설명")
-            .profileImageUrl("S3 프로필 사진 URL")
-            .build();
-    User user;
+    User me;
 
     @BeforeEach
     void saveUser() {
-        user = userRepository.save(simpleUser);
+        me = userRepository.save(TestHelper.createUser());
     }
 
     @AfterEach
@@ -108,8 +102,8 @@ class UserControllerTest {
     void 로그인() throws Exception {
         // Given
         LoginRequest loginRequest = LoginRequest.builder()
-                .email("test@mail.com")
-                .password("12341234")
+                .email(me.getEmail())
+                .password(me.getPassword())
                 .build();
         String request = objectMapper.writeValueAsString(loginRequest);
 
@@ -152,7 +146,7 @@ class UserControllerTest {
         ResultActions resultActions = mockMvc.perform(
                 patch("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("token", String.valueOf(user.getId()))
+                        .param("token", String.valueOf(me.getId()))
                         .content(request)
         );
 
@@ -191,7 +185,7 @@ class UserControllerTest {
         ResultActions resultActions = mockMvc.perform(
                 patch("/api/users/password")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("token", String.valueOf(user.getId()))
+                        .param("token", String.valueOf(me.getId()))
                         .content(request)
         );
 
@@ -220,40 +214,19 @@ class UserControllerTest {
     @Test
     void 유저_페이지() throws Exception {
         // Given
-        Post post = Post.builder()
-                .title("제목")
-                .squareType(SquareType.SIZE_10_PYEONG)
-                .residentialType(ResidentialType.DETACHED_HOUCE)
-                .styleType(StyleType.NORDIC_STYPE)
-                .user(user)
-                .contentList(
-                        List.of(
-                                Content.builder()
-                                        .mediaUrl("S3 Post URL 1")
-                                        .description("콘텐츠 설명 1")
-                                        .placeType(PlaceType.BATHROOM)
-                                        .tags(null)
-                                        .build(),
-                                Content.builder()
-                                        .mediaUrl("S3 Post URL 2")
-                                        .description("콘텐츠 설명 2")
-                                        .placeType(PlaceType.LIVINGROOM)
-                                        .tags(null)
-                                        .build()
-                        )
-                ).build();
+        Post post = TestHelper.createPost(me);
         postRepository.save(post);
         postRepository.flush(); // 트랜잭션 걸고 flush까지 해줘야함!
 
         //  When
         ResultActions resultActions = mockMvc.perform(
                 // ~ api/users/1?token=1&page=0&size=8
-                get("/api/users/{id}", user.getId())
+                get("/api/users/{id}", me.getId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .param("token", String.valueOf(user.getId()))
+                        .param("token", String.valueOf(me.getId()))
                         .param("page", String.valueOf(0))
                         .param("size", String.valueOf(8))
-                        .param("sort", "postId,DESC")   // FIXME : id 변수명 규칙정해야함
+                        .param("sort", "id,DESC")
         );
 
         // Then
@@ -268,8 +241,8 @@ class UserControllerTest {
                                 ),
                                 requestParameters(
                                         parameterWithName("token").description("토큰(id)"),
-                                        parameterWithName("page").description("페이지 넘버"),
-                                        parameterWithName("size").description("페이지 개수"),
+                                        parameterWithName("page").description("현재 페이지 넘버"),
+                                        parameterWithName("size").description("페이지 콘텐츠 개수"),
                                         parameterWithName("sort").description("정렬 기준")
                                 ),
                                 responseFields(
@@ -291,6 +264,99 @@ class UserControllerTest {
                 );
     }
 
+    @Transactional
+    @Test
+    void 팔로잉_페이지() throws Exception {
+        // Given
+        User user2 = TestHelper.createUser();
+        // me -> user2 팔로잉
+        followRepository.save(TestHelper.createFollow(me, user2));
+        followRepository.flush();
+
+        //  When
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/users/{id}/followings", me.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("token", String.valueOf(me.getId()))
+                        .param("size", String.valueOf(10))
+                        .param("is_first", String.valueOf(true))
+        );
+
+        // Then
+        resultActions
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        document(
+                                "user/following-page", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                                pathParameters(
+                                        parameterWithName("id").description("사용자 아이디")
+                                ),
+                                requestParameters(
+                                        parameterWithName("token").description("토큰(id)"),
+                                        parameterWithName("size").description("페이지 콘텐츠 개수"),
+                                        parameterWithName("is_first").description("최초 페이징 요청 여부")
+                                ),
+                                responseFields(
+                                        fieldWithPath("content[]").type(JsonFieldType.ARRAY).description("페이징 콘텐츠 리스트"),
+                                        fieldWithPath("content[].user_id").type(JsonFieldType.NUMBER).description("사용자 id"),
+                                        fieldWithPath("content[].profile_image_url").type(JsonFieldType.STRING).description("프로필 사진 url"),
+                                        fieldWithPath("content[].nickname").type(JsonFieldType.STRING).description("닉네임"),
+                                        fieldWithPath("content[].description").type(JsonFieldType.STRING).description("한줄 설명"),
+                                        fieldWithPath("content[].is_following").type(JsonFieldType.BOOLEAN).description("팔로우 여부"),
+
+                                        fieldWithPath("last_id").type(JsonFieldType.NUMBER).description("페이징용 마지막 id (Cursor)")
+                                )
+                        )
+                );
+    }
+
+    @Transactional
+    @Test
+    void 팔로워_페이지() throws Exception {
+        // Given
+        User user2 = TestHelper.createUser();
+        // user2 -> me 팔로잉
+        followRepository.save(TestHelper.createFollow(user2, me));
+        followRepository.flush();
+
+        //  When
+        ResultActions resultActions = mockMvc.perform(
+                get("/api/users/{id}/followers", me.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("token", String.valueOf(me.getId()))
+                        .param("size", String.valueOf(10))
+                        .param("is_first", String.valueOf(true))
+        );
+
+        // Then
+        resultActions
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andDo(
+                        document(
+                                "user/follower-page", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
+                                pathParameters(
+                                        parameterWithName("id").description("사용자 아이디")
+                                ),
+                                requestParameters(
+                                        parameterWithName("token").description("토큰(id)"),
+                                        parameterWithName("size").description("페이지 콘텐츠 개수"),
+                                        parameterWithName("is_first").description("최초 페이징 요청 여부")
+                                ),
+                                responseFields(
+                                        fieldWithPath("content[]").type(JsonFieldType.ARRAY).description("페이징 콘텐츠 리스트"),
+                                        fieldWithPath("content[].user_id").type(JsonFieldType.NUMBER).description("사용자 id"),
+                                        fieldWithPath("content[].profile_image_url").type(JsonFieldType.STRING).description("프로필 사진 url"),
+                                        fieldWithPath("content[].nickname").type(JsonFieldType.STRING).description("닉네임"),
+                                        fieldWithPath("content[].description").type(JsonFieldType.STRING).description("한줄 설명"),
+                                        fieldWithPath("content[].is_following").type(JsonFieldType.BOOLEAN).description("팔로우 여부"),
+
+                                        fieldWithPath("last_id").type(JsonFieldType.NUMBER).description("페이징용 마지막 id (Cursor)")
+                                )
+                        )
+                );
+    }
 
 
 }

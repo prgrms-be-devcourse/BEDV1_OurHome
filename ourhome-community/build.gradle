@@ -25,3 +25,27 @@ asciidoctor {
     inputs.dir snippetsDir
     dependsOn test
 }
+
+//bootJar {
+//    dependsOn asciidoctor
+//    copy {
+//        from "${asciidoctor.outputDir}"
+//        into 'BOOT-INF/classes/templates'
+//    }
+//}
+
+// html로 변환하기
+
+asciidoctor.doFirst {
+    delete file('src/main/resources/templates')
+}
+
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/templates")
+}
+
+build {
+    dependsOn copyDocument
+}
