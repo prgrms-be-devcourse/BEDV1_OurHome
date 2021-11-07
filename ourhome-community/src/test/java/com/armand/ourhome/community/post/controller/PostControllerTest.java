@@ -12,6 +12,8 @@ import com.armand.ourhome.community.post.repository.PostRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.EnumValues;
+import org.hibernate.type.EnumType;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -35,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -70,6 +73,11 @@ class PostControllerTest {
 
     private Post post;
 
+
+    private final String residentialTypeNames = getValuesFromEnum(List.of(ResidentialType.values()));
+    private final String placeTypeNames = getValuesFromEnum(List.of(ResidentialType.values()));
+    private final String squareTypeNames = getValuesFromEnum(List.of(ResidentialType.values()));
+    private final String styleTypeNames = getValuesFromEnum(List.of(ResidentialType.values()));
 
     @BeforeEach
     void setUp(){
@@ -154,9 +162,9 @@ class PostControllerTest {
                         document("post/savePost", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
                                 requestFields(
                                         fieldWithPath("id").type(JsonFieldType.NULL).description("게시물 아이디"),
-                                        fieldWithPath("residential_type").type(JsonFieldType.STRING).description("게시될 집의 거주유형"),
-                                        fieldWithPath("square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"),
-                                        fieldWithPath("style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"),
+                                        fieldWithPath("residential_type").type(JsonFieldType.STRING).description("게시될 집의 거주유형"+residentialTypeNames),
+                                        fieldWithPath("square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"+squareTypeNames),
+                                        fieldWithPath("style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"+styleTypeNames),
                                         fieldWithPath("title").type(JsonFieldType.STRING).description("게시물의 제목"),
                                         fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("사용자 아이디"),
                                         fieldWithPath("view_count").type(JsonFieldType.NUMBER).description("조회수"),
@@ -164,9 +172,8 @@ class PostControllerTest {
                                         fieldWithPath("content_list[].id").type(JsonFieldType.NULL).description("게시물 구체 내용물 아이디"),
                                         fieldWithPath("content_list[].media_url").type(JsonFieldType.NULL).description("게시될 집의 사진이 저장된 위치"),
                                         fieldWithPath("content_list[].image_base64").type(JsonFieldType.STRING).description("게시될 집의 사진"),
-                                        fieldWithPath("content_list[].updated_flag").type(JsonFieldType.BOOLEAN).description("게시될 집의 사진의 업데이트 여부(default: false)"),
                                         fieldWithPath("content_list[].description").type(JsonFieldType.STRING).description("게시된 사진에 대한 설명"),
-                                        fieldWithPath("content_list[].place_type").type(JsonFieldType.STRING).description("게시된 사진의 공간 유형"),
+                                        fieldWithPath("content_list[].place_type").type(JsonFieldType.STRING).description("게시된 사진의 공간 유형"+placeTypeNames),
                                         fieldWithPath("content_list[].tags").type(JsonFieldType.ARRAY).description("게시된 사진과 관련된 태그들"),
                                         fieldWithPath("content_list[].tags[].id").type(JsonFieldType.NULL).description("태그 아이디"),
                                         fieldWithPath("content_list[].tags[].name").type(JsonFieldType.STRING).description("태그 이름")
@@ -196,9 +203,9 @@ class PostControllerTest {
                                responseFields(
                                        fieldWithPath("content").type(JsonFieldType.ARRAY).description("모든 게시물들"),
                                        fieldWithPath("content[].id").type(JsonFieldType.NUMBER).description("게시물 아이디"),
-                                       fieldWithPath("content[].residential_type").type(JsonFieldType.STRING).description("게시될 집의 거주유형"),
-                                       fieldWithPath("content[].square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"),
-                                       fieldWithPath("content[].style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"),
+                                       fieldWithPath("content[].residential_type").type(JsonFieldType.STRING).description("게시될 집의 거주유형"+residentialTypeNames),
+                                       fieldWithPath("content[].square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"+squareTypeNames),
+                                       fieldWithPath("content[].style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"+styleTypeNames),
                                        fieldWithPath("content[].title").type(JsonFieldType.STRING).description("게시물의 제목"),
                                        fieldWithPath("content[].view_count").type(JsonFieldType.NUMBER).description("조회수"),
                                        fieldWithPath("content[].is_follower").type(JsonFieldType.BOOLEAN).description("본 게시물 팔로우 여부"),
@@ -208,7 +215,7 @@ class PostControllerTest {
                                        fieldWithPath("content[].content_list[].id").type(JsonFieldType.NUMBER).description("게시물 구체 내용물 아이디"),
                                        fieldWithPath("content[].content_list[].media_url").type(JsonFieldType.STRING).description("게시될 집의 사진이 저장된 위치"),
                                        fieldWithPath("content[].content_list[].description").type(JsonFieldType.STRING).description("게시된 사진에 대한 설명"),
-                                       fieldWithPath("content[].content_list[].place_type").type(JsonFieldType.STRING).description("게시된 사진의 공간 유형"),
+                                       fieldWithPath("content[].content_list[].place_type").type(JsonFieldType.STRING).description("게시된 사진의 공간 유형"+placeTypeNames),
                                        fieldWithPath("content[].content_list[].tags").type(JsonFieldType.ARRAY).description("게시된 사진과 관련된 태그들"),
                                        fieldWithPath("content[].content_list[].tags[].id").type(JsonFieldType.NUMBER).description("태그 아이디"),
                                        fieldWithPath("content[].content_list[].tags[].name").type(JsonFieldType.STRING).description("태그 이름"),
@@ -246,9 +253,9 @@ class PostControllerTest {
                                 responseFields(
                                         fieldWithPath("content").type(JsonFieldType.ARRAY).description("모든 게시물들"),
                                         fieldWithPath("content[].id").type(JsonFieldType.NUMBER).description("게시물 아이디"),
-                                        fieldWithPath("content[].residential_type").type(JsonFieldType.STRING).description("게시될 집의 거주유형"),
-                                        fieldWithPath("content[].square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"),
-                                        fieldWithPath("content[].style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"),
+                                        fieldWithPath("content[].residential_type").type(JsonFieldType.STRING).description("게시될 집의 거주유형"+residentialTypeNames),
+                                        fieldWithPath("content[].square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"+squareTypeNames),
+                                        fieldWithPath("content[].style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"+styleTypeNames),
                                         fieldWithPath("content[].title").type(JsonFieldType.STRING).description("게시물의 제목"),
                                         fieldWithPath("content[].view_count").type(JsonFieldType.NUMBER).description("조회수"),
                                         fieldWithPath("content[].is_follower").type(JsonFieldType.BOOLEAN).description("본 게시물 팔로우 여부"),
@@ -258,7 +265,7 @@ class PostControllerTest {
                                         fieldWithPath("content[].content_list[].id").type(JsonFieldType.NUMBER).description("게시물 구체 내용물 아이디"),
                                         fieldWithPath("content[].content_list[].media_url").type(JsonFieldType.STRING).description("게시될 집의 사진이 저장된 위치"),
                                         fieldWithPath("content[].content_list[].description").type(JsonFieldType.STRING).description("게시된 사진에 대한 설명"),
-                                        fieldWithPath("content[].content_list[].place_type").type(JsonFieldType.STRING).description("게시된 사진의 공간 유형"),
+                                        fieldWithPath("content[].content_list[].place_type").type(JsonFieldType.STRING).description("게시된 사진의 공간 유형"+placeTypeNames),
                                         fieldWithPath("content[].content_list[].tags").type(JsonFieldType.ARRAY).description("게시된 사진과 관련된 태그들"),
                                         fieldWithPath("content[].content_list[].tags[].id").type(JsonFieldType.NUMBER).description("태그 아이디"),
                                         fieldWithPath("content[].content_list[].tags[].name").type(JsonFieldType.STRING).description("태그 이름"),
@@ -329,9 +336,9 @@ class PostControllerTest {
                                 ),
                                 responseFields(
                                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("게시물 아이디"),
-                                        fieldWithPath("residential_type").type(JsonFieldType.STRING).description("게시될 집의 거주유형"),
-                                        fieldWithPath("square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"),
-                                        fieldWithPath("style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"),
+                                        fieldWithPath("residential_type").type(JsonFieldType.STRING).description("게시될 집의 거주유형"+residentialTypeNames),
+                                        fieldWithPath("square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"+squareTypeNames),
+                                        fieldWithPath("style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"+styleTypeNames),
                                         fieldWithPath("title").type(JsonFieldType.STRING).description("게시물의 제목"),
                                         fieldWithPath("view_count").type(JsonFieldType.NUMBER).description("조회수"),
                                         fieldWithPath("updated_at").type(JsonFieldType.STRING).description("게시물 생성일자"),
@@ -340,7 +347,7 @@ class PostControllerTest {
                                         fieldWithPath("content_list[].id").type(JsonFieldType.NUMBER).description("게시물 구체 내용물 아이디"),
                                         fieldWithPath("content_list[].media_url").type(JsonFieldType.STRING).description("게시될 집의 사진이 저장된 위치"),
                                         fieldWithPath("content_list[].description").type(JsonFieldType.STRING).description("게시된 사진에 대한 설명"),
-                                        fieldWithPath("content_list[].place_type").type(JsonFieldType.STRING).description("게시된 사진의 공간 유형"),
+                                        fieldWithPath("content_list[].place_type").type(JsonFieldType.STRING).description("게시된 사진의 공간 유형"+placeTypeNames),
                                         fieldWithPath("content_list[].tags").type(JsonFieldType.ARRAY).description("게시된 사진과 관련된 태그들"),
                                         fieldWithPath("content_list[].tags[].id").type(JsonFieldType.NUMBER).description("태그 아이디"),
                                         fieldWithPath("content_list[].tags[].name").type(JsonFieldType.STRING).description("태그 이름")
@@ -372,7 +379,7 @@ class PostControllerTest {
                 );
         //assertThat(postRepository.count(), is(0L)); //each method 로는 잘 되는데, perclass 만 하면 삭제가 안됨.
     }
-    @Disabled
+    @Test
     @DisplayName("게시물을 수정할 수 있다.")
     void update() throws Exception {
         //Given
@@ -387,8 +394,7 @@ class PostControllerTest {
                 .userId(userOfPost.getId())
                 .contentList(List.of(ReqContent.builder()
                                 .contentId(postSavedBeforeUpdate.getContentList().get(0).getContentId())
-                                .updatedFlag(false)
-                                .mediaUrl(postSavedBeforeUpdate.getContentList().get(0).getMediaUrl())
+                                .imageBase64("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAArIAAAEOCAYAAAB1mfQTAAAAAXNSR0IArs4c6QACtMd0RVh0bXhmaWxlACUzQ214ZmlsZSUyMGhvc3QlM0QlMjJhcHAuZGlhZ3JhbXMubmV0JTIyJTIwbW9kaWZpZWQlM0QlMjIyMDIxLTEwLTE3VDIzJTNBMjMlM0EzNi4zMDFaJTIyJTIwYWdlbnQlM0QlMjI1LjAlMjAoV2luZG93cyUyME5UJTIwMTAuMCUzQiUyMFdpbjY0JTNCJTIweDY0KSUyMEFwcGxlV2ViS2l0JTJGNTM3LjM2JTIwKEtIVE1MJTJDJTIwbGlrZSUyMEdlY2tvKSUyMENocm9tZSUyRjk0LjAuNDYwNi44MSUyMFNhZmFyaSUyRjUzNy4zNiUyMiUyMGV0YWclM0QlMjJvRUg1c0FjdEZSdjFxcGZub2R1UCUyMiUyMHZlcnNpb24lM0QlMjIxNS41LjQlMjIlMjB0eXBlJTNEJTIyZ29vZ2xlJTIyJTNFJTNDZGlhZ3JhbSUyMGlkJTNEJTIyRGV5dmg3UG5jZ1R3djJIcXhyc0UlMjIlMjBuYW1lJTNEJTIyUGFnZS0xJTIyJTNFN0x6WGx1UklraVQ2TmYzWWRjREpJemh4TUFmZ1lDOTd3RGx4Y09EckZ4WloxZDIxTmJOMzdwNlpTemNpTXdOaERoaGdxbXFpSW1xRyUyRkJ2SzlhYzB4MU9sajFuZSUyRlEyQnN2TnZLUDgzNVBuQzZPY0hhTGwlMkJ0WkEwOGF1aG5PdnNWeFA4endhbnZ2UGZHNkhmVzdjNnk1YyUyRm5iaU9ZN2ZXMDU4YjAzRVk4blQ5VTFzOHolMkJQeDU5T0tzZnZ6WGFlNHpQJTJGUzRLUng5OWRXdjg3VzZsY3JoWkQlMkZiSmZ6dXF6JTJCdUROTSUyRkQ3Z1B2N2o1TjlIc2xSeE5oNyUyRjBvUUtmME81ZVJ6WFgwZjl5ZVVkTU40ZmR2bDFuZmp2ZlBxUEI1dnpZZjJQWE9CY1U1RXB4SDhyNXZYV0NVaVFYQ1Q2TyUyRktybHozdXR0OEh6STd4blAzJTJCeE92MWh4bWVoNSUyRkE0ZFozVExxTzg5OVFkcyUyRm50WDRNcGNWSjNsbmpVcSUyRjFPRHluSk9PNmp2MiUyRm5NQjBkUWslMkJXTWZwYWEzV3ZudCUyQmdaJTJGRGNWdTdlc2k1ZjdnT2VociUyRk9xemZSd3E2eTg5JTJGYWZwOW1GSSUyQjl2azZYODhwdjMlMkY2ZCUyRmlQNlBrOTZQQSUyRm5ITDgwNFhvNzZkVSUyRiUyQkk5NHZlMiUyQlBlZ0tmJTJGUjlUJTJGdCUyQmh6OGJ0ciUyRkUyWkdzYiUyRlltZkdkcDhGQiUyRjExVDElMkYxUGFQNGYyN2tESDdCeDJwYnp1QTBaTjNiQVAwOVhhUEh6OWUlMkI2SWw2bVgzWXY2ak4lMkZIcCUyRjl1U1h6Unl2MFI4dHpYSzBybUhBTU1BTWklMkZyUXV2JTJCMTVONWElMkYxZU0lMkZXcDZEUE1WUllLeHBYTmJuQjRWQ09ZbFMlMkJkJTJCUnBDRCUyRmpzRUk5bmNLUSUyQkMlMkZFekJHWmpHTW94bWFQcWZGeCUyRkxmRnZTM1pTJTJGJTJGY3lLQXBQNEglMkY2TiUyRjhUOU8lMkY0WmpmdzBCRXZtdkNnSGkzd2tCcmh1M3JKakhaN0QlMkZMd3lGNHpoJTJCbTRieUNZUnglMkJTMTlIdUpmWW1GY3EzeiUyQjVkMiUyRnAlMkY4WTVYJTJCZWwlMkYlMkJPJTJGbyUyRlRIUG1MbXduNE40ejZOOXlNJTJGVmU1R2Y2TG13VU8lMkJhdG5qN3J2NGdFNGRWbmplZjA5OFNIb2Y0NWxrTDhBSVBRWHk4QTAlMkZsZTd3TlIlMkZGUVQlMkJRUVQlMkJ4UWg1OXFUYTMzOGQ1N1Y2WW1pSU8lMkJHZnJleFBGSU40JTJGSW5BZjU2ampTQnFmNUpJazYlMkZyOWJ2NTRtMGQlMkY1eGklMkZsMWJnbnYlMkZUeTA1NTEyODF2dWZhY0MlMkZaWlhmTDdYR0dzemdQenlBNGslMkZjUWYlMkY4UXY3c0Q1cjZqU0wlMkIzT2N5Ym5PYSUyRjk3TnYlMkJieCUyRjZIblAwTDNIMTNSZiUyQjduQ2FjeVglMkYlMkZTejQlMkZUJTJGakclMkIlMkYzVSUyRjR0RCUyRnIlMkZ6NGR4TDlxJTJCY2VtJTJGJTJGajYzJTJGTmlROGolMkJBMGolMkY5a0xTZiUyRmY2bFR5cjhucDMwMUc2ZldRdGl5ZkFWUWRWYjNtemhTbjRJUGpVUUIlMkY5bHJ5eSUyQjFhOG8lMkJHZjZRbTh4ZjMlMkI3MTklMkJlVjNHUHFOSkVucUlkRVVBZE1rZ2Y5UFhmOGZoME1NJTJCek1jRXVpJTJGQVlmUXYwRUk2ZjhxTkNUSiUyRjdqQiUyRnglMkJWJTJGYk40alolMkZrJTJGJTJCdlhoJTJCWU41ZDhRcnZaWTB6NmdsMVNPelBObE9KOUslMkJKVFBrWmclMkIlMkY3QSUyQng0VFBUNDdvbUZsOURqNmEwQWx2ejhhWUhNNDR6JTJGNTQlMkJQUTNoR1h0cnh2ejhSM2JhaE5PY1RSODdTYWpWWFdDMEpySTZzejl4aTR0TzcxNjY3UkttJTJCclZhYUk0NVVvYXRuTVN2MVN1c3IzVHcwcWw1c1pTYWNteVhCTmVzQVdVWSUyQnF5dnVEbnhwJTJCUHRhQTRTWHVWYzNxeiUyQkJGeHViSHl6SGxZeWhObkxFRmVjUHFMMXp4JTJGOXVCcHVwdjAxZUo4eWE3cVRlUTdxdk5CaFgwUG80R3M3UmgzREN0ZWVWWHI1eVElMkJvY0ltSnBIQlRabHRNJTJGaU5jd25CdVBGdzREaE81cmhVNXZPd3ZROU9UNWIxUFlTOUtsbnhjeCUyQnRIMDd2ZmNDRHZ1aU1jZFVIYzklMkZwYXhEVGtLekNaM1RaTXdBem9NN1hhWTdZZnJ5dHAydGh1UEs4bk9BN242dmJYSWYwZVd6MmZlVG9tOWhsREdxcjQlMkJsWVppbFolMkZyekZSTzBIN2ZtOGVrdXVhU1kzRHZ1NFRta01ROXJ5QzFsdVRHTm5XNlZJV3RPWm1LaGZFaSUyRmhmSDJPRnF1VVVjcDMzVE83eEslMkJlQVglMkIlMkZlSmQ0bVJJajlVNFRLYWU5TWVXQXBaJTJGQ2hyJTJGRCUyQmd4YUpJZUFGOXZVV0NDenVTaUhVVTJCR2FiYWU1RUlhMzlnVTdNT2V5anpjR2MxeCUyRjZLbTlSbDclMkJGdzA0YkRPalRpaEFPdk00OTBhMnMlMkJoaUNOcGUlMkJOVURTMk4yeWJTdjFaNEJuRlVkak8xalMxdkEzaSUyRmN0VnpydmdLMlc5ZTlWMTcwaDZXb2lQb3owVWxmM1lpT3dUJTJCWmhVbXFETTZMc3hUeVhSR1JINWV0ZzVXUEtnRiUyQkpjaWZBNWwlMkI1OGVvSWlHRVRRMHVic3d2aW5tdFNNak5lUzJwTlBJenk5QmxqdGl0ZkI1NWkyamhLYThpdm1HcTkzYVpsJTJCcWVkQnFLcm95MHhrZVpGeGFmVFhlWWs4Tk9HWnlmWTNoMGRabFlsUTdSS3VlbG5rMWElMkJ6STZ5SXp2NTZTeCUyQmwzeDRXa3FGZDN5UG1QeG1lUmRZY2xVanhoaGcxWjZoYUg3dWVPNVNEbkNIclZjSVlubG44dWFiTmg3QnliMFdlV1NpYTZybWpJRGE2YTByTzhYTllZVHpFbTYlMkZjUEt5eUpHVW9MJTJGYUMlMkJQNFJIU0xQOWVVN3RlVENRM3U0MlFZeXhJelhONjZtUkMlMkZNTzVZZlZHT2hvc29nRGg4ekpiUTFNaVlXMjUlMkJobG16azV2bnd0SVBRUEk3M3J0aGhGNDBVR2Z1R2dMRXZ4N1R6V2M4RXN1R1IwdnZHdWRSSUdGd1N5a00yUlh6d3VTVGRQMEZwS1VGSnBkWkpvTDdxNmo2eVZzTThYTHJVblFsMlV3ZkgxZ1JibU5GM3lDRDRndWM0VGI0MSUyRncyOGRGNVhVR0VTUXk5Z1ZPak01S3lUVCUyRm10MktxZWFYbVRKaTFOWlV4TnJLVGxHVTdPVWlFWXJROFRIU0xDc3cwcGppeENYbG4yVkd1MSUyQjZ0TXUzWlp0d2Q1V2V6enJkNWpVVnR4d2hTaHdxWjB3b0twbHAxSCUyQm1ISVolMkJyYjg4Q1hKa3E5c3RobFh3cVdZMW0xcVRNZkpFSGJaV2RKQnMxUHhGVUJMWmNUYzg3UnRUb3VJdFZ2JTJGWUtzQ1N1WmdWTHZENnR0VkVUazZVbWI1Wm42YXo5THB3WGdKdzFxaUhJYkVNODRSR2FraTdISmFrdjhxdzdJQkVtJTJCNFdjbzFjOWg5MVo3SXc4MDdrNW9YbXRxJTJCQkFzN2VsVlk2cWFPN2pGUWlGekt0UHNCVkxucmozYmptY3UzNFVQdWZSR1RzRkUzNFE3NW43MWZzRE4xR3Nmdm8ydnh5QnVnakJ5T0c1YUY4UU56JTJGcEhpU2EzZEdrd3VUZHRYbEMwJTJCa1ZpRms4QVZDZU1iWHZ3SnR1VEolMkJwdHpTYlVkMlVkWHpkREplZmltNHNwZmZmUzhDUzZLJTJCb1FTaFBHNFBNTXkydThFcWtVN2JCT2dFJTJCV1BCc3FlJTJCbHclMkZIcFRVbWZIc0hVam5qVGttZTk0NkdYbzFEeFRQbDE4MzBoRnNZYkFpSSUyQlZSRU02eXhwSyUyQlkwUXBXUHFyeXVvZHBLcjRmcWp1UTcxUFElMkZIVW")
                                 .description("[수정]집 안 내용입니다.")  // 수정한 곳
                                 .placeType(postSavedBeforeUpdate.getContentList().get(0).getPlaceType())
                                 .tags(List.of(ReqTag.builder()
@@ -405,21 +411,44 @@ class PostControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                //.andExpect(jsonPath("id").value(post.getPostId()))
                 .andDo(print())
                 .andDo(
                         document("post/updatePost", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()),
                                 pathParameters(
-
+                                        parameterWithName("id").description("수정 요청 게시물 아이디")
                                 ),
                                 requestFields(
-
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("게시물 아이디"),
+                                        fieldWithPath("residential_type").type(JsonFieldType.STRING).description("게시될 집의 거주유형"+residentialTypeNames),
+                                        fieldWithPath("square_type").type(JsonFieldType.STRING).description("게시될 집의 평수"+squareTypeNames),
+                                        fieldWithPath("style_type").type(JsonFieldType.STRING).description("게시될 집의 스타일"+styleTypeNames),
+                                        fieldWithPath("title").type(JsonFieldType.STRING).description("게시물의 제목"),
+                                        fieldWithPath("user_id").type(JsonFieldType.NUMBER).description("사용자 아이디"),
+                                        fieldWithPath("view_count").type(JsonFieldType.NUMBER).description("조회수"),
+                                        fieldWithPath("content_list").type(JsonFieldType.ARRAY).description("게시될 집의 구체적 내용들"),
+                                        fieldWithPath("content_list[].id").type(JsonFieldType.NUMBER).description("게시물 구체 내용물 아이디"),
+                                        fieldWithPath("content_list[].media_url").type(JsonFieldType.NULL).description("게시될 집의 사진이 저장된 위치"),
+                                        fieldWithPath("content_list[].image_base64").type(JsonFieldType.STRING).description("게시될 집의 사진"),
+                                        fieldWithPath("content_list[].description").type(JsonFieldType.STRING).description("게시된 사진에 대한 설명"),
+                                        fieldWithPath("content_list[].place_type").type(JsonFieldType.STRING).description("게시된 사진의 공간 유형"+placeTypeNames),
+                                        fieldWithPath("content_list[].tags").type(JsonFieldType.ARRAY).description("게시된 사진과 관련된 태그들"),
+                                        fieldWithPath("content_list[].tags[].id").type(JsonFieldType.NUMBER).description("태그 아이디"),
+                                        fieldWithPath("content_list[].tags[].name").type(JsonFieldType.STRING).description("태그 이름")
                                 ),
                                 responseFields(
-
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("생성된 게시물 아이디")
                                 )
                         )
                 );
+    }
+
+
+    private String getValuesFromEnum(List enumValues){ //
+        StringBuffer typeNames = new StringBuffer();
+        typeNames.append("\n").append("(유형: ");
+        enumValues.forEach(typeName -> typeNames.append(typeName).append(" "));
+        typeNames.append(")");
+        return typeNames.toString();
     }
 
 

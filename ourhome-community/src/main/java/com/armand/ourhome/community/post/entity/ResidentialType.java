@@ -20,8 +20,14 @@ public enum ResidentialType implements Criteria {
         this.displaceName = displaceName;
     }
 
-    public static Boolean getIfPresent(String residentialTypeRequest){
+    public static Boolean exists(String residentialTypeRequest){
         return Arrays.stream(ResidentialType.values()).anyMatch((v) -> v.name().equals(residentialTypeRequest));
+    }
+
+    public String getTypeNames(){
+        StringBuffer typeNames = null;
+        Arrays.stream(ResidentialType.values()).toList().forEach( typeName -> typeNames.append(typeName+ " "));
+        return typeNames.toString();
     }
 
     public String getDisplaceName(){

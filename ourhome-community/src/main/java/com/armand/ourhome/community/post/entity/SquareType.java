@@ -1,5 +1,7 @@
 package com.armand.ourhome.community.post.entity;
 
+import java.util.Arrays;
+
 public enum SquareType implements Criteria {
     SIZE_LESS_THAN_10_PYEONG("10평미만"),
     SIZE_10_PYEONG("10평대"),
@@ -13,6 +15,12 @@ public enum SquareType implements Criteria {
 
     SquareType(String displaceName) {
         this.displaceName = displaceName;
+    }
+
+    public String getTypeNames(){
+        StringBuffer typeNames = null;
+        Arrays.stream(SquareType.values()).toList().forEach(typeName -> typeNames.append(typeName+ " "));
+        return typeNames.toString();
     }
 
     public String getDisplaceName(){
