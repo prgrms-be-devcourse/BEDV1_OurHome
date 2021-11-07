@@ -20,7 +20,7 @@ public class ReqContent {
     private Long contentId;
 
     @NotBlank
-    private String mediaUrl; // 삭제
+    private String mediaUrl = null;
 
     private String description;
     @NotBlank
@@ -34,7 +34,7 @@ public class ReqContent {
     @JsonProperty("image_base64")
     private String imageBase64; // null
 
-    private Boolean updatedFlag = false; // 필드 삭제
+//    private Boolean updatedFlag = false; // 필드 삭제
 
     @Builder
     public ReqContent(Long contentId,
@@ -45,11 +45,11 @@ public class ReqContent {
                       String imageBase64,
                       Boolean updatedFlag){
         this.contentId = contentId;
-        this.mediaUrl = mediaUrl;
+//        this.mediaUrl = mediaUrl;
         this.description = description;
         this.placeType = placeType;
         this.tags = tags;
         this.imageBase64 = imageBase64;
-        this.updatedFlag = updatedFlag;
+//        this.updatedFlag = updatedFlag;
     }
 }

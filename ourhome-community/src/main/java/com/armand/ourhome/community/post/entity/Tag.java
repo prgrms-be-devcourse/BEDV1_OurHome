@@ -32,12 +32,16 @@ public class Tag extends BaseEntity {
     }
 
     @Builder
-    public Tag(Long tagId, String name, Content content){
+    public Tag(Long tagId, String name){
         Assert.notNull(name, "name은 null 값을 허용하지 않습니다.");
         Checking.validLength(0,30,"tag name", name);
         this.tagId = tagId;
         this.name = name;
-        this.content = content;
+
+    }
+
+    public void updateTag(String name){
+        this.name = name;
     }
 
 }

@@ -48,7 +48,7 @@ public class Post extends BaseEntity {
     private User user;
 
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Content> contentList = new ArrayList<>();
 
     public void addContent(final Content content){
@@ -87,6 +87,16 @@ public class Post extends BaseEntity {
         this.viewCount = viewCount;
         this.user = user;
         contentList.forEach( content -> addContent(content)); // 동적팩토리매서드 사용해서 적요해 볼 것. // 생성자 책임의 범위를 넘었음.
+    }
+
+    public void updatePost(String title,
+                           SquareType squareType,
+                           ResidentialType residentialType,
+                           StyleType styleType){
+        this.title = title;
+        this.squareType = squareType;
+        this.styleType = styleType;
+        this.residentialType = residentialType;
     }
 
 }

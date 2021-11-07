@@ -32,7 +32,7 @@ public class Content {
     @Column(nullable = false)
     private PlaceType placeType;
 
-    @OneToMany(mappedBy = "content", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "content", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tag> tags = new ArrayList<>();
 
     public void addTag(Tag tag){
@@ -62,5 +62,11 @@ public class Content {
         this.description = description;
         this.placeType = placeType;
         tags.forEach(tag -> addTag(tag));
+    }
+
+    public void updateContent(String mediaUrl, String description, PlaceType placeType, boolean isUpdatedForMedia){
+        if (isUpdatedForMedia) this.mediaUrl = mediaUrl;
+        this.description = description;
+        this.placeType = placeType;
     }
 }
