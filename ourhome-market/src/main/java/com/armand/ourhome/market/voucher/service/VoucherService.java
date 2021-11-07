@@ -1,7 +1,7 @@
 package com.armand.ourhome.market.voucher.service;
 
 import com.armand.ourhome.common.api.PageResponse;
-import com.armand.ourhome.common.error.exception.EntityNotFoundException;
+import com.armand.ourhome.common.error.exception.user.UserNotFoundException;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import com.armand.ourhome.market.voucher.converter.VoucherConverter;
@@ -77,7 +77,7 @@ public class VoucherService {
 		Voucher voucher = voucherRepository.findById(id)
 			.orElseThrow(() -> new VoucherNotFoundException(
 				MessageFormat.format("등록된 바우처를 찾을 수 없습니다. id : {0}", id)));
-		
+
 		voucherRepository.delete(voucher);
 	}
 
@@ -87,8 +87,7 @@ public class VoucherService {
 			.orElseThrow(() -> new VoucherNotFoundException(
 				MessageFormat.format("등록된 바우처를 찾을 수 없습니다. id : {0}", id)));
 		User user = userRepository.findById(userId)
-			.orElseThrow(() -> new EntityNotFoundException(
-				MessageFormat.format("등록된 사용자를 찾을 수 없습니다. userId : {0}", userId)));
+			.orElseThrow(() -> new UserNotFoundException(userId));
 		validateDuplicatedWallet(id, userId);
 
 		Wallet wallet = walletRepository.save(Wallet.of(user, voucher));
