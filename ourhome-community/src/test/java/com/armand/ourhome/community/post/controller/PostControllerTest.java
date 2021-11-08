@@ -5,15 +5,12 @@ import com.armand.ourhome.community.follow.repository.FollowRepository;
 import com.armand.ourhome.community.post.dto.request.ReqContent;
 import com.armand.ourhome.community.post.dto.request.ReqPost;
 import com.armand.ourhome.community.post.dto.request.ReqTag;
-import com.armand.ourhome.community.post.dto.request.ReqUserId;
 import com.armand.ourhome.community.post.entity.*;
 import com.armand.ourhome.community.post.entity.Tag;
 import com.armand.ourhome.community.post.repository.PostRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.EnumValues;
-import org.hibernate.type.EnumType;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -37,11 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.*;
 
 /**
  * Created by yunyun on 2021/10/31.
@@ -189,11 +184,9 @@ class PostControllerTest {
     @DisplayName("게시된 모든 정보를 추출할 수 있다.")
     void getAll() throws Exception {
         //When, Then
-        var userId = new ReqUserId(user.getId());
-
        mockMvc.perform(get("/api/posts?size=5&page=0")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userId)))
+                .param("user_id", user.getId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("content[0].square_type").value("SIZE_10_PYEONG"))
@@ -236,13 +229,12 @@ class PostControllerTest {
     void getAllByResidentialType() throws Exception {
 
         //When, Then
-        var userId = new ReqUserId(user.getId());
-        mockMvc.perform(get("/api/posts/filter")
+        mockMvc.perform(get("/api/posts/type")
                         .param("criteria_type", "residential-type")
                         .param("criteria", "APARTMENT")
                         .param("size", "1")
                         .param("page", "0")
-                        .content(objectMapper.writeValueAsString(userId))
+                        .param("user_id", user.getId().toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -286,13 +278,12 @@ class PostControllerTest {
     void getAllByPlaceType() throws Exception {
 
         //When, Then
-        var userId = new ReqUserId(user.getId());
-        mockMvc.perform(get("/api/posts/filter")
+        mockMvc.perform(get("/api/posts/type")
                         .param("criteria_type", "place-type")
                         .param("criteria", "LIVINGROOM")
                         .param("size", "1")
                         .param("page", "0")
-                        .content(objectMapper.writeValueAsString(userId))
+                        .param("user_id", user.getId().toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -305,13 +296,12 @@ class PostControllerTest {
     @DisplayName("저장되어 있는 모든 게시물 중 테그를 기준으로 정보를 추출할 수 있다.")
     void getAllByTag() throws Exception {
         //When, Then
-        var userId = new ReqUserId(user.getId());
-        mockMvc.perform(get("/api/posts/filter")
+        mockMvc.perform(get("/api/posts/type")
                         .param("criteria_type", "tag")
                         .param("criteria", "tag1")
                         .param("size", "1")
                         .param("page", "0")
-                        .content(objectMapper.writeValueAsString(userId))
+                        .param("user_id", user.getId().toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))

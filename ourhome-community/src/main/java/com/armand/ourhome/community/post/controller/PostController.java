@@ -2,7 +2,6 @@ package com.armand.ourhome.community.post.controller;
 
 import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.community.post.dto.request.ReqPost;
-import com.armand.ourhome.community.post.dto.request.ReqUserId;
 import com.armand.ourhome.community.post.dto.response.ResPost;
 import com.armand.ourhome.community.post.dto.response.ResReturnId;
 import com.armand.ourhome.community.post.service.PostService;
@@ -35,17 +34,17 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<PageResponse<List<ResPost>>> getAll(Pageable pageable,
-                                                              @Valid @RequestBody final ReqUserId reqUserId) {
+                                                              @RequestParam(name= "user_id") final Long userId) {
 
-        return ResponseEntity.ok(postService.getAll(pageable, reqUserId.getUserId()));
+        return ResponseEntity.ok(postService.getAll(pageable, userId));
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/type")
     public ResponseEntity<PageResponse<List<ResPost>>> getAllByCriteria(Pageable pageable,
                                                             @RequestParam(name = "criteria_type") String criteriaType,
                                                             @RequestParam(name = "criteria") String criteria,
-                                                            @Valid @RequestBody final ReqUserId reqUserId){
-        return ResponseEntity.ok(postService.getAllBYCriteria(criteriaType, criteria, pageable, reqUserId.getUserId()));
+                                                            @RequestParam(name= "user_id") final Long userId){
+        return ResponseEntity.ok(postService.getAllByCriteria(criteriaType, criteria, pageable, userId));
     }
 
     @PostMapping("/{id}")
