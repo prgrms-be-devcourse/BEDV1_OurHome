@@ -83,4 +83,12 @@
 
 <br>
 
-~~나중에 더 작성~~
+## Diagram
+
+### Multi Modules
+
+![img](https://user-images.githubusercontent.com/71180414/140661903-066f42f4-89cd-4b36-81c3-a2a9a6526b5c.png)
+
+### ERD
+
+![img](https://user-images.githubusercontent.com/71180414/140661742-c7bde3ce-c883-4860-96b6-f303f5d36b73.png)

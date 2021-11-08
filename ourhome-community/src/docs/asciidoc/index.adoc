@@ -1,0 +1,107 @@
+:hardbreaks:
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+:toc: left
+
+= OurHome Community API
+
+== User
+
+=== 회원가입
+'''
+
+`*Request*`
+
+include::{snippets}/user/sign-up/http-request.adoc[]
+include::{snippets}/user/sign-up/request-fields.adoc[]
+
+`*Response*`
+
+include::{snippets}/user/sign-up/http-response.adoc[]
+include::{snippets}/user/sign-up/response-fields.adoc[]
+
+=== 로그인
+'''
+
+`*Request*`
+
+include::{snippets}/user/login/http-request.adoc[]
+include::{snippets}/user/login/request-fields.adoc[]
+
+`*Response*`
+
+include::{snippets}/user/login/http-response.adoc[]
+include::{snippets}/user/login/response-fields.adoc[]
+
+=== 내 정보 수정
+'''
+
+`*Request*`
+
+include::{snippets}/user/update-info/http-request.adoc[]
+include::{snippets}/user/update-info/request-parameters.adoc[]
+include::{snippets}/user/update-info/request-fields.adoc[]
+
+`*Response*`
+
+include::{snippets}/user/update-info/http-response.adoc[]
+include::{snippets}/user/update-info/response-fields.adoc[]
+
+=== 비밀번호 변경
+'''
+
+`*Request*`
+
+include::{snippets}/user/update-password/http-request.adoc[]
+include::{snippets}/user/update-password/request-parameters.adoc[]
+include::{snippets}/user/update-password/request-fields.adoc[]
+
+`*Response*`
+
+include::{snippets}/user/update-password/http-response.adoc[]
+include::{snippets}/user/update-password/response-fields.adoc[]
+
+=== 사용자 페이지
+'''
+
+`*Request*`
+
+include::{snippets}/user/page/http-request.adoc[]
+include::{snippets}/user/page/path-parameters.adoc[]
+include::{snippets}/user/page/request-parameters.adoc[]
+
+
+`*Response*`
+
+include::{snippets}/user/page/http-response.adoc[]
+include::{snippets}/user/page/response-fields.adoc[]
+
+=== 팔로잉 페이지
+'''
+
+`*Request*`
+
+include::{snippets}/user/following-page/http-request.adoc[]
+include::{snippets}/user/following-page/path-parameters.adoc[]
+include::{snippets}/user/following-page/request-parameters.adoc[]
+
+`*Response*`
+
+include::{snippets}/user/following-page/http-response.adoc[]
+include::{snippets}/user/following-page/response-fields.adoc[]
+
+=== 팔로워 페이지
+'''
+
+`*Request*`
+
+include::{snippets}/user/follower-page/http-request.adoc[]
+include::{snippets}/user/follower-page/path-parameters.adoc[]
+include::{snippets}/user/follower-page/request-parameters.adoc[]
+
+`*Response*`
+
+include::{snippets}/user/follower-page/http-response.adoc[]
+include::{snippets}/user/follower-page/response-fields.adoc[]
