@@ -1,6 +1,7 @@
 package com.armand.ourhome.community.post.controller;
 
 import com.armand.ourhome.common.api.PageResponse;
+import com.armand.ourhome.community.post.controller.common.CriteriaType;
 import com.armand.ourhome.community.post.dto.request.ReqPost;
 import com.armand.ourhome.community.post.dto.response.ResPost;
 import com.armand.ourhome.community.post.dto.response.ResReturnId;
@@ -41,7 +42,7 @@ public class PostController {
 
     @GetMapping("/type")
     public ResponseEntity<PageResponse<List<ResPost>>> getAllByCriteria(Pageable pageable,
-                                                            @RequestParam(name = "criteria_type") String criteriaType,
+                                                            @RequestParam(name = "criteria_type") CriteriaType criteriaType,
                                                             @RequestParam(name = "criteria") String criteria,
                                                             @RequestParam(name= "user_id") final Long userId){
         return ResponseEntity.ok(postService.getAllByCriteria(criteriaType, criteria, pageable, userId));

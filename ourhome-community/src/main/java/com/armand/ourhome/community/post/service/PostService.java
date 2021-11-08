@@ -4,7 +4,6 @@ import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.community.follow.repository.FollowRepository;
 import com.armand.ourhome.community.post.controller.common.CriteriaType;
-import com.armand.ourhome.community.post.dto.request.ReqContent;
 import com.armand.ourhome.community.post.dto.request.ReqPost;
 import com.armand.ourhome.community.post.dto.response.ResPost;
 import com.armand.ourhome.community.post.entity.*;
@@ -45,6 +44,9 @@ public class PostService {
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
     private final AwsS3Uploader awsS3Uploader;
 
+
+
+
     @Transactional
     public Long save(final ReqPost postDto){
 
@@ -65,8 +67,8 @@ public class PostService {
     }
 
 
-    public PageResponse<List<ResPost>> getAllByCriteria(String criteriaTypeRequest, String type, Pageable pageable, Long userId){
-        CriteriaType criteriaType = CriteriaType.findCriteriaTypeForUrl(criteriaTypeRequest);
+    public PageResponse<List<ResPost>> getAllByCriteria(CriteriaType criteriaType, String type, Pageable pageable, Long userId){
+//        CriteriaType criteriaType = CriteriaType.(criteriaTypeRequest);
         switch(criteriaType) {
             case RESIDENTIAL_TYPE -> {
                 if (! ResidentialType.exists(type)) throw new CriteriaNotFountException(type);
@@ -80,7 +82,7 @@ public class PostService {
                 return getAllByTag(type, pageable, userId);
             }
         }
-         throw new CriteriaNotFountException(criteriaTypeRequest);
+         throw new CriteriaNotFountException(criteriaType.toString());
     }
 
     public PageResponse<List<ResPost>> getAllByResidentialType(ResidentialType residentialType, Pageable pageable, Long userId){
