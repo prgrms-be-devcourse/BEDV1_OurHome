@@ -4,7 +4,8 @@ import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.community.follow.repository.FollowRepository;
 import com.armand.ourhome.community.post.controller.common.CriteriaType;
-import com.armand.ourhome.community.post.dto.request.ReqPost;
+import com.armand.ourhome.community.post.dto.request.CreatePostRequest;
+import com.armand.ourhome.community.post.dto.request.UpdatePostRequest;
 import com.armand.ourhome.community.post.dto.response.ResPost;
 import com.armand.ourhome.community.post.entity.*;
 import com.armand.ourhome.community.post.exception.CriteriaNotFountException;
@@ -12,9 +13,7 @@ import com.armand.ourhome.community.post.exception.PostNotFoundException;
 import com.armand.ourhome.community.post.exception.UserNotFountException;
 import com.armand.ourhome.community.post.mapper.PostConverter;
 import com.armand.ourhome.community.post.mapper.PostMapper;
-import com.armand.ourhome.community.post.repository.ContentRepository;
 import com.armand.ourhome.community.post.repository.PostRepository;
-import com.armand.ourhome.community.post.repository.TagRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +47,7 @@ public class PostService {
 
 
     @Transactional
-    public Long save(final ReqPost postDto){
+    public Long save(final CreatePostRequest postDto){
 
         User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
         postDto.getContentList().forEach(content -> content.setMediaUrl(awsS3Uploader.upload(content.getImageBase64(),"post")));
@@ -116,20 +115,9 @@ public class PostService {
     }
 
     @Transactional
-    public Long update(final ReqPost postDto, Long postId){
-
-//        List<ReqContent> contentDtoList = postDto.getContentList();
-//
-//        for (int i = 0; i < contentDtoList.size(); i++){
-//            if (contentDtoList.get(i).getUpdatedFlag()) {
-//                contentDtoList.get(i).setMediaUrl(awsS3Uploader.upload(contentDtoList.get(i).getImageBase64(), "post"));
-//            }
-//        }
-
-
+    public Long update(final UpdatePostRequest postDto, Long postId){
         Post postBeforeUpdate = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId.toString(), "post's id"));
         postConverter.updateConverter(postDto, postBeforeUpdate);
-//        postMapper.updateFromDto(postDto, postBeforeUpdate);
         return postDto.getId();
     }
 

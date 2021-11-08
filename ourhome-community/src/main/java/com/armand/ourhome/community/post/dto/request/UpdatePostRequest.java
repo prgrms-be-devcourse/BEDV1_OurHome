@@ -3,8 +3,6 @@ package com.armand.ourhome.community.post.dto.request;
 import com.armand.ourhome.community.post.entity.ResidentialType;
 import com.armand.ourhome.community.post.entity.SquareType;
 import com.armand.ourhome.community.post.entity.StyleType;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,7 +15,7 @@ import java.util.List;
  */
 
 @Getter
-public class ReqPost {
+public class UpdatePostRequest {
 
     private Long id;
     @NotBlank
@@ -27,14 +25,14 @@ public class ReqPost {
     private ResidentialType residentialType;
     private StyleType styleType;
 
-    private List<ReqContent> contentList;
+    private List<UpdateContentRequest> contentList;
 
     private Long userId;
 
     private int viewCount;
 
     @Builder
-    public ReqPost(Long id, String title, SquareType squareType, ResidentialType residentialType, StyleType styleType, List<ReqContent> contentList, int viewCount, Long userId){
+    public UpdatePostRequest(Long id, String title, SquareType squareType, ResidentialType residentialType, StyleType styleType, List<UpdateContentRequest> contentList, int viewCount, Long userId){
         this.id = id;
         this.title = title;
         this.squareType = squareType;

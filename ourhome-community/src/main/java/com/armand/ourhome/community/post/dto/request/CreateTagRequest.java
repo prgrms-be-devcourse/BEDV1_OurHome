@@ -1,8 +1,6 @@
 package com.armand.ourhome.community.post.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,7 +12,7 @@ import javax.validation.constraints.NotBlank;
  */
 
 @Getter
-public class ReqTag {
+public class CreateTagRequest {
     @JsonProperty("id")
     private Long tagId;
 
@@ -23,7 +21,7 @@ public class ReqTag {
     private String name;
 
     @Builder
-    public ReqTag(Long tagId, String name){
+    public CreateTagRequest(Long tagId, String name){
         this.tagId = tagId;
         this.name = name;
     }

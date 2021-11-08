@@ -2,8 +2,6 @@ package com.armand.ourhome.community.post.dto.request;
 
 import com.armand.ourhome.community.post.entity.PlaceType;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,7 +13,7 @@ import java.util.List;
  */
 
 @Getter
-public class ReqContent {
+public class CreateContentRequest {
     @JsonProperty("id")
     private Long contentId;
 
@@ -25,7 +23,7 @@ public class ReqContent {
     private String description;
     @NotBlank
     private PlaceType placeType;
-    private List<ReqTag> tags;
+    private List<CreateTagRequest> tags;
 
     public void setMediaUrl(String mediaUrl){
         this.mediaUrl = mediaUrl;
@@ -34,22 +32,16 @@ public class ReqContent {
     @JsonProperty("image_base64")
     private String imageBase64; // null
 
-//    private Boolean updatedFlag = false; // 필드 삭제
-
     @Builder
-    public ReqContent(Long contentId,
-                      String mediaUrl,
-                      String description,
-                      PlaceType placeType,
-                      List<ReqTag> tags,
-                      String imageBase64,
-                      Boolean updatedFlag){
+    public CreateContentRequest(Long contentId,
+                                String description,
+                                PlaceType placeType,
+                                List<CreateTagRequest> tags,
+                                String imageBase64){
         this.contentId = contentId;
-//        this.mediaUrl = mediaUrl;
         this.description = description;
         this.placeType = placeType;
         this.tags = tags;
         this.imageBase64 = imageBase64;
-//        this.updatedFlag = updatedFlag;
     }
 }
