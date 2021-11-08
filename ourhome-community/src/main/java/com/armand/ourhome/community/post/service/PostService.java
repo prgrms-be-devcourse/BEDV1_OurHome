@@ -64,13 +64,13 @@ public class PostService {
         Page<Post> postWithPage = postRepository.findAll(pageable);
 
         // 본 게시물에 대해 팔로워 여부 확인
-        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        List<ResPost> postDtoList = isFollowing(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
 
         return new PageResponse<List<ResPost>>(postDtoList, postWithPage.getNumber(), postWithPage.getTotalPages(), postWithPage.getNumberOfElements(), postWithPage.getTotalElements());
     }
 
 
-    public PageResponse<List<ResPost>> getAllBYCriteria(String criteriaTypeRequest, String type, Pageable pageable, Long userId){
+    public PageResponse<List<ResPost>> getAllByCriteria(String criteriaTypeRequest, String type, Pageable pageable, Long userId){
         CriteriaType criteriaType = CriteriaType.findCriteriaTypeForUrl(criteriaTypeRequest);
         switch(criteriaType) {
             case RESIDENTIAL_TYPE -> {
@@ -93,7 +93,7 @@ public class PostService {
         Page<Post> postWithPage = postRepository.findAllByResidentialType(residentialType, pageable);
 
         // 본 게시물에 대해 팔로워 여부 확인
-        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        List<ResPost> postDtoList = isFollowing(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
 
         return new PageResponse<List<ResPost>>(postDtoList, postWithPage.getNumber(), postWithPage.getTotalPages(), postWithPage.getNumberOfElements(), postWithPage.getTotalElements());
     }
@@ -103,7 +103,7 @@ public class PostService {
         Page<Post> postWithPage = postRepository.findAllByPlaceType(placeType, pageable);
 
         // 본 게시물에 대해 팔로워 여부 확인
-        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        List<ResPost> postDtoList = isFollowing(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
 
         return new PageResponse<List<ResPost>>(postDtoList, postWithPage.getNumber(), postWithPage.getTotalPages(), postWithPage.getNumberOfElements(), postWithPage.getTotalElements());
     }
@@ -113,7 +113,7 @@ public class PostService {
         Page<Post> postWithPage = postRepository.findAllByTag(tagName, pageable);
 
         // 본 게시물에 대해 팔로워 여부 확인
-        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        List<ResPost> postDtoList = isFollowing(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
 
         return new PageResponse<List<ResPost>>(postDtoList, postWithPage.getNumber(), postWithPage.getTotalPages(), postWithPage.getNumberOfElements(), postWithPage.getTotalElements());
     }
@@ -148,7 +148,7 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    private List<ResPost> setIsFollower(User user, List<Post> posts, List<ResPost> resPosts){
+    private List<ResPost> isFollowing(User user, List<Post> posts, List<ResPost> resPosts){
         for (int i =0; i < posts.size(); i++){
             User userOfPost = posts.get(i).getUser();
             resPosts.get(i).setIsFollower(followRepository.existsByFollowerAndFollowing(user, userOfPost));
