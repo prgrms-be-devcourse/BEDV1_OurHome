@@ -20,7 +20,13 @@ public enum PlaceType implements Criteria {
         this.displaceName = displaceName;
     }
 
-    public static Boolean getIfPresent(String placeTypeRequest){
+    public static String getTypeNames(){
+        StringBuffer typeNames = null;
+        Arrays.stream(PlaceType.values()).toList().forEach(typeName -> typeNames.append(typeName+ " "));
+        return typeNames.toString();
+    }
+
+    public static Boolean exists(String placeTypeRequest){
         return Arrays.stream(PlaceType.values()).anyMatch((v) -> v.name().equals(placeTypeRequest));
     }
     public String getDisplaceName(){

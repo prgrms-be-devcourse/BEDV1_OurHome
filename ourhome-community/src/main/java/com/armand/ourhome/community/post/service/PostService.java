@@ -11,6 +11,7 @@ import com.armand.ourhome.community.post.entity.*;
 import com.armand.ourhome.community.post.exception.CriteriaNotFountException;
 import com.armand.ourhome.community.post.exception.PostNotFoundException;
 import com.armand.ourhome.community.post.exception.UserNotFountException;
+import com.armand.ourhome.community.post.mapper.PostConverter;
 import com.armand.ourhome.community.post.mapper.PostMapper;
 import com.armand.ourhome.community.post.repository.ContentRepository;
 import com.armand.ourhome.community.post.repository.PostRepository;
@@ -39,9 +40,8 @@ public class PostService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
-    private final ContentRepository contentRepository;
-    private final TagRepository tagRepository;
     private final FollowRepository followRepository;
+    private final PostConverter postConverter;
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
     private final AwsS3Uploader awsS3Uploader;
 
@@ -74,11 +74,11 @@ public class PostService {
         CriteriaType criteriaType = CriteriaType.findCriteriaTypeForUrl(criteriaTypeRequest);
         switch(criteriaType) {
             case RESIDENTIAL_TYPE -> {
-                if (! ResidentialType.getIfPresent(type)) throw new CriteriaNotFountException(type);
+                if (! ResidentialType.exists(type)) throw new CriteriaNotFountException(type);
                 return getAllByResidentialType(ResidentialType.valueOf(type), pageable, userId);
             }
             case PLACE_TYPE -> {
-                if (! PlaceType.getIfPresent(type)) throw new CriteriaNotFountException(type);
+                if (! PlaceType.exists(type)) throw new CriteriaNotFountException(type);
                 return getAllByPlaceType(PlaceType.valueOf(type), pageable, userId);
             }
             case TAG -> {
@@ -120,16 +120,19 @@ public class PostService {
 
     @Transactional
     public Long update(final ReqPost postDto, Long postId){
-        List<ReqContent> contentDtoList = postDto.getContentList();
 
-        for (int i = 0; i < contentDtoList.size(); i++){
-            if (contentDtoList.get(i).getUpdatedFlag()) {
-                contentDtoList.get(i).setMediaUrl(awsS3Uploader.upload(contentDtoList.get(i).getImageBase64(), "post"));
-            }
-        }
+//        List<ReqContent> contentDtoList = postDto.getContentList();
+//
+//        for (int i = 0; i < contentDtoList.size(); i++){
+//            if (contentDtoList.get(i).getUpdatedFlag()) {
+//                contentDtoList.get(i).setMediaUrl(awsS3Uploader.upload(contentDtoList.get(i).getImageBase64(), "post"));
+//            }
+//        }
+
+
         Post postBeforeUpdate = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId.toString(), "post's id"));
-
-        postMapper.updateFromDto(postDto, postBeforeUpdate);
+        postConverter.updateConverter(postDto, postBeforeUpdate);
+//        postMapper.updateFromDto(postDto, postBeforeUpdate);
         return postDto.getId();
     }
 
