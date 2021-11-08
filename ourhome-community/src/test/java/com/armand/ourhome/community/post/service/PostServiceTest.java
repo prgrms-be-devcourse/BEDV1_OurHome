@@ -58,7 +58,7 @@ class PostServiceTest {
 
     @BeforeEach
     void setUp(){
-        // 추후 userOfPost와 user 로 나눠서 테스트 확인할 것. 우선 colloller에서 기능 작동 확인완료하였음.
+        // 추후 writer와 user 로 나눠서 테스트 확인할 것. 우선 colloller에서 기능 작동 확인완료하였음.
         userSaved = userRepository.save(User.builder()
                         .email("test@email.com")
                         .password("1223")

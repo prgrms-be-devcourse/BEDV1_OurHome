@@ -150,8 +150,8 @@ public class PostService {
 
     private List<ResPost> isFollowing(User user, List<Post> posts, List<ResPost> resPosts){
         for (int i =0; i < posts.size(); i++){
-            User userOfPost = posts.get(i).getUser();
-            resPosts.get(i).setIsFollower(followRepository.existsByFollowerAndFollowing(user, userOfPost));
+            User writer = posts.get(i).getUser();
+            resPosts.get(i).setIsFollower(followRepository.existsByFollowerAndFollowing(user, writer));
         }
         return resPosts;
     }
