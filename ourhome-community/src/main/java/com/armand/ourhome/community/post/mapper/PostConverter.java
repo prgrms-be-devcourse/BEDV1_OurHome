@@ -1,8 +1,8 @@
 package com.armand.ourhome.community.post.mapper;
 
 import com.armand.ourhome.common.utils.AwsS3Uploader;
-import com.armand.ourhome.community.post.dto.request.ReqContent;
-import com.armand.ourhome.community.post.dto.request.ReqPost;
+import com.armand.ourhome.community.post.dto.request.UpdateContentRequest;
+import com.armand.ourhome.community.post.dto.request.UpdatePostRequest;
 import com.armand.ourhome.community.post.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ public class PostConverter {
 
     final AwsS3Uploader awsS3Uploader;
 
-    public void updateConverter(ReqPost reqPostDto, Post postEntity){
+    public void updateConverter(UpdatePostRequest reqPostDto, Post postEntity){
 
         postEntity.updatePost(reqPostDto.getTitle(),
                 reqPostDto.getSquareType(),
@@ -26,7 +26,7 @@ public class PostConverter {
         );
 
         String mediaUrl;
-        ReqContent reqContent;
+        UpdateContentRequest reqContent;
         Content contentEntity;
         boolean isUpdatedForMedia;
 

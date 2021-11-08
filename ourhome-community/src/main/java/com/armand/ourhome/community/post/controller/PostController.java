@@ -1,8 +1,9 @@
 package com.armand.ourhome.community.post.controller;
 
 import com.armand.ourhome.common.api.PageResponse;
-import com.armand.ourhome.community.post.dto.request.ReqPost;
-import com.armand.ourhome.community.post.dto.request.ReqUserId;
+import com.armand.ourhome.community.post.controller.common.CriteriaType;
+import com.armand.ourhome.community.post.dto.request.CreatePostRequest;
+import com.armand.ourhome.community.post.dto.request.UpdatePostRequest;
 import com.armand.ourhome.community.post.dto.response.ResPost;
 import com.armand.ourhome.community.post.dto.response.ResReturnId;
 import com.armand.ourhome.community.post.service.PostService;
@@ -27,7 +28,7 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<ResReturnId> save(@Valid @RequestBody final ReqPost postDto) {
+    public ResponseEntity<ResReturnId> save(@Valid @RequestBody final CreatePostRequest postDto) {
         return ResponseEntity.ok(ResReturnId.builder()
                 .id(postService.save(postDto))
                 .build());
@@ -35,21 +36,21 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<PageResponse<List<ResPost>>> getAll(Pageable pageable,
-                                                              @Valid @RequestBody final ReqUserId reqUserId) {
+                                                              @RequestParam(name= "user_id") final Long userId) {
 
-        return ResponseEntity.ok(postService.getAll(pageable, reqUserId.getUserId()));
+        return ResponseEntity.ok(postService.getAll(pageable, userId));
     }
 
-    @GetMapping("/filter")
+    @GetMapping("/type")
     public ResponseEntity<PageResponse<List<ResPost>>> getAllByCriteria(Pageable pageable,
-                                                            @RequestParam(name = "criteria_type") String criteriaType,
+                                                            @RequestParam(name = "criteria_type") CriteriaType criteriaType,
                                                             @RequestParam(name = "criteria") String criteria,
-                                                            @Valid @RequestBody final ReqUserId reqUserId){
-        return ResponseEntity.ok(postService.getAllBYCriteria(criteriaType, criteria, pageable, reqUserId.getUserId()));
+                                                            @RequestParam(name= "user_id") final Long userId){
+        return ResponseEntity.ok(postService.getAllByCriteria(criteriaType, criteria, pageable, userId));
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<ResReturnId> update(@RequestBody @Valid final ReqPost postDto,
+    public ResponseEntity<ResReturnId> update(@RequestBody @Valid final UpdatePostRequest postDto,
                                        @PathVariable final Long id){
         return ResponseEntity.ok(ResReturnId.builder()
                 .id(postService.update(postDto, id))

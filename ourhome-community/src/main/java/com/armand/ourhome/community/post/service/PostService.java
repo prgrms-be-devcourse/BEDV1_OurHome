@@ -4,8 +4,8 @@ import com.armand.ourhome.common.api.PageResponse;
 import com.armand.ourhome.common.utils.AwsS3Uploader;
 import com.armand.ourhome.community.follow.repository.FollowRepository;
 import com.armand.ourhome.community.post.controller.common.CriteriaType;
-import com.armand.ourhome.community.post.dto.request.ReqContent;
-import com.armand.ourhome.community.post.dto.request.ReqPost;
+import com.armand.ourhome.community.post.dto.request.CreatePostRequest;
+import com.armand.ourhome.community.post.dto.request.UpdatePostRequest;
 import com.armand.ourhome.community.post.dto.response.ResPost;
 import com.armand.ourhome.community.post.entity.*;
 import com.armand.ourhome.community.post.exception.CriteriaNotFountException;
@@ -13,9 +13,7 @@ import com.armand.ourhome.community.post.exception.PostNotFoundException;
 import com.armand.ourhome.community.post.exception.UserNotFountException;
 import com.armand.ourhome.community.post.mapper.PostConverter;
 import com.armand.ourhome.community.post.mapper.PostMapper;
-import com.armand.ourhome.community.post.repository.ContentRepository;
 import com.armand.ourhome.community.post.repository.PostRepository;
-import com.armand.ourhome.community.post.repository.TagRepository;
 import com.armand.ourhome.domain.user.User;
 import com.armand.ourhome.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,16 +43,14 @@ public class PostService {
     private final PostMapper postMapper = Mappers.getMapper(PostMapper.class);
     private final AwsS3Uploader awsS3Uploader;
 
+
+
+
     @Transactional
-    public Long save(final ReqPost postDto){
+    public Long save(final CreatePostRequest postDto){
 
         User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
-
-        int contentSize = postDto.getContentList().size();
-        for (int i = 0; i < contentSize; i++){
-            String mediaUrl = awsS3Uploader.upload(postDto.getContentList().get(i).getImageBase64(), "post");
-            postDto.getContentList().get(i).setMediaUrl(mediaUrl);
-        }
+        postDto.getContentList().forEach(content -> content.setMediaUrl(awsS3Uploader.upload(content.getImageBase64(),"post")));
 
         return postRepository.save(postMapper.toEntity(postDto, user)).getId();
     }
@@ -64,14 +60,14 @@ public class PostService {
         Page<Post> postWithPage = postRepository.findAll(pageable);
 
         // 본 게시물에 대해 팔로워 여부 확인
-        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        List<ResPost> postDtoList = isFollowing(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
 
         return new PageResponse<List<ResPost>>(postDtoList, postWithPage.getNumber(), postWithPage.getTotalPages(), postWithPage.getNumberOfElements(), postWithPage.getTotalElements());
     }
 
 
-    public PageResponse<List<ResPost>> getAllBYCriteria(String criteriaTypeRequest, String type, Pageable pageable, Long userId){
-        CriteriaType criteriaType = CriteriaType.findCriteriaTypeForUrl(criteriaTypeRequest);
+    public PageResponse<List<ResPost>> getAllByCriteria(CriteriaType criteriaType, String type, Pageable pageable, Long userId){
+//        CriteriaType criteriaType = CriteriaType.(criteriaTypeRequest);
         switch(criteriaType) {
             case RESIDENTIAL_TYPE -> {
                 if (! ResidentialType.exists(type)) throw new CriteriaNotFountException(type);
@@ -85,7 +81,7 @@ public class PostService {
                 return getAllByTag(type, pageable, userId);
             }
         }
-         throw new CriteriaNotFountException(criteriaTypeRequest);
+         throw new CriteriaNotFountException(criteriaType.toString());
     }
 
     public PageResponse<List<ResPost>> getAllByResidentialType(ResidentialType residentialType, Pageable pageable, Long userId){
@@ -93,7 +89,7 @@ public class PostService {
         Page<Post> postWithPage = postRepository.findAllByResidentialType(residentialType, pageable);
 
         // 본 게시물에 대해 팔로워 여부 확인
-        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        List<ResPost> postDtoList = isFollowing(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
 
         return new PageResponse<List<ResPost>>(postDtoList, postWithPage.getNumber(), postWithPage.getTotalPages(), postWithPage.getNumberOfElements(), postWithPage.getTotalElements());
     }
@@ -103,7 +99,7 @@ public class PostService {
         Page<Post> postWithPage = postRepository.findAllByPlaceType(placeType, pageable);
 
         // 본 게시물에 대해 팔로워 여부 확인
-        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        List<ResPost> postDtoList = isFollowing(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
 
         return new PageResponse<List<ResPost>>(postDtoList, postWithPage.getNumber(), postWithPage.getTotalPages(), postWithPage.getNumberOfElements(), postWithPage.getTotalElements());
     }
@@ -113,26 +109,15 @@ public class PostService {
         Page<Post> postWithPage = postRepository.findAllByTag(tagName, pageable);
 
         // 본 게시물에 대해 팔로워 여부 확인
-        List<ResPost> postDtoList = setIsFollower(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
+        List<ResPost> postDtoList = isFollowing(user, postWithPage.getContent(), postMapper.toDtoList(postWithPage.getContent()));
 
         return new PageResponse<List<ResPost>>(postDtoList, postWithPage.getNumber(), postWithPage.getTotalPages(), postWithPage.getNumberOfElements(), postWithPage.getTotalElements());
     }
 
     @Transactional
-    public Long update(final ReqPost postDto, Long postId){
-
-//        List<ReqContent> contentDtoList = postDto.getContentList();
-//
-//        for (int i = 0; i < contentDtoList.size(); i++){
-//            if (contentDtoList.get(i).getUpdatedFlag()) {
-//                contentDtoList.get(i).setMediaUrl(awsS3Uploader.upload(contentDtoList.get(i).getImageBase64(), "post"));
-//            }
-//        }
-
-
+    public Long update(final UpdatePostRequest postDto, Long postId){
         Post postBeforeUpdate = postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId.toString(), "post's id"));
         postConverter.updateConverter(postDto, postBeforeUpdate);
-//        postMapper.updateFromDto(postDto, postBeforeUpdate);
         return postDto.getId();
     }
 
@@ -148,10 +133,10 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    private List<ResPost> setIsFollower(User user, List<Post> posts, List<ResPost> resPosts){
+    private List<ResPost> isFollowing(User user, List<Post> posts, List<ResPost> resPosts){
         for (int i =0; i < posts.size(); i++){
-            User userOfPost = posts.get(i).getUser();
-            resPosts.get(i).setIsFollower(followRepository.existsByFollowerAndFollowing(user, userOfPost));
+            User writer = posts.get(i).getUser();
+            resPosts.get(i).setIsFollower(followRepository.existsByFollowerAndFollowing(user, writer));
         }
         return resPosts;
     }

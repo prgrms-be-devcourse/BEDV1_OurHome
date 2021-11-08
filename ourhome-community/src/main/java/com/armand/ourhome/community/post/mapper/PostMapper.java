@@ -1,6 +1,6 @@
 package com.armand.ourhome.community.post.mapper;
 
-import com.armand.ourhome.community.post.dto.request.ReqPost;
+import com.armand.ourhome.community.post.dto.request.CreatePostRequest;
 import com.armand.ourhome.community.post.dto.response.ResPost;
 import com.armand.ourhome.community.post.entity.Post;
 import com.armand.ourhome.domain.user.User;
@@ -20,8 +20,8 @@ public interface PostMapper {
     PostMapper INSTANCE = Mappers.getMapper(PostMapper.class);
 
     @Mapping(source="user", target = "user")
-    @Mapping(source = "reqPost.id", target = "id")
-    Post toEntity(ReqPost reqPost, User user);
+    @Mapping(source = "createPostRequest.id", target = "id")
+    Post toEntity(CreatePostRequest createPostRequest, User user);
 
     @Mapping(target = "userId", ignore = true)
     ResPost toDto(Post post);
@@ -29,8 +29,4 @@ public interface PostMapper {
     @Mapping(target = "userId", ignore = true)
     List<ResPost> toDtoList(List<Post> post);
 
-
-    @Transactional
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateFromDto(ReqPost reqPost, @MappingTarget Post post);
 }
