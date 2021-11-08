@@ -432,7 +432,7 @@ class PostControllerTest {
     private String getValuesFromEnum(List enumValues){ //
         StringBuffer typeNames = new StringBuffer();
         typeNames.append("\n").append("(유형: ");
-        enumValues.forEach(typeName -> typeNames.append(typeName).append(" "));
+        enumValues.forEach(typeName -> typeNames.append(typeName).append(", "));
         typeNames.append(")");
         return typeNames.toString();
     }
