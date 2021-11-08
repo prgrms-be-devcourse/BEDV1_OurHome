@@ -49,12 +49,7 @@ public class PostService {
     public Long save(final ReqPost postDto){
 
         User user = userRepository.findById(postDto.getUserId()).orElseThrow(() -> new UserNotFountException("해당 사용자를 찾을 수 없습니다."));
-
-        int contentSize = postDto.getContentList().size();
-        for (int i = 0; i < contentSize; i++){
-            String mediaUrl = awsS3Uploader.upload(postDto.getContentList().get(i).getImageBase64(), "post");
-            postDto.getContentList().get(i).setMediaUrl(mediaUrl);
-        }
+        postDto.getContentList().forEach(content -> content.setMediaUrl(awsS3Uploader.upload(content.getImageBase64(),"post")));
 
         return postRepository.save(postMapper.toEntity(postDto, user)).getId();
     }
