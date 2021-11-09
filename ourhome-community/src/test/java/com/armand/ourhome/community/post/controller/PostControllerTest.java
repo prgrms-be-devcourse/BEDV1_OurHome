@@ -17,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -123,6 +124,7 @@ class PostControllerTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("게시물을 저장할 수 있다.")
     void save() throws Exception {
         //Given
@@ -178,6 +180,7 @@ class PostControllerTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("게시된 모든 정보를 추출할 수 있다.")
     void getAll() throws Exception {
         //When, Then
@@ -222,6 +225,7 @@ class PostControllerTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("저장되어 있는 모든 게시물 중 거주형태를 기준으로 정보를 추출할 수 있다.")
     void getAllByResidentialType() throws Exception {
 
@@ -271,6 +275,7 @@ class PostControllerTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("저장되어 있는 모든 게시물 중 공간형태를 기준으로 정보를 추출할 수 있다.")
     void getAllByPlaceType() throws Exception {
 
@@ -290,6 +295,7 @@ class PostControllerTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("저장되어 있는 모든 게시물 중 테그를 기준으로 정보를 추출할 수 있다.")
     void getAllByTag() throws Exception {
         //When, Then
@@ -307,6 +313,7 @@ class PostControllerTest {
 
     }
     @Test
+    @Transactional
     @DisplayName("특정 게시물을 추출할 수 있다.")
     void getOne() throws Exception {
         //When, Then
@@ -344,6 +351,7 @@ class PostControllerTest {
     }
 
     @Test
+    @Transactional
     @DisplayName("특정 게시물을 삭제 할 수 있다.")
     @Order(value = 7)
     void deleteTest() throws Exception {
@@ -367,6 +375,7 @@ class PostControllerTest {
         //assertThat(postRepository.count(), is(0L)); //each method 로는 잘 되는데, perclass 만 하면 삭제가 안됨.
     }
     @Test
+    @Transactional
     @DisplayName("게시물을 수정할 수 있다.")
     void update() throws Exception {
         //Given
