@@ -103,6 +103,14 @@ class ContentTest {
                 .description("content 설명란")
                 .mediaUrl("/post/dii920j393jlf.png")
                 .placeType(PlaceType.LIVINGROOM)
+                .tags(List.of(
+                        Tag.builder()
+                                .name("좋은 거실")
+                                .build(),
+                        Tag.builder()
+                                .name("깔끔 거실")
+                                .build()
+                ))
                 .build();
 
     }
