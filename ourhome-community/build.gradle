@@ -10,6 +10,11 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
+// 빌드시 *-plain.jar 생성하지 않기
+jar {
+    enabled = false
+}
+
 // ---------------------------- ( adoc 생성 ) ----------------------------
 
 // snippets 생성될 경로 변수 생성
@@ -32,11 +37,11 @@ asciidoctor {
 // ---------------------------- ( html 변환 ) ----------------------------
 
 // 빌드시 snippets 을 참조 -> docs/asciidoc/*.adoc 에서 작성한대로 html 생성 -> resources/static/docs 경로로 반환
-bootJar {
-    dependsOn asciidoctor
-    from "${asciidoctor.outputDir}"
-    into 'static/docs'
-}
+//bootJar {
+//    dependsOn asciidoctor
+//    from "${asciidoctor.outputDir}"
+//    into 'static/docs'
+//}
 
 // But!! 위의 방법을 사용시 캐시때문에 html 덮어쓰기가 잘 안될수도 있음 따라서 아래와 같은 방법 사용
 // 1. build -> copyDocument 태스크 실행
